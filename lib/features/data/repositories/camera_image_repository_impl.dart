@@ -40,4 +40,22 @@ class CameraImageRepositoryImpl implements CameraImageRepository {
           message: e.toString())); // Handle unexpected errors
     }
   }
+
+  // @override
+  // Future<Either<Failure, CameraImage>> capturePhoto() async {
+  //   final result = await cameraDataSource.capturePhoto();
+  //   return result.fold(
+  //     (failure) => Left(failure),
+  //     (cameraImageModel) => Right(cameraImageModel.toEntity()),
+  //   );
+  // }
+
+  // @override
+  // Future<Either<Failure, CameraImage>> pickImage() async {
+  //   final result = await cameraDataSource.pickImage();
+  //   return result.fold(
+  //     (failure) => Left(failure),
+  //     (cameraImageModel) => Right(cameraImageModel.toEntity()),
+  //   );
+  // }
 }
