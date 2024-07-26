@@ -56,11 +56,11 @@ class _MainPageState extends State<MainPage>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          CameraPreviewWidget(
-            cameraController: cameraController,
-            size: size,
-            cameraValue: cameraValue,
-          ),
+          // CameraPreviewWidget(
+          //   cameraController: cameraController,
+          //   size: size,
+          //   cameraValue: cameraValue,
+          // ),
           SafeArea(
             child: Column(
               children: [

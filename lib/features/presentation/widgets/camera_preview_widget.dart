@@ -8,7 +8,8 @@ class CameraPreviewWidget extends StatelessWidget {
   const CameraPreviewWidget({
     super.key,
     required this.cameraController,
-    required this.size, required Future<void> cameraValue,
+    required this.size,
+    required Future<void> cameraValue,
   });
 
   @override
