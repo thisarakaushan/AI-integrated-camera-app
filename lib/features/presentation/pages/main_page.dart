@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:valuefinder/features/presentation/bloc/camera_bloc.dart';
-import 'package:valuefinder/features/presentation/bloc/camera_event.dart';
 import 'package:valuefinder/features/presentation/bloc/camera_state.dart';
+import 'package:valuefinder/features/presentation/widgets/camera_preview_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/gallery_button_widget.dart';
 
 class MainPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -27,8 +28,7 @@ class _MainPageState extends State<MainPage>
     super.initState();
     startCamera(0);
     _controller = AnimationController(
-      duration: const Duration(
-          seconds: 30), // Adjust duration as needed to change rotation speed
+      duration: const Duration(seconds: 30), // Adjust duration as needed
       vsync: this,
     )..repeat();
   }
@@ -56,34 +56,10 @@ class _MainPageState extends State<MainPage>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          FutureBuilder(
-            future: cameraValue,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: 357.5, // Adjusted width
-                      height: 336.5, // Adjusted height
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: AspectRatio(
-                          aspectRatio: cameraController.value.aspectRatio,
-                          child: CameraPreview(cameraController),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
+          CameraPreviewWidget(
+            cameraController: cameraController,
+            size: size,
+            cameraValue: cameraValue,
           ),
           SafeArea(
             child: Column(
@@ -112,20 +88,19 @@ class _MainPageState extends State<MainPage>
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: CameraPreview(cameraController),
+                    child: CameraPreviewWidget(
+                      cameraController: cameraController,
+                      size: size,
+                      cameraValue: cameraValue,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 5),
-                AnimatedBuilder(
-                  animation: _controller,
-                  child: Image.asset('assets/main_image.png',
-                      height: 131, width: 131),
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _controller.value * 2.0 * 3.141592653589793,
-                      child: child,
-                    );
-                  },
+                AnimatedImageWidget(
+                  controller: _controller,
+                  imagePath: 'assets/main_image.png',
+                  height: 131,
+                  width: 131,
                 ),
                 const SizedBox(height: 5),
                 ShaderMask(
@@ -133,7 +108,7 @@ class _MainPageState extends State<MainPage>
                     colors: [
                       Color(0xff2753cf),
                       Color(0xffc882ff),
-                      Color(0xff46edfe)
+                      Color(0xff46edfe),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -148,94 +123,8 @@ class _MainPageState extends State<MainPage>
                   style: TextStyle(color: Color(0xff46edfe), fontSize: 16),
                 ),
                 const Spacer(),
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(35),
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xff2753cf),
-                        Color(0xffc882ff),
-                        Color(0xff46edfe)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xff0e235a),
-                        borderRadius: BorderRadius.circular(35),
-                      ),
-                      child: BlocBuilder<CameraBloc, CameraState>(
-                        builder: (context, state) {
-                          return IconButton(
-                            icon: const Icon(Icons.camera_alt,
-                                color: Colors.white),
-                            onPressed: () {
-                              context
-                                  .read<CameraBloc>()
-                                  .add(CapturePhotoEvent());
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+                const GalleryButtonWidget(), // Use the gallery button widget
                 const SizedBox(height: 20),
-                Container(
-                  width: 270,
-                  height: 74,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(90),
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xff2753cf),
-                        Color(0xffc882ff),
-                        Color(0xff46edfe)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: const Color(0xff0e235a),
-                        borderRadius: BorderRadius.circular(90),
-                      ),
-                      child: BlocBuilder<CameraBloc, CameraState>(
-                        builder: (context, state) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              context.read<CameraBloc>().add(PickImageEvent());
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(90),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                              shadowColor: Colors.transparent,
-                            ),
-                            child: const Text(
-                              'Gallery',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
                 BlocBuilder<CameraBloc, CameraState>(
                   builder: (context, state) {
                     if (state is CameraLoaded) {

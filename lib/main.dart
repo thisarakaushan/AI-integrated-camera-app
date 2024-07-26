@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/di/injection_container.dart';
-import 'package:valuefinder/features/presentation/pages/splash_page.dart';
+import 'package:valuefinder/config/routes/app_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashPage(cameras: cameras),
+      initialRoute: AppRoutes.splashPage,
+      onGenerateRoute: (settings) => AppRoutes.generateRoute(settings, cameras),
     );
   }
 }
