@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:valuefinder/features/presentation/bloc/camera_bloc.dart';
-import 'package:valuefinder/features/presentation/bloc/camera_state.dart';
-import 'package:valuefinder/features/presentation/bloc/camera_event.dart';
 
 class GalleryButtonWidget extends StatelessWidget {
-  const GalleryButtonWidget({super.key});
+  final VoidCallback onGalleryPressed;
+
+  const GalleryButtonWidget({super.key, required this.onGalleryPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -27,27 +25,20 @@ class GalleryButtonWidget extends StatelessWidget {
             color: const Color(0xff0e235a),
             borderRadius: BorderRadius.circular(90),
           ),
-          child: BlocBuilder<CameraBloc, CameraState>(
-            builder: (context, state) {
-              return ElevatedButton(
-                onPressed: () {
-                  context.read<CameraBloc>().add(PickImageEvent());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(90),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shadowColor: Colors.transparent,
-                ),
-                child: const Text(
-                  'Gallery',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              );
-            },
+          child: ElevatedButton(
+            onPressed: onGalleryPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(90),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              shadowColor: Colors.transparent,
+            ),
+            child: const Text(
+              'Gallery',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
           ),
         ),
       ),
