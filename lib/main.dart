@@ -23,13 +23,24 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) => sl<CameraBloc>(),
-        )
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         initialRoute: AppRoutes.splashPage,
-        onGenerateRoute: (settings) =>
-            AppRoutes.generateRoute(settings, cameras),
+        onGenerateRoute: (settings) {
+          // Pass cameras as part of the route arguments
+          final arguments = settings.name == AppRoutes.splashPage ||
+                  settings.name == AppRoutes.mainPage
+              ? {'cameras': cameras}
+              : settings.arguments;
+          return AppRoutes.generateRoute(
+            RouteSettings(
+              name: settings.name,
+              arguments: arguments,
+            ),
+          );
+        },
       ),
     );
   }

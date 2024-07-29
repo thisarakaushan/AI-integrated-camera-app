@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-// Import the new StartButtonWidget
+import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/presentation/widgets/start_button_widget.dart';
 
 class SplashPage extends StatefulWidget {
@@ -22,16 +22,6 @@ class _SplashPageState extends State<SplashPage>
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
-
-    // Auto navigation after 10 sec
-
-    // Timer(const Duration(seconds: 10), () {
-    //   _controller.stop();
-    //   Navigator.of(context).pushReplacementNamed(
-    //     '/main-page', // Use named route for navigation
-    //     arguments: widget.cameras, // Pass cameras as arguments
-    //   );
-    // });
   }
 
   @override
@@ -42,8 +32,8 @@ class _SplashPageState extends State<SplashPage>
 
   void _navigateToMainPage() {
     Navigator.of(context).pushReplacementNamed(
-      '/main-page', // Use named route for navigation
-      arguments: widget.cameras, // Pass cameras as arguments
+      AppRoutes.mainPage, // Use AppRoutes.mainPage
+      arguments: widget.cameras,
     );
   }
 
@@ -70,13 +60,13 @@ class _SplashPageState extends State<SplashPage>
                 );
               },
             ),
-            const SizedBox(height: 20), // Space between image and text
+            const SizedBox(height: 20),
             const Text(
               'Your own',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 36,
-                  fontWeight: FontWeight.w600), // Semi-bold weight
+                  fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 5),
             ShaderMask(
@@ -94,14 +84,11 @@ class _SplashPageState extends State<SplashPage>
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 36,
-                    fontWeight: FontWeight.w600), // Semi-bold weight
+                    fontWeight: FontWeight.w600),
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ), // space between text and button
-            StartButtonWidget(
-                onPressed: _navigateToMainPage), // Add the StartButtonWidget
+            const SizedBox(height: 20),
+            StartButtonWidget(onPressed: _navigateToMainPage),
           ],
         ),
       ),
