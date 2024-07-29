@@ -7,7 +7,7 @@ import 'package:valuefinder/features/presentation/widgets/photo_capture_page_tex
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 
 class PhotoCapturePage extends StatefulWidget {
-  const PhotoCapturePage({super.key, required String imagePath});
+  const PhotoCapturePage({super.key});
 
   @override
   _PhotoCapturePageState createState() => _PhotoCapturePageState();
@@ -15,8 +15,8 @@ class PhotoCapturePage extends StatefulWidget {
 
 class _PhotoCapturePageState extends State<PhotoCapturePage>
     with SingleTickerProviderStateMixin {
-  late CameraController _cameraController;
-  late Future<void> _initializeControllerFuture;
+  CameraController? _cameraController;
+  Future<void>? _initializeControllerFuture;
   late AnimationController _controller;
   late Timer _timer;
 
@@ -33,18 +33,29 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    _cameraController = CameraController(
-      cameras.first,
-      ResolutionPreset.high,
-    );
-    _initializeControllerFuture = _cameraController.initialize();
+    try {
+      final cameras = await availableCameras();
+      _cameraController = CameraController(
+        cameras.first,
+        ResolutionPreset.high,
+      );
+      _initializeControllerFuture = _cameraController!.initialize();
+      setState(() {}); // Trigger a rebuild to reflect the changes
+    } catch (e) {
+      // Handle any errors that occur during camera initialization
+      print('Error initializing camera: $e');
+      _initializeControllerFuture = Future.error(e);
+    }
   }
 
   Future<void> _capturePhoto() async {
     try {
       await _initializeControllerFuture;
-      final image = await _cameraController.takePicture();
+      if (_cameraController == null ||
+          !_cameraController!.value.isInitialized) {
+        throw Exception('Camera not initialized');
+      }
+      final image = await _cameraController!.takePicture();
       if (mounted) {
         Navigator.pushReplacementNamed(
           context,
@@ -54,13 +65,13 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
       }
     } catch (e) {
       // Handle any errors that occur during capture
-      print(e);
+      print('Error capturing photo: $e');
     }
   }
 
   @override
   void dispose() {
-    _cameraController.dispose();
+    _cameraController?.dispose();
     _controller.dispose();
     _timer.cancel();
     super.dispose();
@@ -88,7 +99,15 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                   future: _initializeControllerFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      return CameraPreview(_cameraController);
+                      if (_cameraController != null &&
+                          _cameraController!.value.isInitialized) {
+                        return CameraPreview(_cameraController!);
+                      } else {
+                        return const Center(
+                            child: Text('Error initializing camera'));
+                      }
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
