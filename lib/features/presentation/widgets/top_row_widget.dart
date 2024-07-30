@@ -7,10 +7,10 @@ class TopRowWidget extends StatelessWidget {
   final VoidCallback onEditPressed;
 
   const TopRowWidget({
-    Key? key,
+    super.key,
     required this.onMenuPressed,
     required this.onEditPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -42,7 +42,7 @@ class _MainPageState extends State<MainPage>
   // }
   void _navigateToPhotoCapturePage() {
     print('Navigating to PhotoCapturePage'); // Debug log
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 5), () {
       print('Navigating after sec'); // Debug log
       Navigator.pushNamed(
         context,

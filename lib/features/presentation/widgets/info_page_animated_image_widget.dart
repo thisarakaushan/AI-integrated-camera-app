@@ -6,10 +6,10 @@ class InfoPageAnimatedImageWidget extends StatelessWidget {
   final String imagePath;
 
   const InfoPageAnimatedImageWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class InfoPageAnimatedImageWidget extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFF051338), // Background color
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
             Color(0xff2753cf),
             Color(0xffc882ff),
