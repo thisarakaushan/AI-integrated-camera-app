@@ -33,6 +33,7 @@ dependencies:
 
   #state management
   flutter_bloc: ^8.1.4
+  bloc: ^8.1.4
 
   dartz: ^0.10.1
 
@@ -41,7 +42,7 @@ dependencies:
   equatable: ^2.0.5
 
   permission_handler: ^11.3.1
-
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

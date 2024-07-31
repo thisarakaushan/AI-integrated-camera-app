@@ -56,27 +56,33 @@ class _MainPageState extends State<MainPage>
     final picker = ImagePicker();
     try {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-        });
 
-        Navigator.pushNamed(
-          context,
-          AppRoutes.imageProcessingPage,
-          arguments: {'imagePath': _image!.path},
-        );
-      } else {
-        // Handle the case where the user cancels the picker
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No image selected.')),
-        );
+      // Check if the widget is still mounted before using BuildContext
+      if (mounted) {
+        if (pickedFile != null) {
+          setState(() {
+            _image = File(pickedFile.path);
+          });
+
+          Navigator.pushNamed(
+            context,
+            AppRoutes.imageProcessingPage,
+            arguments: {'imagePath': _image!.path},
+          );
+        } else {
+          // Handle the case where the user cancels the picker
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No image selected.')),
+          );
+        }
       }
     } catch (e) {
       // Handle any errors during image picking
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
     }
   }
 
