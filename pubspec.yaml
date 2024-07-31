@@ -25,6 +25,7 @@ dependencies:
   image_gallery_saver: ^2.0.3
   # image_cropper: ^4.0.1 # Image cropper
   path_provider: ^2.0.5
+  path: ^1.9.0
   camera: ^0.11.0+1
   gap: ^3.0.1
   external_path: ^1.0.3
@@ -42,7 +43,6 @@ dependencies:
   equatable: ^2.0.5
 
   permission_handler: ^11.3.1
-  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

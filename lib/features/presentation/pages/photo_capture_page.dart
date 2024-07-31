@@ -193,7 +193,6 @@ class CapturePhoto {
         // );
         // final uploadResponse =
         //     await uploadImageApiService.uploadImage(imageFile);
-
         // if (uploadResponse.statusCode != 200) {
         //   print(
         //       'Failed to upload image: ${uploadResponse.statusCode} ${uploadResponse.body}');

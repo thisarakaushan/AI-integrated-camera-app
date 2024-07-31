@@ -1,4 +1,5 @@
-//import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,19 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDependencies();
 
-  //await Firebase.initializeApp();
+  print('Dependency initialized...');
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+          apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
+          appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
+          messagingSenderId: '1002412293801',
+          projectId: 'excelly-startup',
+        ))
+      : await Firebase.initializeApp();
+
+  print('Made the firbase connection...');
+
   final cameras = await availableCameras();
   runApp(MainApp(cameras: cameras));
 }

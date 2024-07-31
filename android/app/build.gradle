@@ -3,9 +3,13 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
-    //id 'com.google.gms.google-services'
-
+    id "com.google.gms.google-services"
 }
+
+// def flutterRoot = localProperties.getProperty('flutter.sdk')
+// if (flutterRoot == null) {
+//     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+// }
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -27,7 +31,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.example.valuefinder"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -40,8 +44,8 @@ android {
         applicationId = "com.example.valuefinder"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21
+        targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
@@ -59,10 +63,10 @@ flutter {
     source = "../.."
 }
 
-// dependencies {
-//     implementation platform('com.google.firebase:firebase-bom:33.1.2')
-//     implementation('com.google.firebase:firebase-analytics:21.0.0')
-//     implementation 'com.google.firebase:firebase-auth:22.0.0'
-//     implementation 'com.google.firebase:firebase-storage:20.0.0'
-//     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.0" // Ensure the Kotlin version matches the root build.gradle
-// }
+dependencies {
+    // implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    // implementation('com.google.firebase:firebase-analytics:21.0.0')
+    // implementation 'com.google.firebase:firebase-auth:22.0.0'
+    // implementation 'com.google.firebase:firebase-storage:20.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Ensure the Kotlin version matches the root build.gradle
+}
