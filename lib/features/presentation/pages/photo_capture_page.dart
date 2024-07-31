@@ -6,11 +6,11 @@ import 'package:camera/camera.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/core/api/upload_image_api_service.dart';
+// import 'package:valuefinder/core/api/upload_image_api_service.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 class PhotoCapturePage extends StatefulWidget {
   const PhotoCapturePage({super.key});
@@ -182,16 +182,16 @@ class CapturePhoto {
         // }
 
         // upload image to server
-        final uploadImageApiService = UploadImageApiService(
-          baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
-          token:
-              'eyJhbGciOiJSUzI1NiIsImtpZCI6IjBjYjQyNzQyYWU1OGY0ZGE0NjdiY2RhZWE0Yjk1YTI5ZmJhMGM1ZjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZXhjZWxseS1zdGFydHVwIiwiYXVkIjoiZXhjZWxseS1zdGFydHVwIiwiYXV0aF90aW1lIjoxNzIyMzQzOTI3LCJ1c2VyX2lkIjoiWTlPeWtGczgxbWU3TDJzeXMyeWpVVDNYSXFDMyIsInN1YiI6Ilk5T3lrRnM4MW1lN0wyc3lzMnlqVVQzWElxQzMiLCJpYXQiOjE3MjIzNDM5MjcsImV4cCI6MTcyMjM0NzUyNywiZW1haWwiOiJuaWxhbnRoYUBleGNlbGx5LmlvIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIm5pbGFudGhhQGV4Y2VsbHkuaW8iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.gkI_1ul4pVhdYZ62u7KwVDazE_bryQIuNe0izpVuS9unz4qFQeZkcIXFnN5AUZ9GjjgiXUwez1gjJQfM9ipuOyVKQbrYKI7aFXwLvVhPqUSNekFGBjz8UCwp5ojeg2aIbgv8-NhKnFEaYfRVw_EAJ_LdQW9JXM11QbnWtHpAgU4WjvIgw248tvwlkIpjDt3QrEQdfHnvXjg3L52TqU7IiyIJPeRrRxErXzzRGoU1oD_cXiup1gm_j1JSJBbuWa7Afr90S9V8cgQ-CXzCNlSGLTiA8ay3g5YOPY5aLESxh9gGWArKYr05glvoZtyakftL0xDKip3NvhvkFMp6ASgHmg',
-        );
-        final uploadResponse =
-            await uploadImageApiService.uploadImage(imageFile);
+        // final uploadImageApiService = UploadImageApiService(
+        //   baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
+        //   token:
+        //       'eyJhbGciOiJSUzI1NiIsImtpZCI6IjBjYjQyNzQyYWU1OGY0ZGE0NjdiY2RhZWE0Yjk1YTI5ZmJhMGM1ZjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZXhjZWxseS1zdGFydHVwIiwiYXVkIjoiZXhjZWxseS1zdGFydHVwIiwiYXV0aF90aW1lIjoxNzIyMzQzOTI3LCJ1c2VyX2lkIjoiWTlPeWtGczgxbWU3TDJzeXMyeWpVVDNYSXFDMyIsInN1YiI6Ilk5T3lrRnM4MW1lN0wyc3lzMnlqVVQzWElxQzMiLCJpYXQiOjE3MjIzNDM5MjcsImV4cCI6MTcyMjM0NzUyNywiZW1haWwiOiJuaWxhbnRoYUBleGNlbGx5LmlvIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIm5pbGFudGhhQGV4Y2VsbHkuaW8iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.gkI_1ul4pVhdYZ62u7KwVDazE_bryQIuNe0izpVuS9unz4qFQeZkcIXFnN5AUZ9GjjgiXUwez1gjJQfM9ipuOyVKQbrYKI7aFXwLvVhPqUSNekFGBjz8UCwp5ojeg2aIbgv8-NhKnFEaYfRVw_EAJ_LdQW9JXM11QbnWtHpAgU4WjvIgw248tvwlkIpjDt3QrEQdfHnvXjg3L52TqU7IiyIJPeRrRxErXzzRGoU1oD_cXiup1gm_j1JSJBbuWa7Afr90S9V8cgQ-CXzCNlSGLTiA8ay3g5YOPY5aLESxh9gGWArKYr05glvoZtyakftL0xDKip3NvhvkFMp6ASgHmg',
+        // );
+        // final uploadResponse =
+        //     await uploadImageApiService.uploadImage(imageFile);
 
-        print(
-            'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
+        // print(
+        //     'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
       } catch (e) {
         print('Error saving image to gallery: $e');
       }

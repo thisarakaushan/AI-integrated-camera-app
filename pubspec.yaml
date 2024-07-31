@@ -25,6 +25,7 @@ dependencies:
   image_gallery_saver: ^2.0.3
   # image_cropper: ^4.0.1 # Image cropper
   path_provider: ^2.0.5
+  path: ^1.9.0
   camera: ^0.11.0+1
   gap: ^3.0.1
   external_path: ^1.0.3
@@ -33,6 +34,7 @@ dependencies:
 
   #state management
   flutter_bloc: ^8.1.4
+  bloc: ^8.1.4
 
   dartz: ^0.10.1
 
