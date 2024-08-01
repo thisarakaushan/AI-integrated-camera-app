@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:valuefinder/core/services/product_service.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
@@ -27,7 +30,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     )..repeat();
 
     // Simulate some processing and then navigate
-    // _processingFuture = _processImage();
+    _processImage();
     Future.delayed(const Duration(seconds: 3), _navigateToImageRecognitionPage);
   }
 
@@ -37,42 +40,123 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     super.dispose();
   }
 
+  // final response = await http.post(
+  //       Uri.parse('https://shopping-s4r2ozb5wq-uc.a.run.app'),
+  //           body: jsonEncode({
+  //             'image':
+  //                 base64Encode(await File(widget.imagePath).readAsBytes()),
+  //           }),
+  //           headers: {
+  //         'Content-Type': 'application/json',
+  //       }
+
   // Image processing method
 
-//   Future<void> _processImage() async {
-//   try {
-//     // Send image to backend for processing
-//     final response = await http.post(
-//       Uri.parse('https://your-backend-url.com/process-image'),
-//       body: {
-//         'image': base64Encode(await File(widget.imagePath).readAsBytes()),
-//       },
-//     );
-//     final result = jsonDecode(response.body);
-//     final String identifiedObject = result['object']; // e.g., "Adidas shoe"
+  // Future<void> _processImage() async {
+  //   try {
+  //     final imageBytes = await File(widget.imagePath).readAsBytes();
+  //     final encodedImage = base64Encode(imageBytes);
 
-//     // Navigate to the ImageRecognitionPage with the identified object
-//     if (mounted) {
-//       Navigator.pushNamed(
-//         context,
-//         AppRoutes.imageRecognitionPage,
-//         arguments: {
-//           'imagePath': widget.imagePath,
-//           'identifiedObject': identifiedObject,
-//         },
-//       );
-//     }
-//   } catch (e) {
-//     // Handle any errors here
-//     print('Error processing image: $e');
-//   }
-// }
+  //     // Send image to backend for processing
+  //     final response = await http.post(
+  //       Uri.parse('https://shopping-s4r2ozb5wq-uc.a.run.app'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({'image': encodedImage}),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final result = jsonDecode(response.body);
+  //       final String identifiedObject = result['object']; // e.g., "Adidas shoe"
+
+  //       // Print debug information
+  //       print(
+  //           'Navigating to ${AppRoutes.imageRecognitionPage} with arguments: {imagePath: ${widget.imagePath}, identifiedObject: ${identifiedObject}}');
+
+  //       // Fetch products related to the identified object
+  //       final ProductResponse = await fetchProducts(identifiedObject);
+  //       final products = ProductResponse.products ?? [];
+
+  //       // print debug info
+  //       print('Identified object: $identifiedObject');
+  //       print('Products: $products');
+
+  //       // Navigate to the ImageRecognitionPage with the identified object
+  //       if (mounted) {
+  //         Navigator.pushNamed(
+  //           context,
+  //           AppRoutes.imageRecognitionPage,
+  //           arguments: {
+  //             'imagePath': widget.imagePath,
+  //             'identifiedObject': identifiedObject,
+  //             'products': products,
+  //           },
+  //         );
+  //       }
+  //     } else {
+  //       throw Exception('Failed to process image');
+  //     }
+  //   } catch (e) {
+  //     // Handle any errors here
+  //     print('Error processing image: $e');
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to process image: $e')),
+  //       );
+  //     }
+  //   }
+  // }
+
+  Future<void> _processImage() async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://shopping-s4r2ozb5wq-uc.a.run.app'),
+        headers: {
+          'Content-Type': 'application/json', // Adjust if needed
+        },
+        body: jsonEncode({
+          'image': base64Encode(await File(widget.imagePath).readAsBytes()),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        final String identifiedObject = result['object']; // e.g., "Adidas shoe"
+
+        if (mounted) {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.imageRecognitionPage,
+            arguments: {
+              'imagePath': widget.imagePath,
+              'identifiedObject': identifiedObject,
+            },
+          );
+        }
+      } else {
+        throw Exception(
+            'Failed to process image with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Print the detailed error message
+      print('Error processing image: $e');
+      // Optionally, display an error message to the user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to process image: $e')),
+        );
+      }
+    }
+  }
 
   void _navigateToImageRecognitionPage() {
     Navigator.pushNamed(
       context,
       AppRoutes.imageRecognitionPage,
-      arguments: {'imagePath': widget.imagePath},
+      arguments: {
+        'imagePath': widget.imagePath,
+        'identifiedObject':
+            'Default Object Name', // temporarily set to a default for testing
+      },
     );
   }
 

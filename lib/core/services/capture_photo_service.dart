@@ -92,8 +92,8 @@ class CapturePhoto {
 
         print('Image saved to gallery: $result');
 
-        final FirebaseAuth _auth = FirebaseAuth.instance;
-        User? user = _auth.currentUser;
+        final FirebaseAuth auth = FirebaseAuth.instance;
+        User? user = auth.currentUser;
         if (user != null) {
           String? token = await user.getIdToken();
           print('Token: $token');

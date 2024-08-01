@@ -63,9 +63,10 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
+            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
@@ -84,7 +85,8 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
             ),
             const SizedBox(height: 10),
             Text(
-              widget.identifiedObject,
+              widget
+                  .identifiedObject, // This should display the recognized object
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -98,7 +100,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
               width: 131,
             ),
             const SizedBox(height: 20),
-            const ImageProcessingPageTextWidget(), // use the image processing page text widget
+            const ImageProcessingPageTextWidget(),
             const Spacer(),
           ],
         ),

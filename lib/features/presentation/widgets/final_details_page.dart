@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 class DetailsPage extends StatelessWidget {
@@ -20,13 +19,11 @@ class DetailsPage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Page Content
           Positioned(
             bottom: 0,
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height *
-                  0.7, // Adjust height as needed
+              height: MediaQuery.of(context).size.height * 0.7,
               decoration: BoxDecoration(
                 color: Colors.grey[800],
                 borderRadius:
@@ -36,7 +33,6 @@ class DetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  // Platform-specific Details
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text(
@@ -48,7 +44,6 @@ class DetailsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Image
                   Container(
                     width: 159,
                     height: 125,
@@ -66,23 +61,22 @@ class DetailsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Description
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      description,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        description,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
-                  // Additional details specific to the platform can go here
                 ],
               ),
             ),
           ),
-          // Close Button
           Positioned(
             top: 10,
             right: 10,

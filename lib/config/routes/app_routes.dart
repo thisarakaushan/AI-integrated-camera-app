@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/image_info_page.dart';
 import 'package:valuefinder/features/presentation/pages/image_recognition_page.dart';
 import 'package:valuefinder/features/presentation/pages/main_page.dart';
@@ -48,6 +49,7 @@ class AppRoutes {
         }
         return _errorRoute(
             'Missing or invalid arguments for ImageProcessingPage');
+      // In AppRoutes
       case imageRecognitionPage:
         if (args != null &&
             args.containsKey('imagePath') &&
@@ -66,16 +68,14 @@ class AppRoutes {
       case imageInfoPage:
         if (args != null &&
             args.containsKey('imageInfoPath') &&
-            args.containsKey('description') &&
-            args.containsKey('platforms')) {
+            args.containsKey('description')) {
           final imageInfoPath = args['imageInfoPath'] as String;
           final description = args['description'] as String;
-          final platforms = args['platforms'] as List<Map<String, String>>;
           return MaterialPageRoute(
             builder: (_) => ImageInfoPage(
               imageInfoPath: imageInfoPath,
-              description: description,
-              platforms: platforms,
+              description: description, platforms: [],
+
             ),
           );
         }
