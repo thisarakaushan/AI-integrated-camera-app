@@ -13,17 +13,24 @@ Future<void> main() async {
   await initializeDependencies();
 
   print('Dependency initialized...');
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-          options: const FirebaseOptions(
+
+  try {
+    if (Platform.isAndroid) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
           apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
           appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
           messagingSenderId: '1002412293801',
           projectId: 'excelly-startup',
-        ))
-      : await Firebase.initializeApp();
-
-  print('Made the firbase connection...');
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    print('Firebase initialized successfully...');
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+  }
 
   final cameras = await availableCameras();
   runApp(MainApp(cameras: cameras));

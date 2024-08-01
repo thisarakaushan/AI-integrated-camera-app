@@ -6,11 +6,12 @@ import 'package:camera/camera.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-// import 'package:valuefinder/core/api/upload_image_api_service.dart';
+import 'package:valuefinder/core/api/auth_service.dart';
+import 'package:valuefinder/core/api/upload_image_api_service.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PhotoCapturePage extends StatefulWidget {
   const PhotoCapturePage({super.key});
@@ -25,6 +26,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   Future<void>? _initializeControllerFuture;
   late AnimationController _controller;
   late Timer _timer;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -34,8 +36,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
-    _timer = Timer(
-        const Duration(seconds: 2), _capturePhoto); // Adjust timing as needed
+    _authenticateAndCapturePhoto();
   }
 
   Future<void> _initializeCamera() async {
@@ -54,6 +55,19 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     }
   }
 
+  Future<void> _authenticateAndCapturePhoto() async {
+    String? token = await _authService.signInWithEmailAndPassword(
+        'nilantha@excelly.io', 'Nila_123');
+    if (token != null) {
+      // Sign in successful
+      _timer = Timer(
+          const Duration(seconds: 2), _capturePhoto); // Adjust timing as needed
+    } else {
+      // Sign in failed
+      print('User authentication failed');
+    }
+  }
+
   Future<void> _capturePhoto() async {
     try {
       await _initializeControllerFuture;
@@ -63,7 +77,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
       }
       final image = await _cameraController!.takePicture();
 
-      // save the captured photo to the gallery
+      // Save the captured photo to the gallery
       final capturePhoto = CapturePhoto();
       await capturePhoto.saveAndUploadPhoto(image.path);
       print('Image saved and Uploaded');
@@ -99,7 +113,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         child: Column(
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
+            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // Top row
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
@@ -137,7 +151,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
               width: 131,
             ),
             const SizedBox(height: 20),
-            const PhotoCapturePageTextWidget(), // use the photo capture page text widget
+            const PhotoCapturePageTextWidget(), // Use the photo capture page text widget
             const Spacer(),
           ],
         ),
@@ -151,7 +165,7 @@ class CapturePhoto {
   Future<void> saveAndUploadPhoto(String imagePath) async {
     print('Call save photo method');
 
-    // check for permissions
+    // Check for permissions
     if (await Permission.storage.request().isGranted) {
       try {
         // Read the file from the given path
@@ -172,26 +186,27 @@ class CapturePhoto {
         print('Image saved to gallery: $result');
 
         // Obtain the token
-        // final FirebaseAuth _auth = FirebaseAuth.instance;
-        // User? user = _auth.currentUser;
-        // String? token = await user?.getIdToken();
+        final FirebaseAuth _auth = FirebaseAuth.instance;
+        User? user = _auth.currentUser;
+        if (user != null) {
+          String? token = await user.getIdToken();
+          if (token != null) {
+            // Upload image to server
+            final uploadImageApiService = UploadImageApiService(
+              baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
+              token: token,
+            );
+            final uploadResponse =
+                await uploadImageApiService.uploadImage(imageFile);
 
-        // if (token == null) {
-        //   print('Error obtaining token');
-        //   return;
-        // }
-
-        // upload image to server
-        // final uploadImageApiService = UploadImageApiService(
-        //   baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
-        //   token:
-        //       'eyJhbGciOiJSUzI1NiIsImtpZCI6IjBjYjQyNzQyYWU1OGY0ZGE0NjdiY2RhZWE0Yjk1YTI5ZmJhMGM1ZjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZXhjZWxseS1zdGFydHVwIiwiYXVkIjoiZXhjZWxseS1zdGFydHVwIiwiYXV0aF90aW1lIjoxNzIyMzQzOTI3LCJ1c2VyX2lkIjoiWTlPeWtGczgxbWU3TDJzeXMyeWpVVDNYSXFDMyIsInN1YiI6Ilk5T3lrRnM4MW1lN0wyc3lzMnlqVVQzWElxQzMiLCJpYXQiOjE3MjIzNDM5MjcsImV4cCI6MTcyMjM0NzUyNywiZW1haWwiOiJuaWxhbnRoYUBleGNlbGx5LmlvIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIm5pbGFudGhhQGV4Y2VsbHkuaW8iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.gkI_1ul4pVhdYZ62u7KwVDazE_bryQIuNe0izpVuS9unz4qFQeZkcIXFnN5AUZ9GjjgiXUwez1gjJQfM9ipuOyVKQbrYKI7aFXwLvVhPqUSNekFGBjz8UCwp5ojeg2aIbgv8-NhKnFEaYfRVw_EAJ_LdQW9JXM11QbnWtHpAgU4WjvIgw248tvwlkIpjDt3QrEQdfHnvXjg3L52TqU7IiyIJPeRrRxErXzzRGoU1oD_cXiup1gm_j1JSJBbuWa7Afr90S9V8cgQ-CXzCNlSGLTiA8ay3g5YOPY5aLESxh9gGWArKYr05glvoZtyakftL0xDKip3NvhvkFMp6ASgHmg',
-        // );
-        // final uploadResponse =
-        //     await uploadImageApiService.uploadImage(imageFile);
-
-        // print(
-        //     'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
+            print(
+                'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
+          } else {
+            print('Error obtaining token');
+          }
+        } else {
+          print('User is not logged in');
+        }
       } catch (e) {
         print('Error saving image to gallery: $e');
       }
