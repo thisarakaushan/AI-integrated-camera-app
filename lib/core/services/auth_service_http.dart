@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class AuthService {
+class AuthServiceHttp {
   static const String apiKey = 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU';
   static const String signInUrl =
       'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey';

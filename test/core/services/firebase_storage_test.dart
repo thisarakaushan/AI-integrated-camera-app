@@ -3,10 +3,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 void main() {
   test('Firebase Storage Upload and Download', () async {
-    final FirebaseStorage _storage = FirebaseStorage.instance;
+    final FirebaseStorage storage = FirebaseStorage.instance;
 
     try {
-      Reference ref = _storage.ref().child('test/test_file.txt');
+      Reference ref = storage.ref().child('test/test_file.txt');
 
       // Upload a file
       await ref.putString('Hello Firebase Storage!');

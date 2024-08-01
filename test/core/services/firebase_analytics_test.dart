@@ -3,10 +3,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   test('Firebase Analytics Log Event', () async {
-    final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+    final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
     try {
-      await _analytics.logEvent(
+      await analytics.logEvent(
         name: 'test_event',
         parameters: {'test_param': 'test_value'},
       );

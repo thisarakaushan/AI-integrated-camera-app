@@ -3,16 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_test_setup.dart'; // Ensure this path is correct
 
 void main() {
-  setUpAll(() async { 
+  setUpAll(() async {
     setupFirebase(); // Initialize Firebase before running tests
   });
 
   test('Firebase Auth Sign-In', () async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     try {
       // Test signing in anonymously
-      UserCredential userCredential = await _auth.signInAnonymously();
+      UserCredential userCredential = await auth.signInAnonymously();
       User? user = userCredential.user;
 
       if (user != null) {

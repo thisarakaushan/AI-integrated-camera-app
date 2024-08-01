@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -13,23 +13,30 @@ Future<void> main() async {
   await initializeDependencies();
 
   print('Dependency initialized...');
-
-  try {
-    if (Platform.isAndroid) {
-      await Firebase.initializeApp(
-        options: const FirebaseOptions(
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
           apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
           appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
           messagingSenderId: '1002412293801',
           projectId: 'excelly-startup',
-        ),
-      );
-    } else {
-      await Firebase.initializeApp();
+        ))
+      : await Firebase.initializeApp();
+
+  print('Firebase initialized...');
+
+  // anonymous login
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  User? user = auth.currentUser;
+
+  if (user == null) {
+    // If not logged in, sign in anonymously
+    try {
+      UserCredential userCredential = await auth.signInAnonymously();
+      user = userCredential.user;
+    } catch (e) {
+      print('Failed to sign in anonymously: $e');
     }
-    print('Firebase initialized successfully...');
-  } catch (e) {
-    print('Error initializing Firebase: $e');
   }
 
   final cameras = await availableCameras();
