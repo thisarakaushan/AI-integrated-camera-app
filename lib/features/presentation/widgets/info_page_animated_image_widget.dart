@@ -18,25 +18,37 @@ class InfoPageAnimatedImageWidget extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFF051338), // Background color
         gradient: const LinearGradient(
           colors: [
             Color(0xff2753cf),
             Color(0xffc882ff),
             Color(0xff46edfe),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         border: Border.all(
-          width: 2,
-          color: Colors.transparent, // Transparent to let gradient show
+          color: Colors.transparent,
+          width: 1, // Adjust the width of the gradient border as needed
         ),
       ),
       child: Center(
-        child: AnimatedImageWidget(
-          controller: controller,
-          imagePath: imagePath,
-          height: 33,
-          width: 33,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color:
+                const Color(0xff0e235a), // Background color inside the circle
+          ),
+          child: Center(
+            child: AnimatedImageWidget(
+              controller: controller,
+              imagePath: imagePath,
+              height: 33,
+              width: 33,
+            ),
+          ),
         ),
       ),
     );

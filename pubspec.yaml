@@ -62,3 +62,4 @@ flutter:
   assets:
     - assets/splash_image.png
     - assets/main_image.png
+    - assets/info_page_image.png

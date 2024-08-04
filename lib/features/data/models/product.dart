@@ -5,10 +5,11 @@ class Product {
   final String price;
   final String delivery;
   final String imageUrl;
-  final int size;
   final int position;
   final int? rating;
   final int? ratingCount;
+  final String? offers;
+  final String? productId;
 
   Product({
     required this.title,
@@ -17,10 +18,11 @@ class Product {
     required this.price,
     required this.delivery,
     required this.imageUrl,
-    required this.size,
     required this.position,
     this.rating,
     this.ratingCount,
+    this.offers,
+    this.productId,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -31,10 +33,11 @@ class Product {
       price: json['price'],
       delivery: json['delivery'],
       imageUrl: json['imageUrl'],
-      size: json['size'],
       position: json['position'],
       rating: json['rating'],
       ratingCount: json['ratingCount'],
+      offers: json['offers'],
+      productId: json['productId'],
     );
   }
 }
@@ -46,8 +49,7 @@ class ProductResponse {
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
     var list = json['products'] as List;
-    List<Product> productsList = list.map((i) => Product.fromJson(i)).toList();
-
-    return ProductResponse(products: productsList);
+    List<Product> productList = list.map((i) => Product.fromJson(i)).toList();
+    return ProductResponse(products: productList);
   }
 }

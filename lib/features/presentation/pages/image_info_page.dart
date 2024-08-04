@@ -29,9 +29,8 @@ class _ImageInfoPageState extends State<ImageInfoPage>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 5),
       vsync: this,
-    )..repeat();
+    );
   }
 
   @override
@@ -56,7 +55,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     );
   }
 
-  // navigation to main page
+  // Navigation to main page
   void _navigateToMainPage() {
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
@@ -64,38 +63,42 @@ class _ImageInfoPageState extends State<ImageInfoPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xff0e235a),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
+            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
             const SizedBox(height: 10),
-            // Animated Image inside a circular container - animated image widget
-            Center(
-              child: InfoPageAnimatedImageWidget(
-                controller: _controller,
-                imagePath: 'assets/info_page_image.png',
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Shoe Image
-            Center(
-              child: Container(
-                width: 159,
-                height: 125,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    File(widget.imageInfoPath),
-                    fit: BoxFit.cover,
+            // Row to position animated image as a bullet point
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: InfoPageAnimatedImageWidget(
+                      controller: _controller,
+                      imagePath: 'assets/info_page_image.png',
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  // Use SizedBox to control the exact size
+                  SizedBox(
+                    width: 159, // Set the width to 159
+                    height: 125, // Set the height to 125
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        File(widget.imageInfoPath),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -173,6 +176,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
             ),
             const SizedBox(height: 20),
             // Additional Description
+            // Additional Description
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -189,11 +193,14 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 children: [
+                  // Camera Button
                   GestureDetector(
                     onTap: _navigateToMainPage,
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        color: const Color(
+                            0xFF051338), // Camera icon background color
                         gradient: const LinearGradient(
                           colors: [
                             Color(0xFF2753CF),
@@ -203,6 +210,14 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
                       padding: const EdgeInsets.all(10),
                       child: const Icon(
@@ -213,44 +228,55 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1C1C1C),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Type message...',
-                          hintStyle: TextStyle(color: Colors.grey),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF051338),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: const TextField(
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Type message...',
+                              hintStyle: TextStyle(color: Colors.grey),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      // Handle send message action
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF2753CF),
-                            Color(0xFFC882FF),
-                            Color(0xFF46EDFE),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                        Positioned(
+                          right: 4,
+                          top: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Handle send message action
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF2753CF),
+                                    Color(0xFFC882FF),
+                                    Color(0xFF46EDFE),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              child: Transform.rotate(
+                                angle: -3.14 /
+                                    2, // Rotate icon to be oriented upwards
+                                child: const Icon(
+                                  Icons.send,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                      ),
+                      ],
                     ),
                   ),
                 ],
