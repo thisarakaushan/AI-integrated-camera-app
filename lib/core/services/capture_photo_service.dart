@@ -72,7 +72,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/core/services/upload_image_api_service.dart';
 
 class CapturePhoto {
-  Future<void> saveAndUploadPhoto(String imagePath) async {
+  Future<void> saveAndUploadPhoto(
+      String imagePath, Function(String) onImageUrl) async {
     print('Call save photo method');
 
     if (await Permission.storage.request().isGranted) {
@@ -107,6 +108,14 @@ class CapturePhoto {
 
             print(
                 'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
+
+            if (uploadResponse.statusCode == 200) {
+              final imageUrl = uploadResponse
+                  .body; // Assuming the response body contains the URL
+              onImageUrl(imageUrl); // Pass the image URL to the callback
+            } else {
+              print('Error uploading image: ${uploadResponse.statusCode}');
+            }
           } else {
             print('Error obtaining token');
           }

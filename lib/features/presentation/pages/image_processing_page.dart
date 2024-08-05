@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,9 +9,9 @@ import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 
 class ImageProcessingPage extends StatefulWidget {
-  final String imagePath;
+  final String imageUrl;
 
-  const ImageProcessingPage({super.key, required this.imagePath});
+  const ImageProcessingPage({super.key, required this.imageUrl});
 
   @override
   _ImageProcessingPageState createState() => _ImageProcessingPageState();
@@ -54,45 +53,90 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
             message: 'Failed to retrieve Firebase ID token.');
       }
 
-      final response = await http.get(
-        Uri.parse('https://shopping-s4r2ozb5wq-uc.a.run.app'),
+      print('Image URL: ${widget.imageUrl}'); // Debug log
+
+      // Step 1: Send image URL to initial endpoint
+      final response = await http.post(
+        Uri.parse('https://createnewthread-s4r2ozb5wq-uc.a.run.app'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
+        body: jsonEncode({'url': widget.imageUrl}),
       );
-
-      print('API Response: ${response.body}'); // Debugging line
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
-        print('Parsed Result: $result'); // Debugging line
+        final String runId = result['runId'] ?? '';
+        final String threadId = result['threadId'] ?? '';
+        final List toolCalls = result['toolCalls'] ?? [];
 
-        final String identifiedObject =
-            result['object'] ?? 'Default Object Name';
-        print('Object identified: $identifiedObject'); // Debugging line
+        print('run id: $runId');
+        print('thread id: $threadId');
+        print('tool calls: $toolCalls');
 
-        if (mounted) {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.imageRecognitionPage,
-            arguments: {
-              'imagePath': widget.imagePath,
-              'identifiedObject': identifiedObject,
-            },
-          );
+        // Extract the keyword from toolCalls
+        String keyword = '';
+        for (var call in toolCalls) {
+          if (call['type'] == 'function') {
+            final functionArgs = jsonDecode(call['function']['arguments']);
+            keyword = functionArgs['keyword'] ?? '';
+            break;
+          }
         }
-      } else if (response.statusCode == 400) {
-        final result = jsonDecode(response.body);
-        if (result['error'] == 'object not clear') {
+        print('Extracted Keyword: $keyword');
+
+        if (keyword.isEmpty) {
+          throw ServerFailure('Keyword extraction failed.');
+        }
+
+        // Step 2: Use the extracted keyword to get details from shopping URL
+        final recognitionResponse = await http.get(
+          Uri.parse(
+              'https://shopping-s4r2ozb5wq-uc.a.run.app?keyword=$keyword'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+
+        if (recognitionResponse.statusCode == 200) {
+          final recognitionResult = jsonDecode(recognitionResponse.body);
+          print('Recognition result: $recognitionResult');
+
+          final String identifiedObject = keyword;
+          print('Identified object: $identifiedObject');
+
+          if (identifiedObject.isNotEmpty) {
+            if (mounted) {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.imageRecognitionPage,
+                arguments: {
+                  'imageUrl': widget.imageUrl,
+                  'identifiedObject': identifiedObject,
+                },
+              );
+            }
+            print('Identified object is: $identifiedObject');
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Identified object is empty.')),
+              );
+            }
+          }
+        } else {
+          final errorResponse = jsonDecode(recognitionResponse.body);
+          throw ServerFailure(
+              'Failed to recognize the image: ${errorResponse['error']}');
+        }
+      } else {
+        final errorResponse = jsonDecode(response.body);
+        if (errorResponse['error'] == 'object not clear') {
           throw ServerFailure(
               'The object in the image is not clear. Please provide more images.');
         } else {
-          throw ServerFailure('Failed to process image: ${result['error']}');
+          throw ServerFailure(
+              'Failed to process image: ${errorResponse['error']}');
         }
-      } else {
-        throw ServerFailure(
-            'Failed to process image with status code: ${response.statusCode}. Response body: ${response.body}');
       }
     } catch (e) {
       if (e is Failure) {
@@ -130,9 +174,29 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.file(
-                  File(widget.imagePath),
+                child: Image.network(
+                  widget.imageUrl,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  (loadingProgress.expectedTotalBytes ?? 1)
+                              : null,
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Center(
+                      child: Text('Failed to load image',
+                          style: TextStyle(color: Colors.red)),
+                    );
+                  },
                 ),
               ),
             ),

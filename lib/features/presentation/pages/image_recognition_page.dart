@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
@@ -7,12 +6,12 @@ import 'package:valuefinder/features/presentation/widgets/image_processing_page_
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 
 class ImageRecognitionPage extends StatefulWidget {
-  final String imagePath;
+  final String imageUrl;
   final String identifiedObject;
 
   const ImageRecognitionPage({
     super.key,
-    required this.imagePath,
+    required this.imageUrl,
     required this.identifiedObject,
   });
 
@@ -33,28 +32,32 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
       vsync: this,
     )..repeat();
 
-    // Set up the timer to navigate after 2 seconds
-    _timer = Timer(const Duration(seconds: 2), _navigateToImageInfoPage);
+    // Set up the timer to navigate after 4 seconds
+    _timer = Timer(const Duration(seconds: 4), _navigateToImageInfoPage);
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _timer.cancel(); // Cancel the timer when disposing
+    _timer.cancel();
     super.dispose();
   }
 
   void _navigateToImageInfoPage() {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.imageInfoPage,
-      arguments: {
-        'imageInfoPath':
-            widget.imagePath, // Use 'imageInfoPath' as per the route
-        'description': widget
-            .identifiedObject, // Pass the identified object as description
-      },
-    );
+    if (widget.identifiedObject.isNotEmpty) {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.imageInfoPage,
+        arguments: {
+          'imageUrl': widget.imageUrl,
+          'description': widget.identifiedObject,
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Identified object is not available.')),
+      );
+    }
   }
 
   @override
@@ -77,16 +80,25 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.file(
-                  File(widget.imagePath),
+                child: Image.network(
+                  widget.imageUrl,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Center(
+                      child: Text(
+                        'Image not available',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              widget
-                  .identifiedObject, // This should display the recognized object
+              widget.identifiedObject.isNotEmpty
+                  ? widget.identifiedObject
+                  : 'Object not identified',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,

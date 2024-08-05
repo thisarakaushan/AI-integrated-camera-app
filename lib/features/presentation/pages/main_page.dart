@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/core/services/upload_image_api_service.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/gallery_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_text_widget.dart';
@@ -19,31 +22,23 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  File? _image; // variable to store picked image
+  File? _image; // Variable to store picked image
+  bool _isNavigating = false; // Flag to prevent simultaneous navigation
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 30), // Adjust duration as needed
+      duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
-    _navigateToPhotoCapturePage(); // Navigate to PhotoCapturePage
+    _navigateToPhotoCapturePage();
   }
 
-  // void _navigateToPhotoCapturePage() {
-  //   // Navigate to PhotoCapturePage immediately after MainPage loads
-  //   Future.delayed(Duration.zero, () {
-  //     Navigator.pushNamed(
-  //       context,
-  //       AppRoutes.photoCapturePage,
-  //     );
-  //   });
-  // }
   void _navigateToPhotoCapturePage() {
-    print('Navigating to PhotoCapturePage'); // Debug log
+    if (_isNavigating) return; // Prevent multiple navigations
+    _isNavigating = true;
     Future.delayed(const Duration(seconds: 5), () {
-      print('Navigating after sec'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
@@ -51,36 +46,89 @@ class _MainPageState extends State<MainPage>
     });
   }
 
-  // method to pick image from gallery
   Future<void> _pickImageFromGallery() async {
     final picker = ImagePicker();
     try {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-      // Check if the widget is still mounted before using BuildContext
       if (mounted) {
         if (pickedFile != null) {
           setState(() {
             _image = File(pickedFile.path);
           });
-
-          Navigator.pushNamed(
-            context,
-            AppRoutes.imageProcessingPage,
-            arguments: {'imagePath': _image!.path},
-          );
+          await _uploadImageToFirebase(pickedFile);
         } else {
-          // Handle the case where the user cancels the picker
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No image selected.')),
           );
         }
       }
     } catch (e) {
-      // Handle any errors during image picking
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _uploadImageToFirebase(XFile file) async {
+    try {
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      User? user = auth.currentUser;
+      if (user != null) {
+        String? token = await user.getIdToken();
+        if (token != null) {
+          final uploadImageApiService = UploadImageApiService(
+            baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
+            token: token,
+          );
+          final uploadResponse =
+              await uploadImageApiService.uploadImage(File(file.path));
+
+          if (uploadResponse.statusCode == 200) {
+            final responseBody = uploadResponse.body;
+            final Map<String, dynamic> responseJson = responseBody is String
+                ? jsonDecode(responseBody)
+                : responseBody as Map<String, dynamic>;
+            final imageUrl = responseJson['url'] as String;
+
+            print('Navigating to ImageProcessingPage with URL: $imageUrl');
+            Navigator.pushNamed(
+              context,
+              AppRoutes.imageProcessingPage,
+              arguments: {'imageUrl': imageUrl},
+            );
+          } else {
+            print('Error uploading image: ${uploadResponse.statusCode}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('Error uploading image: ${uploadResponse.statusCode}'),
+              ),
+            );
+          }
+        } else {
+          print('Error obtaining token');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error obtaining authentication token'),
+              ),
+            );
+          }
+        }
+      } else {
+        print('User is not logged in or user object is null');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User is not logged in')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading image: $e')),
         );
       }
     }
@@ -101,9 +149,8 @@ class _MainPageState extends State<MainPage>
         child: Column(
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
+            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
             const Spacer(),
-            // Lens frame without camera preview
             Container(
               width: size.width * 0.8,
               height: size.height * 0.3,
@@ -111,7 +158,7 @@ class _MainPageState extends State<MainPage>
                 border: Border.all(color: Colors.white, width: 2),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   '',
                   style: TextStyle(color: Colors.white, fontSize: 16),
@@ -125,11 +172,11 @@ class _MainPageState extends State<MainPage>
               height: 131,
               width: 131,
             ),
-            const MainPageTextWidget(), // use the main page text widget
+            const MainPageTextWidget(),
             const Spacer(),
             GalleryButtonWidget(
-                onGalleryPressed:
-                    _pickImageFromGallery), // Use the gallery button widget and pass the method
+              onGalleryPressed: _pickImageFromGallery,
+            ),
             const SizedBox(height: 20),
           ],
         ),

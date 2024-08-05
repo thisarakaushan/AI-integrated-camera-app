@@ -41,10 +41,10 @@ class AppRoutes {
         );
       case imageProcessingPage:
         print('getting routes in image processing page');
-        if (args != null && args.containsKey('imagePath')) {
-          final imagePath = args['imagePath'] as String;
+        if (args != null && args.containsKey('imageUrl')) {
+          final imageUrl = args['imageUrl'] as String;
           return MaterialPageRoute(
-            builder: (_) => ImageProcessingPage(imagePath: imagePath),
+            builder: (_) => ImageProcessingPage(imageUrl: imageUrl),
           );
         }
         return _errorRoute(
@@ -52,13 +52,13 @@ class AppRoutes {
       // In AppRoutes
       case imageRecognitionPage:
         if (args != null &&
-            args.containsKey('imagePath') &&
+            args.containsKey('imageUrl') &&
             args.containsKey('identifiedObject')) {
-          final imagePath = args['imagePath'] as String;
+          final imageUrl = args['imageUrl'] as String;
           final identifiedObject = args['identifiedObject'] as String;
           return MaterialPageRoute(
             builder: (_) => ImageRecognitionPage(
-              imagePath: imagePath,
+              imageUrl: imageUrl,
               identifiedObject: identifiedObject,
             ),
           );
@@ -67,15 +67,15 @@ class AppRoutes {
             'Missing or invalid arguments for ImageRecognitionPage');
       case imageInfoPage:
         if (args != null &&
-            args.containsKey('imageInfoPath') &&
+            args.containsKey('imageUrl') &&
             args.containsKey('description')) {
-          final imageInfoPath = args['imageInfoPath'] as String;
+          final imageUrl = args['imageUrl'] as String;
           final description = args['description'] as String;
           return MaterialPageRoute(
             builder: (_) => ImageInfoPage(
-              imageInfoPath: imageInfoPath,
-              description: description, platforms: [],
-
+              imageUrl: imageUrl,
+              description: description,
+              platforms: const [],
             ),
           );
         }

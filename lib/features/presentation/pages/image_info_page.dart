@@ -1,18 +1,20 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:valuefinder/features/presentation/widgets/final_details_page.dart';
+import 'package:valuefinder/core/helpers/bottom_sheet_helpers.dart'; // Import the helper file
+import 'package:valuefinder/features/presentation/widgets/botton_sheet_widget.dart'; // Import the new widget file
 import 'package:valuefinder/features/presentation/widgets/info_page_animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/platform_grid_view.dart'; // Import the new grid view widget file
 import 'package:valuefinder/config/routes/app_routes.dart';
 
 class ImageInfoPage extends StatefulWidget {
-  final String imageInfoPath;
+  final String imageUrl;
   final String description;
   final List<Map<String, String>> platforms;
 
   const ImageInfoPage({
     super.key,
-    required this.imageInfoPath,
+    required this.imageUrl,
     required this.description,
     required this.platforms,
   });
@@ -39,25 +41,24 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     super.dispose();
   }
 
-  // Show Bottom Sheet with DetailsPage
-  void _showDetailsBottomSheet(String platformName) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return DetailsPage(
-          platformName: platformName,
-          imageInfoPath: widget.imageInfoPath,
-          description: widget.description,
-        );
-      },
-    );
-  }
-
   // Navigation to main page
   void _navigateToMainPage() {
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
+  }
+
+  // Handle send message action
+  void _handleSendMessage() {
+    // Add your send message logic here
+  }
+
+  // Handle platform tap
+  void _onPlatformTap(String name, String imageUrl, String price) {
+    showDetailsBottomSheet(
+      context,
+      widget.imageUrl,
+      widget.description,
+      name,
+    );
   }
 
   @override
@@ -71,7 +72,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
             const SizedBox(height: 20),
             TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
             const SizedBox(height: 10),
-            // Row to position animated image as a bullet point
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
@@ -86,14 +86,13 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Use SizedBox to control the exact size
                   SizedBox(
-                    width: 159, // Set the width to 159
-                    height: 125, // Set the height to 125
+                    width: 159,
+                    height: 125,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        File(widget.imageInfoPath),
+                      child: Image.network(
+                        widget.imageUrl,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -102,7 +101,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               ),
             ),
             const SizedBox(height: 20),
-            // Description
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -114,69 +112,11 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               ),
             ),
             const SizedBox(height: 20),
-            // Details Box
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                width: double.infinity,
-                height: 315,
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: widget.platforms.length,
-                  itemBuilder: (context, index) {
-                    final platform = widget.platforms[index];
-                    return GestureDetector(
-                      onTap: () => _showDetailsBottomSheet(platform['name']!),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              platform['imageUrl']!,
-                              height: 40,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              platform['name']!,
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.black),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              platform['price']!,
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              'Size: ${platform['size']}',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+            PlatformGridView(
+              platforms: widget.platforms,
+              onPlatformTap: _onPlatformTap,
             ),
             const SizedBox(height: 20),
-            // Additional Description
-            // Additional Description
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
@@ -188,99 +128,9 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               ),
             ),
             const Spacer(),
-            // Bottom Camera Button and Chat Bar
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  // Camera Button
-                  GestureDetector(
-                    onTap: _navigateToMainPage,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(
-                            0xFF051338), // Camera icon background color
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF2753CF),
-                            Color(0xFFC882FF),
-                            Color(0xFF46EDFE),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF051338),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: const TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Type message...',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 4,
-                          top: 2,
-                          child: GestureDetector(
-                            onTap: () {
-                              // Handle send message action
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF2753CF),
-                                    Color(0xFFC882FF),
-                                    Color(0xFF46EDFE),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              child: Transform.rotate(
-                                angle: -3.14 /
-                                    2, // Rotate icon to be oriented upwards
-                                child: const Icon(
-                                  Icons.send,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            BottomSheetWidget(
+              onNavigateToMainPage: _navigateToMainPage,
+              onSendMessage: _handleSendMessage,
             ),
           ],
         ),

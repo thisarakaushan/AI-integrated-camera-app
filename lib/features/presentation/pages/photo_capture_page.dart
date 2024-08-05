@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -74,18 +75,23 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
 
       // Save the captured photo to the gallery
       final capturePhoto = CapturePhoto();
-      await capturePhoto.saveAndUploadPhoto(image.path);
-      print('Image saved and Uploaded');
+      await capturePhoto.saveAndUploadPhoto(image.path, (String imageUrlJson) {
+        // Decode the JSON-encoded URL
+        final Map<String, dynamic> imageUrlMap = jsonDecode(imageUrlJson);
+        final String imageUrl = imageUrlMap['url'];
 
-      if (mounted) {
+        print('Image saved and uploaded');
         print(
-            'Navigating to ${AppRoutes.imageProcessingPage} with arguments: ${image.path}');
-        Navigator.pushReplacementNamed(
-          context,
-          AppRoutes.imageProcessingPage,
-          arguments: {'imagePath': image.path},
-        );
-      }
+            'Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
+
+        if (mounted) {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.imageProcessingPage,
+            arguments: {'imageUrl': imageUrl},
+          );
+        }
+      });
     } catch (e) {
       // Handle any errors that occur during capture
       print('Error capturing photo: $e');

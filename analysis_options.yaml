@@ -14,6 +14,7 @@ analyzer:
     non_constant_identifier_names: ignore
     prefer_const_constructors: ignore
     slash_for_doc_comments: ignore
+    unnecessary_type_check: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
