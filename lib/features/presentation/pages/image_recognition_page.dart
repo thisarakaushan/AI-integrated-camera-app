@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/config/routes/slide_transition_route.dart';
+import 'package:valuefinder/features/data/models/product.dart';
+import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
@@ -8,11 +11,13 @@ import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 class ImageRecognitionPage extends StatefulWidget {
   final String imageUrl;
   final String identifiedObject;
+  final List<Product> products;
 
   const ImageRecognitionPage({
     super.key,
     required this.imageUrl,
     required this.identifiedObject,
+    required this.products,
   });
 
   @override
@@ -51,6 +56,8 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
         arguments: {
           'imageUrl': widget.imageUrl,
           'description': widget.identifiedObject,
+          'products':
+              widget.products.map((product) => product.toJson()).toList(),
         },
       );
     } else {
@@ -58,6 +65,17 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
         SnackBar(content: Text('Identified object is not available.')),
       );
     }
+  }
+
+  void _navigateToRecentSearchesPage() {
+    Navigator.push(
+      context,
+      SlideTransitionRoute(page: const RecentSearchesPage()),
+    );
+  }
+
+  void _navigateToMainPage() {
+    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
   @override
@@ -69,7 +87,9 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
+            TopRowWidget(
+                onMenuPressed: _navigateToRecentSearchesPage,
+                onEditPressed: _navigateToMainPage),
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,

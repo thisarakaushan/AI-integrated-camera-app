@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +14,26 @@ Future<void> main() async {
   await initializeDependencies();
 
   print('Dependency initialized...');
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-          options: const FirebaseOptions(
+  try {
+    if (Platform.isAndroid) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
           apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
           appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
           messagingSenderId: '1002412293801',
           projectId: 'excelly-startup',
-        ))
-      : await Firebase.initializeApp();
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    print('Firebase initialized...');
+  } catch (e) {
+    print('Failed to initialize Firebase: $e');
+  }
 
-  print('Firebase initialized...');
+  // Initialize Firebase Analytics
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   // anonymous login
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -40,12 +50,17 @@ Future<void> main() async {
   }
 
   final cameras = await availableCameras();
-  runApp(MainApp(cameras: cameras));
+  runApp(MainApp(cameras: cameras, analytics: analytics));
 }
 
 class MainApp extends StatelessWidget {
   final List<CameraDescription> cameras;
-  const MainApp({super.key, required this.cameras});
+  final FirebaseAnalytics analytics;
+  const MainApp({
+    super.key,
+    required this.cameras,
+    required this.analytics,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +72,9 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         initialRoute: AppRoutes.splashPage,
         onGenerateRoute: (settings) {
           // Pass cameras as part of the route arguments

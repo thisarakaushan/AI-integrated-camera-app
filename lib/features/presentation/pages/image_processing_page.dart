@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:injectable/injectable.dart';
+import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/error/failures.dart';
+import 'package:valuefinder/features/data/models/product.dart';
+import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
@@ -71,9 +75,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         final String threadId = result['threadId'] ?? '';
         final List toolCalls = result['toolCalls'] ?? [];
 
-        print('run id: $runId');
-        print('thread id: $threadId');
-        print('tool calls: $toolCalls');
+        print('Result: $result');
 
         // Extract the keyword from toolCalls
         String keyword = '';
@@ -87,7 +89,8 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         print('Extracted Keyword: $keyword');
 
         if (keyword.isEmpty) {
-          throw ServerFailure('Keyword extraction failed.');
+          throw ServerFailure(
+              'Object is not clear. Please provide more images.');
         }
 
         // Step 2: Use the extracted keyword to get details from shopping URL
@@ -101,27 +104,27 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
           final recognitionResult = jsonDecode(recognitionResponse.body);
           print('Recognition result: $recognitionResult');
 
-          final String identifiedObject = keyword;
-          print('Identified object: $identifiedObject');
+          // Extract product data
+          final List<Product> products = (recognitionResult['products'] as List)
+              .map((json) => Product.fromJson(json as Map<String, dynamic>))
+              .toList();
 
-          if (identifiedObject.isNotEmpty) {
-            if (mounted) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.imageRecognitionPage,
-                arguments: {
-                  'imageUrl': widget.imageUrl,
-                  'identifiedObject': identifiedObject,
-                },
-              );
-            }
-            print('Identified object is: $identifiedObject');
-          } else {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Identified object is empty.')),
-              );
-            }
+          // final String identifiedObject = keyword;
+          // print('Identified object: $identifiedObject');
+
+          // navigate to imagerecognition page with products
+
+          if (mounted) {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.imageRecognitionPage,
+              arguments: {
+                'imageUrl': widget.imageUrl,
+                'identifiedObject': keyword,
+                'products':
+                    products.map((product) => product.toJson()).toList(),
+              },
+            );
           }
         } else {
           final errorResponse = jsonDecode(recognitionResponse.body);
@@ -155,6 +158,17 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     }
   }
 
+  void _navigateToRecentSearchesPage() {
+    Navigator.push(
+      context,
+      SlideTransitionRoute(page: const RecentSearchesPage()),
+    );
+  }
+
+  void _navigateToMainPage() {
+    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,7 +177,9 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         child: Column(
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
+            TopRowWidget(
+                onMenuPressed: _navigateToRecentSearchesPage,
+                onEditPressed: _navigateToMainPage),
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,

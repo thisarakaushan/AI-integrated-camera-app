@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/services/auth_service_anonymous.dart';
 import 'package:valuefinder/core/services/capture_photo_service.dart';
+import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
@@ -98,6 +100,17 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     }
   }
 
+  void _navigateToMainPage() {
+    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
+  }
+
+  void _navigateToRecentSearchesPage() {
+    Navigator.push(
+      context,
+      SlideTransitionRoute(page: const RecentSearchesPage()),
+    );
+  }
+
   @override
   void dispose() {
     _cameraController?.dispose();
@@ -114,7 +127,10 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         child: Column(
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // Top row
+            TopRowWidget(
+                onMenuPressed: _navigateToRecentSearchesPage,
+                onEditPressed: _navigateToMainPage
+            ), // Top row
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,

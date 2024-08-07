@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:valuefinder/features/data/models/product.dart';
 
 class PlatformGridView extends StatelessWidget {
-  final List<Map<String, String>> platforms;
-  final void Function(String, String, String) onPlatformTap;
+  final List<Product> products;
+  final void Function(Product) onProductTap;
 
   const PlatformGridView({
     super.key,
-    required this.platforms,
-    required this.onPlatformTap,
+    required this.products,
+    required this.onProductTap,
   });
 
   @override
@@ -16,54 +17,56 @@ class PlatformGridView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
-        height: 315,
+        height: 315, // Adjust the height as needed for layout spacing
         decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(10),
+          color: Color(0xff0e235a), // Container background color
+          borderRadius:
+              BorderRadius.circular(10), // Rounded corners for the container
         ),
         child: GridView.builder(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(15),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
+            crossAxisCount: 2, // Number of columns
+            crossAxisSpacing: 10, // Spacing between columns
+            mainAxisSpacing: 10, // Spacing between rows
           ),
-          itemCount: platforms.length,
+          itemCount: products.length,
           itemBuilder: (context, index) {
-            final platform = platforms[index];
+            final product = products[index];
             return GestureDetector(
-              onTap: () => onPlatformTap(
-                platform['name']!,
-                platform['imageUrl']!,
-                platform['price']!,
-              ),
+              onTap: () => onProductTap(product),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white, // Background color of each grid item
+                  borderRadius: BorderRadius.circular(
+                      10), // Rounded corners for each grid item
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
-                      platform['imageUrl']!,
-                      height: 40,
+                      product.imageUrl,
+                      height: 60, // Adjust the image size as needed
                     ),
+                    // const SizedBox(height: 10),
+                    // Text(
+                    //   product.title,
+                    //   style: const TextStyle(fontSize: 14, color: Colors.black),
+                    //   textAlign: TextAlign.center,
+                    // ),
                     const SizedBox(height: 10),
                     Text(
-                      platform['name']!,
-                      style: const TextStyle(fontSize: 14, color: Colors.black),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      platform['price']!,
+                      product.price,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 10),
                     Text(
-                      'Size: ${platform['size']}',
+                      product.delivery,
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

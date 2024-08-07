@@ -1,5 +1,3 @@
-// lib/features/presentation/widgets/top_row_widget.dart
-
 import 'package:flutter/material.dart';
 
 class TopRowWidget extends StatelessWidget {

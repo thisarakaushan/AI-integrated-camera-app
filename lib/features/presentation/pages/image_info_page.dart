@@ -1,22 +1,24 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:valuefinder/core/helpers/bottom_sheet_helpers.dart'; // Import the helper file
-import 'package:valuefinder/features/presentation/widgets/botton_sheet_widget.dart'; // Import the new widget file
+import 'package:valuefinder/config/routes/slide_transition_route.dart';
+import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
+import 'package:valuefinder/features/presentation/widgets/botton_sheet_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/info_page_animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/platform_grid_view.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/platform_grid_view.dart'; // Import the new grid view widget file
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/features/data/models/product.dart';
+import 'package:valuefinder/features/presentation/widgets/final_details_page.dart';
 
 class ImageInfoPage extends StatefulWidget {
   final String imageUrl;
   final String description;
-  final List<Map<String, String>> platforms;
+  final List<Product> products; // Updated to use Product model
 
   const ImageInfoPage({
     super.key,
     required this.imageUrl,
     required this.description,
-    required this.platforms,
+    required this.products,
   });
 
   @override
@@ -32,6 +34,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     super.initState();
     _controller = AnimationController(
       vsync: this,
+      duration: const Duration(seconds: 2), // Add duration for animation
     );
   }
 
@@ -52,12 +55,33 @@ class _ImageInfoPageState extends State<ImageInfoPage>
   }
 
   // Handle platform tap
-  void _onPlatformTap(String name, String imageUrl, String price) {
-    showDetailsBottomSheet(
+  void _onPlatformTap(Product product) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return DetailsPage(
+            product: product, // Adjust as needed
+          );
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0); // Start position of the slide
+          const end = Offset.zero; // End position of the slide
+          const curve = Curves.easeInOut; // Animation curve
+
+          var tween = Tween(begin: begin, end: end);
+          var offsetAnimation =
+              animation.drive(tween.chain(CurveTween(curve: curve)));
+
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+  }
+
+  void _navigateToRecentSearchesPage() {
+    Navigator.push(
       context,
-      widget.imageUrl,
-      widget.description,
-      name,
+      SlideTransitionRoute(page: const RecentSearchesPage()),
     );
   }
 
@@ -70,7 +94,9 @@ class _ImageInfoPageState extends State<ImageInfoPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}),
+            TopRowWidget(
+                onMenuPressed: _navigateToRecentSearchesPage,
+                onEditPressed: _navigateToMainPage),
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -78,8 +104,8 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 40,
-                    height: 40,
+                    width: 35,
+                    height: 35,
                     child: InfoPageAnimatedImageWidget(
                       controller: _controller,
                       imagePath: 'assets/info_page_image.png',
@@ -87,8 +113,8 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 159,
-                    height: 125,
+                    width: 130,
+                    height: 100,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
@@ -113,8 +139,8 @@ class _ImageInfoPageState extends State<ImageInfoPage>
             ),
             const SizedBox(height: 20),
             PlatformGridView(
-              platforms: widget.platforms,
-              onPlatformTap: _onPlatformTap,
+              products: widget.products, // Updated to use Product model
+              onProductTap: _onPlatformTap, // Updated to use Product model
             ),
             const SizedBox(height: 20),
             Padding(
@@ -127,7 +153,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: 5),
             BottomSheetWidget(
               onNavigateToMainPage: _navigateToMainPage,
               onSendMessage: _handleSendMessage,

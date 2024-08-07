@@ -1,16 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:valuefinder/features/data/models/product.dart';
 
 class DetailsPage extends StatelessWidget {
-  final String platformName;
-  final String imageInfoPath;
-  final String description;
+  final Product product;
 
   const DetailsPage({
     super.key,
-    required this.platformName,
-    required this.imageInfoPath,
-    required this.description,
+    required this.product,
   });
 
   @override
@@ -36,7 +32,7 @@ class DetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text(
-                      'Details from $platformName',
+                      'Details from ${product.source}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -54,8 +50,8 @@ class DetailsPage extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        File(imageInfoPath),
+                      child: Image.network(
+                        product.imageUrl,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -65,7 +61,7 @@ class DetailsPage extends StatelessWidget {
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        description,
+                        product.offers ?? 'No description available',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
