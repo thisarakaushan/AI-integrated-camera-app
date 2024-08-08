@@ -7,7 +7,7 @@ import 'package:valuefinder/features/presentation/widgets/platform_grid_view.dar
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/data/models/product.dart';
-import 'package:valuefinder/features/presentation/widgets/final_details_page.dart';
+import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
 
 class ImageInfoPage extends StatefulWidget {
   final String imageUrl;
@@ -146,7 +146,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'If you require specific assistance with these shoes, such as prices or sizes, please inform me!',
+                'If you require specific assistance with these ${widget.description}, such as price or sizes, please inform me!',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,

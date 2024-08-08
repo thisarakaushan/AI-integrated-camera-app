@@ -8,7 +8,7 @@ import 'package:valuefinder/features/presentation/pages/recent_searches_page.dar
 import 'package:valuefinder/features/presentation/pages/splash_page.dart';
 import 'package:valuefinder/features/presentation/pages/photo_capture_page.dart';
 import 'package:valuefinder/features/presentation/pages/image_processing_page.dart';
-import 'package:valuefinder/features/presentation/widgets/final_details_page.dart';
+import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
 
 class AppRoutes {
   static const String splashPage = '/';
