@@ -81,7 +81,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF051338),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

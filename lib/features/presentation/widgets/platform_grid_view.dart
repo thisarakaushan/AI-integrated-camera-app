@@ -13,6 +13,10 @@ class PlatformGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productCount = products.length;
+    // Determine the number of columns based on the product count
+    final crossAxisCount = productCount <= 2 ? productCount : 2;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -25,8 +29,8 @@ class PlatformGridView extends StatelessWidget {
         ),
         child: GridView.builder(
           padding: const EdgeInsets.all(15),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Number of columns
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount, // Number of columns
             crossAxisSpacing: 10, // Spacing between columns
             mainAxisSpacing: 10, // Spacing between rows
           ),

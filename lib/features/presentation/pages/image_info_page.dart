@@ -142,7 +142,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(

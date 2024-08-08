@@ -13,7 +13,9 @@ import 'package:valuefinder/features/presentation/widgets/photo_capture_page_tex
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 
 class PhotoCapturePage extends StatefulWidget {
-  const PhotoCapturePage({super.key});
+  final String? imageUrl; // accept the imageUrl parameter from main page
+
+  const PhotoCapturePage({super.key, this.imageUrl});
 
   @override
   _PhotoCapturePageState createState() => _PhotoCapturePageState();
@@ -24,18 +26,50 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
   late AnimationController _controller;
-  late Timer _timer;
+  Timer? _timer; // Timer? to avoid late initialization
   final AnonymousAuthService _authService = AnonymousAuthService();
+  bool imageLoaded = false; // Flag to track if the image is displayed
+
+  Future<void> _navigateToProcessingPage(String imageUrl) async {
+    print(
+        'Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
+    if (mounted) {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.imageProcessingPage,
+        arguments: {'imageUrl': imageUrl},
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    print(
+        'Received imageUrl: ${widget.imageUrl}'); // Print the received imageUrl
+
     _controller = AnimationController(
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
-    _authenticateAndCapturePhoto();
+
+    if (widget.imageUrl != null) {
+      // Skip camera initialization and photo capture if imageUrl is provided
+      print(
+          'Image URL received and display images, kipping camera initialization and capture. ');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          imageLoaded = true; // Set flag to true when image URL is received
+        });
+        // Wait for the image to be displayed, then navigate
+        Future.delayed(const Duration(seconds: 1), () {
+          _navigateToProcessingPage(widget.imageUrl!);
+        });
+      });
+    } else {
+      _initializeCamera();
+      _authenticateAndCapturePhoto();
+    }
   }
 
   Future<void> _initializeCamera() async {
@@ -67,6 +101,13 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   }
 
   Future<void> _capturePhoto() async {
+    if (widget.imageUrl != null) {
+      print(
+          'Inside photo capture method and Received imageUrl: ${widget.imageUrl}');
+      // Skip photo capture and navigation if imageUrl is provided
+      return;
+    }
+
     try {
       await _initializeControllerFuture;
       if (_cameraController == null ||
@@ -115,22 +156,24 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   void dispose() {
     _cameraController?.dispose();
     _controller.dispose();
-    _timer.cancel();
+    _timer?.cancel(); // Ensure _timer is only canceled if initialized
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    print('Received imageUrl in PhotoCapturePage: ${widget.imageUrl}');
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF051338),
       body: SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 20),
             TopRowWidget(
-                onMenuPressed: _navigateToRecentSearchesPage,
-                onEditPressed: _navigateToMainPage
-            ), // Top row
+              onMenuPressed: _navigateToRecentSearchesPage,
+              onEditPressed: _navigateToMainPage,
+            ),
             const Spacer(),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
@@ -140,24 +183,64 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
-                child: FutureBuilder<void>(
-                  future: _initializeControllerFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (_cameraController != null &&
-                          _cameraController!.value.isInitialized) {
-                        return CameraPreview(_cameraController!);
-                      } else {
-                        return const Center(
-                            child: Text('Error initializing camera'));
-                      }
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+                child: widget.imageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: SizedBox(
+                          width: size.width * 0.8, // Adjust the width as needed
+                          height:
+                              size.height * 0.3, // Adjust the height as needed
+                          child: Image.network(
+                            widget.imageUrl!,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
+                                  ),
+                                );
+                              }
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Text('Failed to load image',
+                                    style: TextStyle(color: Colors.red)),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : FutureBuilder<void>(
+                        future: _initializeControllerFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (_cameraController != null &&
+                                _cameraController!.value.isInitialized) {
+                              return CameraPreview(_cameraController!);
+                            } else {
+                              return const Center(
+                                  child: Text('Error initializing camera'));
+                            }
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
               ),
             ),
             const SizedBox(height: 20),

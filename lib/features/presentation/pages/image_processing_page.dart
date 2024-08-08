@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:injectable/injectable.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/features/data/models/product.dart';
@@ -172,7 +171,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF051338),
       body: SafeArea(
         child: Column(
           children: [

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   File? image; // Variable to store picked image
+  Timer? _navigationTimer; // Timer for automatic navigation
 
   @override
   void initState() {
@@ -34,21 +36,38 @@ class _MainPageState extends State<MainPage>
       duration: const Duration(seconds: 5),
       vsync: this,
     )..repeat();
-    _navigateToPhotoCapturePage();
+
+    // Initial navigation without picking an image
+    // Set up a timer for automatic navigation
+    _navigationTimer = Timer(const Duration(seconds: 8), () {
+      if (mounted) {
+        // Navigate to PhotoCapturePage if gallery button wasn't clicked
+        _navigateToPhotoCapturePage();
+      }
+    });
   }
 
-  void _navigateToPhotoCapturePage() {
-    print('Navigating to PhotoCapturePage'); // Debug log
-    Future.delayed(const Duration(seconds: 5), () {
-      print('Navigating after sec'); // Debug log
+  void _navigateToPhotoCapturePage({String? imageUrl}) {
+    if (imageUrl != null) {
+      print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
+      Navigator.pushNamed(
+        context,
+        AppRoutes.photoCapturePage,
+        arguments: {'imageUrl': imageUrl},
+      );
+    } else {
+      print('Navigating to PhotoCapturePage without URL'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
       );
-    });
+    }
   }
 
   Future<void> _pickImageFromGallery() async {
+    // Cancel the timer to prevent automatic navigation if the user interacts
+    _navigationTimer?.cancel();
+
     final picker = ImagePicker();
     try {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -65,6 +84,12 @@ class _MainPageState extends State<MainPage>
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No image selected.')),
           );
+          // Delay navigation to allow message to be seen
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              _navigateToPhotoCapturePage();
+            }
+          });
         }
       }
     } catch (e) {
@@ -97,28 +122,34 @@ class _MainPageState extends State<MainPage>
                 : responseBody as Map<String, dynamic>;
             final imageUrl = responseJson['url'] as String;
 
-            print('Navigating to ImageProcessingPage with URL: $imageUrl');
-            Navigator.pushNamed(
-              context,
-              AppRoutes.imageProcessingPage,
-              arguments: {'imageUrl': imageUrl},
-            );
+            if (imageUrl != null) {
+              print(
+                  'Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
+              _navigateToPhotoCapturePage(imageUrl: imageUrl);
+            } else {
+              print(
+                  'Received null image URL from upload response'); // Debug log
+            }
           } else {
             print('Error uploading image: ${uploadResponse.statusCode}');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content:
-                    Text('Error uploading image: ${uploadResponse.statusCode}'),
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Error uploading image: ${uploadResponse.statusCode}'),
+                ),
+              );
+            }
           }
         } else {
           print('Error obtaining token');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Error obtaining authentication token'),
-            ),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error obtaining authentication token'),
+              ),
+            );
+          }
         }
       } else {
         print('User is not logged in or user object is null');
@@ -149,14 +180,12 @@ class _MainPageState extends State<MainPage>
   @override
   void dispose() {
     _controller.dispose(); // Dispose animation controller
+    _navigationTimer?.cancel(); // Cancel the automatic navigation timer
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Check if RecentSearchesPage is active
-    final isRecentSearchesPageActive =
-        ModalRoute.of(context)?.isActive ?? false;
     final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.black,

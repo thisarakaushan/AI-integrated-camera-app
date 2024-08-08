@@ -11,7 +11,7 @@ class MessageButtonWidget extends StatelessWidget {
       width: 35, // Adjust width as needed
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: const [
           Icon(
             Icons.message,
             color: Colors.black,
