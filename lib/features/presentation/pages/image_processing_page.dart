@@ -47,8 +47,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
   Future<void> _processImage() async {
     try {
-      print(
-          'Is Recent Searches Page Open: $_isRecentSearchesPageOpen'); // Debug log
+      // print('Is Recent Searches Page Open: $_isRecentSearchesPageOpen'); // Debug log
       if (_isRecentSearchesPageOpen) {
         return; // Avoid processing if RecentSearchesPage is open
       }
@@ -66,7 +65,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
             message: 'Failed to retrieve Firebase ID token.');
       }
 
-      print('Image URL: ${widget.imageUrl}'); // Debug log
+      //print('Image URL: ${widget.imageUrl}'); // Debug log
 
       // Step 1: Send image URL to initial endpoint
       final response = await http.post(
@@ -111,7 +110,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
         if (recognitionResponse.statusCode == 200) {
           final recognitionResult = jsonDecode(recognitionResponse.body);
-          print('Recognition result: $recognitionResult');
+          //print('Recognition result: $recognitionResult');
 
           // Extract product data
           final List<Product> products = (recognitionResult['products'] as List)

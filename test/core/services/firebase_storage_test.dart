@@ -10,7 +10,7 @@ void main() {
 
       // Upload a file
       await ref.putString('Hello Firebase Storage!');
-      print('File uploaded successfully');
+      //print('File uploaded successfully');
 
       // Download the file
       String downloadURL = await ref.getDownloadURL();

@@ -60,14 +60,14 @@ class _MainPageState extends State<MainPage>
 
   void _navigateToPhotoCapturePage({String? imageUrl}) {
     if (imageUrl != null) {
-      print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
+      //print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
         arguments: {'imageUrl': imageUrl},
       );
     } else {
-      print('Navigating to PhotoCapturePage without URL'); // Debug log
+      //print('Navigating to PhotoCapturePage without URL'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
@@ -134,8 +134,7 @@ class _MainPageState extends State<MainPage>
             final imageUrl = responseJson['url'] as String;
 
             if (imageUrl != null) {
-              print(
-                  'Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
+              //print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
               _navigateToPhotoCapturePage(imageUrl: imageUrl);
             } else {
               print(

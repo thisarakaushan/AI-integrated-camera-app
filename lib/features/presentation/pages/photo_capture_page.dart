@@ -35,8 +35,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   Future<void> _navigateToProcessingPage(String imageUrl) async {
-    print(
-        'Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
+    //print('Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
     if (mounted) {
       // Ensure that the current state is appropriate before navigation
       if (imageUrl.isNotEmpty) {
@@ -54,7 +53,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   @override
   void initState() {
     super.initState();
-    print('Received imageUrl: ${widget.imageUrl}');
+    //print('Received imageUrl: ${widget.imageUrl}');
 
     _controller = AnimationController(
       duration: const Duration(seconds: 30),
@@ -114,8 +113,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
 
   Future<void> _capturePhoto() async {
     if (widget.imageUrl != null) {
-      print(
-          'Inside photo capture method and Received imageUrl: ${widget.imageUrl}');
+      //print('Inside photo capture method and Received imageUrl: ${widget.imageUrl}');
       // Skip photo capture and navigation if imageUrl is provided
       return;
     }
@@ -135,9 +133,8 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         final Map<String, dynamic> imageUrlMap = jsonDecode(imageUrlJson);
         final String imageUrl = imageUrlMap['url'];
 
-        print('Image saved and uploaded');
-        print(
-            'Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
+        //print('Image saved and uploaded');
+        //print('Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
 
         if (mounted) {
           Navigator.pushReplacementNamed(

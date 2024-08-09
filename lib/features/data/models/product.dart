@@ -89,7 +89,7 @@ ProductResponse parseProductResponse(String jsonResponse) {
 void debugJson(String jsonResponse) {
   try {
     final parsed = jsonDecode(jsonResponse);
-    print('Parsed JSON: $parsed');
+    //print('Parsed JSON: $parsed');
   } catch (e) {
     print('Error decoding JSON: $e');
   }

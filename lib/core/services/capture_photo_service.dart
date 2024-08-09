@@ -74,13 +74,13 @@ import 'package:valuefinder/core/services/upload_image_api_service.dart';
 class CapturePhoto {
   Future<void> saveAndUploadPhoto(
       String imagePath, Function(String) onImageUrl) async {
-    print('Call save photo method');
+    //print('Call save photo method');
 
     if (await Permission.storage.request().isGranted) {
       try {
         final File imageFile = File(imagePath);
         if (!await imageFile.exists()) {
-          print('File does not exist at $imagePath');
+          //print('File does not exist at $imagePath');
           return;
         }
         final Uint8List bytes = await imageFile.readAsBytes();
@@ -91,13 +91,13 @@ class CapturePhoto {
           name: 'captured_image_${DateTime.now().millisecondsSinceEpoch}',
         );
 
-        print('Image saved to gallery: $result');
+        //print('Image saved to gallery: $result');
 
         final FirebaseAuth auth = FirebaseAuth.instance;
         User? user = auth.currentUser;
         if (user != null) {
           String? token = await user.getIdToken();
-          print('Token: $token');
+          //print('Token: $token');
           if (token != null) {
             final uploadImageApiService = UploadImageApiService(
               baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
@@ -106,8 +106,7 @@ class CapturePhoto {
             final uploadResponse =
                 await uploadImageApiService.uploadImage(imageFile);
 
-            print(
-                'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
+            //print('uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
 
             if (uploadResponse.statusCode == 200) {
               final imageUrl = uploadResponse

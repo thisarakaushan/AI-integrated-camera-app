@@ -41,7 +41,7 @@ class AppRoutes {
         print('getting routes in photo capture page');
         // Pass imageUrl if provided
         final imageUrl = args?['imageUrl'] as String?;
-        print('Image URL received in route generation: $imageUrl');
+        //print('Image URL received in route generation: $imageUrl');
         return MaterialPageRoute(
           builder: (_) => PhotoCapturePage(imageUrl: imageUrl),
         );
