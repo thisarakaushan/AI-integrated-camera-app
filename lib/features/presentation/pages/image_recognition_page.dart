@@ -28,6 +28,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Timer _timer;
+  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   @override
   void initState() {
@@ -37,8 +38,13 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
       vsync: this,
     )..repeat();
 
-    // Set up the timer to navigate after 4 seconds
-    _timer = Timer(const Duration(seconds: 4), _navigateToImageInfoPage);
+    // Set up the timer to navigate after 4 seconds, but check the flag first
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (!_isRecentSearchesPageOpen) {
+        _navigateToImageInfoPage();
+        timer.cancel();
+      }
+    });
   }
 
   @override
@@ -49,29 +55,44 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
   }
 
   void _navigateToImageInfoPage() {
-    if (widget.identifiedObject.isNotEmpty) {
-      Navigator.pushNamed(
-        context,
-        AppRoutes.imageInfoPage,
-        arguments: {
-          'imageUrl': widget.imageUrl,
-          'description': widget.identifiedObject,
-          'products':
-              widget.products.map((product) => product.toJson()).toList(),
-        },
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Identified object is not available.')),
-      );
+    if (_isRecentSearchesPageOpen) {
+      return; // Avoid navigation if RecentSearchesPage is open
+    }
+
+    if (!_isRecentSearchesPageOpen) {
+      if (widget.identifiedObject.isNotEmpty) {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.imageInfoPage,
+          arguments: {
+            'imageUrl': widget.imageUrl,
+            'description': widget.identifiedObject,
+            'products':
+                widget.products.map((product) => product.toJson()).toList(),
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Identified object is not available.')),
+        );
+      }
     }
   }
 
   void _navigateToRecentSearchesPage() {
+    setState(() {
+      _isRecentSearchesPageOpen = true; // Set flag to true
+    });
+
     Navigator.push(
       context,
       SlideTransitionRoute(page: const RecentSearchesPage()),
-    );
+    ).then((_) {
+      // Reset flag after Recent Searches Page is closed
+      setState(() {
+        _isRecentSearchesPageOpen = false;
+      });
+    });
   }
 
   void _navigateToMainPage() {

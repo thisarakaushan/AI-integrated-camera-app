@@ -23,6 +23,7 @@ class ImageProcessingPage extends StatefulWidget {
 class _ImageProcessingPageState extends State<ImageProcessingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   @override
   void initState() {
@@ -32,7 +33,10 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
       vsync: this,
     )..repeat();
 
-    _processImage();
+    // Process the image but handle interruptions from RecentSearchesPage
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _processImage();
+    });
   }
 
   @override
@@ -43,6 +47,12 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
   Future<void> _processImage() async {
     try {
+      print(
+          'Is Recent Searches Page Open: $_isRecentSearchesPageOpen'); // Debug log
+      if (_isRecentSearchesPageOpen) {
+        return; // Avoid processing if RecentSearchesPage is open
+      }
+
       final FirebaseAuth auth = FirebaseAuth.instance;
       User? user = auth.currentUser;
 
@@ -108,22 +118,20 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
               .map((json) => Product.fromJson(json as Map<String, dynamic>))
               .toList();
 
-          // final String identifiedObject = keyword;
-          // print('Identified object: $identifiedObject');
-
           // navigate to imagerecognition page with products
-
-          if (mounted) {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.imageRecognitionPage,
-              arguments: {
-                'imageUrl': widget.imageUrl,
-                'identifiedObject': keyword,
-                'products':
-                    products.map((product) => product.toJson()).toList(),
-              },
-            );
+          if (!_isRecentSearchesPageOpen) {
+            if (mounted) {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.imageRecognitionPage,
+                arguments: {
+                  'imageUrl': widget.imageUrl,
+                  'identifiedObject': keyword,
+                  'products':
+                      products.map((product) => product.toJson()).toList(),
+                },
+              );
+            }
           }
         } else {
           final errorResponse = jsonDecode(recognitionResponse.body);
@@ -158,10 +166,24 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
   }
 
   void _navigateToRecentSearchesPage() {
+    setState(() {
+      _isRecentSearchesPageOpen = true; // Set flag to true
+    });
+
     Navigator.push(
       context,
       SlideTransitionRoute(page: const RecentSearchesPage()),
-    );
+    ).then((_) {
+      // Reset flag to false after Recent Searches Page is closed
+      setState(() {
+        _isRecentSearchesPageOpen = false;
+      });
+
+      // restart image processing here if needed
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _processImage();
+      });
+    });
   }
 
   void _navigateToMainPage() {

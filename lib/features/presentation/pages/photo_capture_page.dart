@@ -15,7 +15,10 @@ import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 class PhotoCapturePage extends StatefulWidget {
   final String? imageUrl; // accept the imageUrl parameter from main page
 
-  const PhotoCapturePage({super.key, this.imageUrl});
+  const PhotoCapturePage({
+    super.key,
+    this.imageUrl,
+  });
 
   @override
   _PhotoCapturePageState createState() => _PhotoCapturePageState();
@@ -29,24 +32,29 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   Timer? _timer; // Timer? to avoid late initialization
   final AnonymousAuthService _authService = AnonymousAuthService();
   bool imageLoaded = false; // Flag to track if the image is displayed
+  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   Future<void> _navigateToProcessingPage(String imageUrl) async {
     print(
         'Navigating to ${AppRoutes.imageProcessingPage} with imageUrl: $imageUrl');
     if (mounted) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.imageProcessingPage,
-        arguments: {'imageUrl': imageUrl},
-      );
+      // Ensure that the current state is appropriate before navigation
+      if (imageUrl.isNotEmpty) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.imageProcessingPage,
+          arguments: {'imageUrl': imageUrl},
+        );
+      } else {
+        print('No valid image URL provided.');
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
-    print(
-        'Received imageUrl: ${widget.imageUrl}'); // Print the received imageUrl
+    print('Received imageUrl: ${widget.imageUrl}');
 
     _controller = AnimationController(
       duration: const Duration(seconds: 30),
@@ -54,17 +62,18 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     )..repeat();
 
     if (widget.imageUrl != null) {
-      // Skip camera initialization and photo capture if imageUrl is provided
-      print(
-          'Image URL received and display images, kipping camera initialization and capture. ');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          imageLoaded = true; // Set flag to true when image URL is received
+          imageLoaded = true;
         });
-        // Wait for the image to be displayed, then navigate
-        Future.delayed(const Duration(seconds: 1), () {
-          _navigateToProcessingPage(widget.imageUrl!);
-        });
+        // Handle recent searches scenario
+        if (!_isRecentSearchesPageOpen) {
+          Future.delayed(const Duration(seconds: 1), () {
+            if (imageLoaded) {
+              _navigateToProcessingPage(widget.imageUrl!);
+            }
+          });
+        }
       });
     } else {
       _initializeCamera();
@@ -92,8 +101,11 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     User? user = await _authService.signInAnonymously();
     if (user != null) {
       // Sign in successful
-      _timer = Timer(
-          const Duration(seconds: 2), _capturePhoto); // Adjust timing as needed
+      _timer = Timer(const Duration(seconds: 2), () {
+        if (!_isRecentSearchesPageOpen) {
+          _capturePhoto();
+        }
+      }); // Adjust timing as needed
     } else {
       // Sign in failed
       print('User authentication failed');
@@ -145,11 +157,53 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
+//   void _navigateToRecentSearchesPage() {
+//   setState(() {
+//     _isRecentSearchesPageOpen = true;
+//   });
+
+//   Navigator.push(
+//     context,
+//     SlideTransitionRoute(page: const RecentSearchesPage()),
+//   ).then((_) {
+//     setState(() {
+//       _isRecentSearchesPageOpen = false;
+//     });
+
+//     // Only proceed if image is loaded and the camera is initialized
+//     if (imageLoaded && _cameraController != null && _cameraController!.value.isInitialized) {
+//       // Ensure that the image URL is still valid and navigate if needed
+//       if (widget.imageUrl != null) {
+//         _navigateToProcessingPage(widget.imageUrl!);
+//       } else {
+//         _capturePhoto(); // Adjust this if you want to handle the photo capture again
+//       }
+//     }
+//   });
+// }
+
   void _navigateToRecentSearchesPage() {
+    // Set flag to true when RecentSearchesPage is opened
+    setState(() {
+      _isRecentSearchesPageOpen = true;
+    });
+
     Navigator.push(
       context,
       SlideTransitionRoute(page: const RecentSearchesPage()),
-    );
+    ).then((_) {
+      // Reset flag when RecentSearchesPage is closed
+      setState(() {
+        _isRecentSearchesPageOpen = false;
+      });
+
+      // Continue photo capture or camera initialization if needed
+      if (!imageLoaded &&
+          _cameraController != null &&
+          _cameraController!.value.isInitialized) {
+        _capturePhoto(); // Adjust based on your logic
+      }
+    });
   }
 
   @override
@@ -187,9 +241,8 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: SizedBox(
-                          width: size.width * 0.8, // Adjust the width as needed
-                          height:
-                              size.height * 0.3, // Adjust the height as needed
+                          width: size.width * 0.8, // Adjust the width
+                          height: size.height * 0.3, // Adjust the height
                           child: Image.network(
                             widget.imageUrl!,
                             fit: BoxFit.cover,

@@ -28,6 +28,7 @@ class _MainPageState extends State<MainPage>
   late AnimationController _controller;
   File? image; // Variable to store picked image
   Timer? _navigationTimer; // Timer for automatic navigation
+  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   @override
   void initState() {
@@ -37,11 +38,21 @@ class _MainPageState extends State<MainPage>
       vsync: this,
     )..repeat();
 
+    // Set up a timer for automatic navigation
+    _startNavigationTimer();
     // Initial navigation without picking an image
     // Set up a timer for automatic navigation
+    // _navigationTimer = Timer(const Duration(seconds: 8), () {
+    //   if (mounted && !_isRecentSearchesPageOpen) {
+    //     // Navigate to PhotoCapturePage if gallery button wasn't clicked
+    //     _navigateToPhotoCapturePage();
+    //   }
+    // });
+  }
+
+  void _startNavigationTimer() {
     _navigationTimer = Timer(const Duration(seconds: 8), () {
-      if (mounted) {
-        // Navigate to PhotoCapturePage if gallery button wasn't clicked
+      if (mounted && !_isRecentSearchesPageOpen) {
         _navigateToPhotoCapturePage();
       }
     });
@@ -166,10 +177,30 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  // void _navigateToRecentSearchesPage() {
+  //   Navigator.push(
+  //     context,
+  //     SlideTransitionRoute(page: const RecentSearchesPage()),
+  //   );
+  // }
   void _navigateToRecentSearchesPage() {
+    setState(() {
+      _isRecentSearchesPageOpen = true;
+    });
+
     Navigator.push(
       context,
-      SlideTransitionRoute(page: const RecentSearchesPage()),
+      SlideTransitionRoute(
+        page: RecentSearchesPage(
+          onClose: () {
+            setState(() {
+              _isRecentSearchesPageOpen = false;
+            });
+            // Re-enable automatic navigation after closing the RecentSearchesPage
+            _startNavigationTimer();
+          },
+        ),
+      ),
     );
   }
 

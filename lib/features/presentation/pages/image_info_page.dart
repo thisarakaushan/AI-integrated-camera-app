@@ -51,7 +51,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
 
   // Handle send message action
   void _handleSendMessage() {
-    // Add your send message logic here
+    // end message logic here
   }
 
   // Handle platform tap
@@ -60,7 +60,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
           return DetailsPage(
-            product: product, // Adjust as needed
+            product: product,
           );
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

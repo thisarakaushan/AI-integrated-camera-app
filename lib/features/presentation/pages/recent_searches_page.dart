@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
 
 class RecentSearchesPage extends StatelessWidget {
-  const RecentSearchesPage({super.key});
+  final VoidCallback? onClose;
+
+  const RecentSearchesPage({super.key, this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +24,12 @@ class RecentSearchesPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Add spacing to move the TopRowWidget
             SizedBox(height: 20),
-
             TopRowWidget(
               onMenuPressed: () {
+                if (onClose != null) {
+                  onClose!();
+                }
                 Navigator.pop(context);
               },
               onEditPressed: () {
@@ -44,7 +47,7 @@ class RecentSearchesPage extends StatelessWidget {
                 child: Text(
                   'Recent Searches',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white, // Set the text color to white
+                        color: Colors.white, // Set the text color
                       ),
                   textAlign: TextAlign.center,
                 ),
