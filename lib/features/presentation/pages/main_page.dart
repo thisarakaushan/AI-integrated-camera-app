@@ -60,14 +60,12 @@ class _MainPageState extends State<MainPage>
 
   void _navigateToPhotoCapturePage({String? imageUrl}) {
     if (imageUrl != null) {
-      //print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
         arguments: {'imageUrl': imageUrl},
       );
     } else {
-      //print('Navigating to PhotoCapturePage without URL'); // Debug log
       Navigator.pushNamed(
         context,
         AppRoutes.photoCapturePage,
@@ -134,14 +132,12 @@ class _MainPageState extends State<MainPage>
             final imageUrl = responseJson['url'] as String;
 
             if (imageUrl != null) {
-              //print('Navigating to PhotoCapturePage with URL: $imageUrl'); // Debug log
               _navigateToPhotoCapturePage(imageUrl: imageUrl);
             } else {
               print(
                   'Received null image URL from upload response'); // Debug log
             }
           } else {
-            print('Error uploading image: ${uploadResponse.statusCode}');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -152,7 +148,6 @@ class _MainPageState extends State<MainPage>
             }
           }
         } else {
-          print('Error obtaining token');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -162,7 +157,6 @@ class _MainPageState extends State<MainPage>
           }
         }
       } else {
-        print('User is not logged in or user object is null');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User is not logged in')),
         );
@@ -176,12 +170,6 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  // void _navigateToRecentSearchesPage() {
-  //   Navigator.push(
-  //     context,
-  //     SlideTransitionRoute(page: const RecentSearchesPage()),
-  //   );
-  // }
   void _navigateToRecentSearchesPage() {
     setState(() {
       _isRecentSearchesPageOpen = true;

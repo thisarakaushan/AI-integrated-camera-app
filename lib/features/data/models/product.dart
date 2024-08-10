@@ -36,8 +36,7 @@ class Product {
       delivery: json['delivery'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
       position: json['position'] ?? 0, // Default to 0 if not present
-      rating: (json['rating'] as num?)
-          ?.toDouble(), // Convert rating to double safely
+      rating: (json['rating'] as num?)?.toDouble(), // Convert rating to double
       ratingCount: json['ratingCount'] as int?,
       offers: json['offers'],
       productId: json['productId'],
@@ -89,7 +88,6 @@ ProductResponse parseProductResponse(String jsonResponse) {
 void debugJson(String jsonResponse) {
   try {
     final parsed = jsonDecode(jsonResponse);
-    //print('Parsed JSON: $parsed');
   } catch (e) {
     print('Error decoding JSON: $e');
   }

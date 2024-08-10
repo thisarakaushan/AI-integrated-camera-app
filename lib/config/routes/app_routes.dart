@@ -24,7 +24,6 @@ class AppRoutes {
     print(
         'Navigating to ${settings.name} with arguments: ${settings.arguments}');
     final args = settings.arguments as Map<String, dynamic>?;
-    print('Received arguments for ${settings.name}: $args');
 
     switch (settings.name) {
       case splashPage:
@@ -38,15 +37,12 @@ class AppRoutes {
           builder: (_) => MainPage(cameras: cameras),
         );
       case photoCapturePage:
-        print('getting routes in photo capture page');
         // Pass imageUrl if provided
         final imageUrl = args?['imageUrl'] as String?;
-        //print('Image URL received in route generation: $imageUrl');
         return MaterialPageRoute(
           builder: (_) => PhotoCapturePage(imageUrl: imageUrl),
         );
       case imageProcessingPage:
-        print('getting routes in image processing page');
         if (args != null && args.containsKey('imageUrl')) {
           final imageUrl = args['imageUrl'] as String;
           return MaterialPageRoute(
@@ -64,7 +60,7 @@ class AppRoutes {
           final identifiedObject = args['identifiedObject'] as String;
           final productsJson = args['products'] as List<dynamic>;
 
-          // Ensure each item in productsJson is a Map<String, dynamic>
+          // each item in productsJson is a Map<String, dynamic>
           final products = productsJson
               .map((json) => Product.fromJson(json as Map<String, dynamic>))
               .toList();
@@ -122,8 +118,6 @@ class AppRoutes {
               builder: (_) => DetailsPage(product: product),
             );
           } catch (e) {
-            print(
-                'Error parsing product for DetailsPage: $productJson, Error: $e');
             return _errorRoute('Invalid product data for DetailsPage');
           }
         }

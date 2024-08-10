@@ -13,7 +13,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDependencies();
 
-  print('Dependency initialized...');
   try {
     if (Platform.isAndroid) {
       await Firebase.initializeApp(
@@ -27,7 +26,6 @@ Future<void> main() async {
     } else {
       await Firebase.initializeApp();
     }
-    print('Firebase initialized...');
   } catch (e) {
     print('Failed to initialize Firebase: $e');
   }

@@ -8,14 +8,6 @@ class CapturePhotoUseCase {
 
   CapturePhotoUseCase(this.cameraImageRepository);
 
-  // Future<CameraImageEntity> execute() {
-  //   return repository.capturePhoto();
-  // }
-
-  // Future<CameraImageEntity> call() async {
-  //   return await repository.capturePhoto();
-  // }
-
   Future<Either<Failure, CameraImageEntity>> call() {
     return cameraImageRepository.capturePhoto();
   }
