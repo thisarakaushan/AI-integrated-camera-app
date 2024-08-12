@@ -16,11 +16,11 @@ class DetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           Positioned(
-            top: 100, // Adjust this to match the height of your top row widget
+            top: 100, // height of top row widget
             bottom: 0,
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -36,12 +36,15 @@ class DetailsPage extends StatelessWidget {
                 children: [
                   const SizedBox(height: 12),
                   Center(
-                    child: Container(
-                      width: 40,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[400],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -49,7 +52,7 @@ class DetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'Details from ${product.source}',
+                      product.source, // product source
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -59,8 +62,7 @@ class DetailsPage extends StatelessWidget {
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.9,
-                    height:
-                        250, // Increase the height for a larger image display
+                    height: 250, // height of the image display
                     margin: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white, width: 2),
@@ -166,14 +168,6 @@ class DetailsPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            top: 30, // Adjust based on safe area or notch
-            right: 10,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
           Positioned(
