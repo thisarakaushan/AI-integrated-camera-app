@@ -63,7 +63,7 @@
 //   }
 // }
 
-// anonymous authentication
+// anonymous authentication.........................................................................
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,13 +74,10 @@ import 'package:valuefinder/core/services/upload_image_api_service.dart';
 class CapturePhoto {
   Future<void> saveAndUploadPhoto(
       String imagePath, Function(String) onImageUrl) async {
-    //print('Call save photo method');
-
     if (await Permission.storage.request().isGranted) {
       try {
         final File imageFile = File(imagePath);
         if (!await imageFile.exists()) {
-          //print('File does not exist at $imagePath');
           return;
         }
         final Uint8List bytes = await imageFile.readAsBytes();
@@ -97,7 +94,6 @@ class CapturePhoto {
         User? user = auth.currentUser;
         if (user != null) {
           String? token = await user.getIdToken();
-          //print('Token: $token');
           if (token != null) {
             final uploadImageApiService = UploadImageApiService(
               baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',

@@ -104,7 +104,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         if (!_isRecentSearchesPageOpen) {
           _capturePhoto();
         }
-      }); // Adjust timing as needed
+      }); // Adjust timing
     } else {
       // Sign in failed
       print('User authentication failed');
@@ -214,7 +214,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    print('Received imageUrl in PhotoCapturePage: ${widget.imageUrl}');
+    //print('Received imageUrl in PhotoCapturePage: ${widget.imageUrl}');
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
       body: SafeArea(

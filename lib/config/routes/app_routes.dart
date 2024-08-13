@@ -91,7 +91,7 @@ class AppRoutes {
                 try {
                   return Product.fromJson(json as Map<String, dynamic>);
                 } catch (e) {
-                  print('Error parsing product: $json, Error: $e');
+                  //print('Error parsing product: $json, Error: $e');
                   return null;
                 }
               })

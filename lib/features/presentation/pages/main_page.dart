@@ -93,7 +93,7 @@ class _MainPageState extends State<MainPage>
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No image selected.')),
           );
-          // Delay navigation to allow message to be seen
+          // Delay navigation
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
               _navigateToPhotoCapturePage();

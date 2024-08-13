@@ -50,7 +50,7 @@ class PlatformGridView extends StatelessWidget {
                   children: [
                     Image.network(
                       product.imageUrl,
-                      height: 60, // Adjust the image size as needed
+                      height: 60, // Adjust the image size
                     ),
                     // const SizedBox(height: 10),
                     // Text(
