@@ -69,6 +69,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:valuefinder/core/constants/constants.dart';
 import 'package:valuefinder/core/services/upload_image_api_service.dart';
 
 class CapturePhoto {
@@ -96,7 +97,7 @@ class CapturePhoto {
           String? token = await user.getIdToken();
           if (token != null) {
             final uploadImageApiService = UploadImageApiService(
-              baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
+              baseUrl: uploadImageBaseUrl,
               token: token,
             );
             final uploadResponse =

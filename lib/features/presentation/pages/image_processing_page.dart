@@ -3,12 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
+import 'package:valuefinder/core/constants/constants.dart';
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_processing_page_widgets/image_processing_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 
 class ImageProcessingPage extends StatefulWidget {
@@ -69,7 +70,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
       // Step 1: Send image URL to initial endpoint
       final response = await http.post(
-        Uri.parse('https://createnewthread-s4r2ozb5wq-uc.a.run.app'),
+        Uri.parse(createThreadBaseUrl), // use create thread contants
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -103,8 +104,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
         // Step 2: Use the extracted keyword to get details from shopping URL
         final recognitionResponse = await http.get(
-          Uri.parse(
-              'https://shopping-s4r2ozb5wq-uc.a.run.app?keyword=$keyword'),
+          Uri.parse('$shoppingBaseUrl?keyword=$keyword'),
           headers: {'Authorization': 'Bearer $token'},
         );
 

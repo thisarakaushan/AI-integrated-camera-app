@@ -8,9 +8,9 @@ import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/services/auth_service_anonymous.dart';
 import 'package:valuefinder/core/services/capture_photo_service.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/photo_capture_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 
 class PhotoCapturePage extends StatefulWidget {
   final String? imageUrl; // accept the imageUrl parameter from main page
@@ -67,7 +67,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         });
         // Handle recent searches scenario
         if (!_isRecentSearchesPageOpen) {
-          Future.delayed(const Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 4), () {
             if (imageLoaded) {
               _navigateToProcessingPage(widget.imageUrl!);
             }
@@ -113,7 +113,6 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
 
   Future<void> _capturePhoto() async {
     if (widget.imageUrl != null) {
-      //print('Inside photo capture method and Received imageUrl: ${widget.imageUrl}');
       // Skip photo capture and navigation if imageUrl is provided
       return;
     }

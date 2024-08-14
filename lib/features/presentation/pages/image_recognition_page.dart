@@ -4,9 +4,9 @@ import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_processing_page_widgets/image_processing_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 
 class ImageRecognitionPage extends StatefulWidget {
   final String imageUrl;

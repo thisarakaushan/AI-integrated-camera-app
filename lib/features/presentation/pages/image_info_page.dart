@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/botton_sheet_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/info_page_animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/platform_grid_view.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/bottom_sheet_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/platform_grid_view.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
@@ -142,7 +142,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(

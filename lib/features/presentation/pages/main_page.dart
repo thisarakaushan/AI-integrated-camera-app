@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
+import 'package:valuefinder/core/constants/constants.dart';
 import 'package:valuefinder/core/services/upload_image_api_service.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/gallery_button_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/gallery_button_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/main_page_text_widget.dart';
 
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 
 class MainPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -118,7 +119,7 @@ class _MainPageState extends State<MainPage>
         String? token = await user.getIdToken();
         if (token != null) {
           final uploadImageApiService = UploadImageApiService(
-            baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
+            baseUrl: uploadImageBaseUrl, // use baseurl constant
             token: token,
           );
           final uploadResponse =

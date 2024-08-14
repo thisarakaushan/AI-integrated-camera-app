@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/features/presentation/widgets/start_button_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/start_button_widget.dart';
 
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:valuefinder/features/data/models/product.dart';
-import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widget.dart/addtocart_button.dart';
-import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widget.dart/buynow_button.dart';
-import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widget.dart/message_button.dart';
-import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widget.dart/store_button.dart';
+import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widgets/addtocart_button.dart';
+import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widgets/buynow_button.dart';
+import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widgets/message_button.dart';
+import 'package:valuefinder/features/presentation/widgets/details_page_bottom_widgets/store_button.dart';
 
 class DetailsPage extends StatelessWidget {
   final Product product;

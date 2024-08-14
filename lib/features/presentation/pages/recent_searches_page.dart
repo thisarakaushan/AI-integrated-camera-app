@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 
 class RecentSearchesPage extends StatelessWidget {
   final VoidCallback? onClose;
