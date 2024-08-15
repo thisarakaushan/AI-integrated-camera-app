@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/bottom_sheet_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/camera_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/message_input_field_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/message_send_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/platform_grid_view.dart';
 import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
@@ -137,14 +139,14 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 60),
             PlatformGridView(
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 'If you require specific assistance with these ${widget.description}, such as price or sizes, please inform me!',
                 style: const TextStyle(
@@ -153,10 +155,28 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 5),
-            BottomSheetWidget(
-              onNavigateToMainPage: _navigateToMainPage,
-              onSendMessage: _handleSendMessage,
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                children: [
+                  CameraButtonWidget(onNavigateToMainPage: _navigateToMainPage),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        const MessageInputFieldWidget(),
+                        Positioned(
+                          right: 4,
+                          top: 6,
+                          child: MessageSendButtonWidget(
+                              onSendMessage: _handleSendMessage),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

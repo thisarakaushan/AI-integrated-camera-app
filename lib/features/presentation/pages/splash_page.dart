@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
@@ -14,6 +16,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  Timer? _timer; // Timer to implement automatic navigation
 
   @override
   void initState() {
@@ -22,11 +25,15 @@ class _SplashPageState extends State<SplashPage>
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
+
+    // Navigate to the main page after 5 seconds
+    _timer = Timer(const Duration(seconds: 5), _navigateToMainPage);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel(); // Cancel the timer if the widget is disposed
     super.dispose();
   }
 
@@ -37,8 +44,20 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 
+  // Automatic navigation if we didn't click the start button
+  void _onStartButtonPressed() {
+    _timer?.cancel(); // Cancel the timer when the button is pressed
+    _navigateToMainPage();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final double imageSize =
+        size.width * 0.9; // Adjust image size relative to screen width
+    final double textSize =
+        size.width * 0.2; // Adjust text size relative to screen width
+
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
       body: Center(
@@ -49,8 +68,8 @@ class _SplashPageState extends State<SplashPage>
               animation: _controller,
               child: Image.asset(
                 'assets/splash_image.png',
-                width: 357,
-                height: 357,
+                width: imageSize,
+                height: imageSize,
                 fit: BoxFit.contain,
               ),
               builder: (context, child) {
@@ -60,15 +79,20 @@ class _SplashPageState extends State<SplashPage>
                 );
               },
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(
+                height: size.height *
+                    0.02), // Space between elements, relative to screen height
+            Text(
               'Your own',
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.w600),
+                color: Colors.white,
+                fontSize: 36,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 5),
+            SizedBox(
+                height: size.height *
+                    0.01), // Space between elements, relative to screen height
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [
@@ -79,16 +103,19 @@ class _SplashPageState extends State<SplashPage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),
-              child: const Text(
+              child: Text(
                 'AI assistance',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 36,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            StartButtonWidget(onPressed: _navigateToMainPage),
+            SizedBox(
+                height: size.height *
+                    0.04), // Space between elements, relative to screen height
+            StartButtonWidget(onPressed: _onStartButtonPressed),
           ],
         ),
       ),

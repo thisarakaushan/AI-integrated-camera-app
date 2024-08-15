@@ -4,9 +4,10 @@ import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_processing_page_widgets/image_processing_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/processing_recognition_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
 
 class ImageRecognitionPage extends StatefulWidget {
   final String imageUrl;
@@ -101,63 +102,90 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF051338),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            TopRowWidget(
-                onMenuPressed: _navigateToRecentSearchesPage,
-                onEditPressed: _navigateToMainPage),
-            const Spacer(),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  widget.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Text(
-                        'Image not available',
-                        style: TextStyle(color: Colors.white),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final lensSize =
+            constraints.maxWidth * 0.88; // Adjusted size for responsiveness
+        final borderRadius = lensSize * 0.1;
+        final textSize = constraints.maxWidth * 0.05; // 5% of screen width
+
+        return Scaffold(
+          backgroundColor: const Color(0xFF051338),
+          body: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TopRowWidget(
+                    onMenuPressed: _navigateToRecentSearchesPage,
+                    onEditPressed: _navigateToMainPage),
+                const SizedBox(height: 10),
+                Container(
+                  width: lensSize,
+                  height: lensSize,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(borderRadius),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: LensBorderPainter(
+                            focusRect: Rect.fromLTWH(
+                              0,
+                              0,
+                              lensSize,
+                              lensSize,
+                            ),
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        child: Image.network(
+                          widget.imageUrl,
+                          fit: BoxFit.cover,
+                          width: lensSize,
+                          height: lensSize,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Text(
+                                'Image not available',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: textSize),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Text(
+                  widget.identifiedObject.isNotEmpty
+                      ? widget.identifiedObject
+                      : 'Object not identified',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: textSize,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                AnimatedImageWidget(
+                  controller: _controller,
+                  imagePath: 'assets/main_image.png',
+                  height: constraints.maxWidth * 0.6,
+                  width: constraints.maxWidth * 0.6,
+                ),
+                const SizedBox(height: 5),
+                const ProcessingAndRecognitionPageTextWidget(),
+                const SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              widget.identifiedObject.isNotEmpty
-                  ? widget.identifiedObject
-                  : 'Object not identified',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-              ),
-            ),
-            const SizedBox(height: 10),
-            AnimatedImageWidget(
-              controller: _controller,
-              imagePath: 'assets/main_image.png',
-              height: 131,
-              width: 131,
-            ),
-            const SizedBox(height: 20),
-            const ImageProcessingPageTextWidget(),
-            const Spacer(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

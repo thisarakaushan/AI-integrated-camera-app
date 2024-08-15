@@ -1,16 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:camera/camera.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/config/routes/slide_transition_route.dart';
-import 'package:valuefinder/core/constants/constants.dart';
-import 'package:valuefinder/core/services/upload_image_api_service.dart';
+import 'package:valuefinder/core/services/image_picker_service.dart';
 import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
-import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/camera_lens_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/photo_capture_button_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/gallery_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/main_page_text_widget.dart';
 
@@ -75,99 +73,41 @@ class _MainPageState extends State<MainPage>
   }
 
   Future<void> _pickImageFromGallery() async {
-    // Cancel the timer to prevent automatic navigation if the user interacts
-    _navigationTimer?.cancel();
+    _navigationTimer?.cancel(); // Cancel the automatic navigation timer
 
-    final picker = ImagePicker();
     try {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-      if (mounted) {
-        if (pickedFile != null) {
-          setState(() {
-            image = File(pickedFile.path);
-          });
-
-          // Upload image to Firebase Storage
-          await _uploadImageToFirebase(pickedFile);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No image selected.')),
-          );
-          // Delay navigation
+      await pickImageFromGallery(
+        context,
+        (pickedImage) {
+          if (pickedImage != null) {
+            setState(() {
+              image = pickedImage;
+            });
+          }
+        },
+        (imageUrl) {
+          // Use Future.delayed to navigate after a short delay
           Future.delayed(const Duration(seconds: 2), () {
-            if (mounted) {
-              _navigateToPhotoCapturePage();
-            }
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _uploadImageToFirebase(XFile file) async {
-    try {
-      final FirebaseAuth auth = FirebaseAuth.instance;
-      User? user = auth.currentUser;
-      if (user != null) {
-        String? token = await user.getIdToken();
-        if (token != null) {
-          final uploadImageApiService = UploadImageApiService(
-            baseUrl: uploadImageBaseUrl, // use baseurl constant
-            token: token,
-          );
-          final uploadResponse =
-              await uploadImageApiService.uploadImage(File(file.path));
-
-          if (uploadResponse.statusCode == 200) {
-            final responseBody = uploadResponse.body;
-            final Map<String, dynamic> responseJson = responseBody is String
-                ? jsonDecode(responseBody)
-                : responseBody as Map<String, dynamic>;
-            final imageUrl = responseJson['url'] as String;
-
             if (imageUrl != null) {
               _navigateToPhotoCapturePage(imageUrl: imageUrl);
             } else {
-              print(
-                  'Received null image URL from upload response'); // Debug log
-            }
-          } else {
-            if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                      'Error uploading image: ${uploadResponse.statusCode}'),
-                ),
+                const SnackBar(content: Text('Failed to get image URL')),
               );
+              _navigateToPhotoCapturePage();
             }
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Error obtaining authentication token'),
-              ),
-            );
-          }
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User is not logged in')),
-        );
-      }
+          });
+        },
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading image: $e')),
-        );
-      }
+      // handle specific error and show message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: ${e.toString()}')),
+      );
+      // Navigate to PhotoCapturePage after a short delay
+      Future.delayed(const Duration(seconds: 2), () {
+        _navigateToPhotoCapturePage();
+      });
     }
   }
 
@@ -206,6 +146,9 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final double lensSize = size.width * 0.88; // Adjusted size for square lens
+    final double animatedImageSize = size.width * 0.6;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -219,32 +162,37 @@ class _MainPageState extends State<MainPage>
                   onEditPressed: _navigateToMainPage,
                 ),
                 const Spacer(),
-                // Lens frame without camera preview
-                Container(
-                  width: size.width * 0.8,
-                  height: size.height * 0.3,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+                // camera lens
+                Center(
+                  child: CustomPaint(
+                    size: Size(lensSize, lensSize),
+                    painter: LensBorderPainter(),
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 1),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/main_image.png',
-                  height: 131,
-                  width: 131,
+                  height: animatedImageSize,
+                  width: animatedImageSize,
                 ),
+                const SizedBox(height: 5),
                 const MainPageTextWidget(),
                 const Spacer(),
-                GalleryButtonWidget(
-                  onGalleryPressed: _pickImageFromGallery,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    PhotoCaptureButtonWidget(
+                      onCapturePressed: () {
+                        // Handle photo capture button press
+                        // Implement your photo capture logic here
+                      },
+                    ),
+                    const SizedBox(width: 20), // Space between buttons
+                    GalleryButtonWidget(
+                      onGalleryPressed: _pickImageFromGallery,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
               ],

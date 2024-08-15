@@ -7,11 +7,17 @@ class GalleryButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double buttonWidth =
+        MediaQuery.of(context).size.width * 0.6; // 60% of screen width
+    final double buttonHeight =
+        MediaQuery.of(context).size.height * 0.1; // 10% of screen height
+
     return Container(
-      width: 270,
-      height: 74,
+      width: buttonWidth,
+      height: buttonHeight,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(90),
+        borderRadius:
+            BorderRadius.circular(buttonHeight / 2), // Circular border radius
         gradient: const LinearGradient(
           colors: [Color(0xff2753cf), Color(0xffc882ff), Color(0xff46edfe)],
           begin: Alignment.topLeft,
@@ -23,16 +29,21 @@ class GalleryButtonWidget extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: const Color(0xff0e235a),
-            borderRadius: BorderRadius.circular(90),
+            borderRadius: BorderRadius.circular(
+                buttonHeight / 2), // Circular border radius
           ),
           child: ElevatedButton(
             onPressed: onGalleryPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(90),
+                borderRadius: BorderRadius.circular(
+                    buttonHeight / 2), // Circular border radius
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              padding: EdgeInsets.symmetric(
+                  horizontal: buttonWidth * 0.15,
+                  vertical:
+                      buttonHeight * 0.2), // Padding relative to button size
               shadowColor: Colors.transparent,
             ),
             child: const Text(

@@ -9,7 +9,6 @@ class CameraPreviewWidget extends StatelessWidget {
     super.key,
     required this.cameraController,
     required this.size,
-    required Future<void> cameraValue,
   });
 
   @override
@@ -19,14 +18,21 @@ class CameraPreviewWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return SizedBox(
-            width: size.width * 0.8,
-            height: size.height * 0.3,
+            width: size.width * 0.8, // Relative width to screen size
+            height: size.height * 0.3, // Relative height to screen size
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20), // Rounded corners
               child: AspectRatio(
                 aspectRatio: cameraController.value.aspectRatio,
                 child: CameraPreview(cameraController),
               ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error: ${snapshot.error}',
+              style: TextStyle(color: Colors.red),
             ),
           );
         } else {

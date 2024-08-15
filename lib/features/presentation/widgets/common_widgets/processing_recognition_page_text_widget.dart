@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PhotoCapturePageTextWidget extends StatelessWidget {
-  const PhotoCapturePageTextWidget({super.key});
+class ProcessingAndRecognitionPageTextWidget extends StatelessWidget {
+  const ProcessingAndRecognitionPageTextWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,10 +11,10 @@ class PhotoCapturePageTextWidget extends StatelessWidget {
 
     return Column(
       children: [
-        SizedBox(height: spacing), // Dynamic space based on screen height
+        SizedBox(height: spacing), // Use dynamic spacing
         ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: const [
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [
               Color(0xff2753cf),
               Color(0xffc882ff),
               Color(0xff46edfe),
@@ -23,19 +23,14 @@ class PhotoCapturePageTextWidget extends StatelessWidget {
             end: Alignment.bottomRight,
           ).createShader(bounds),
           child: Text(
-            'Analyzing your image...',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: textSize,
-            ),
+            'Processing...',
+            style: TextStyle(color: Colors.white, fontSize: textSize),
           ),
         ),
+        SizedBox(height: spacing), // Use dynamic spacing
         Text(
-          'Please wait a moment',
-          style: TextStyle(
-            color: Color(0xff46edfe),
-            fontSize: textSize,
-          ),
+          'We\'re finding the best information for you',
+          style: TextStyle(color: Color(0xff46edfe), fontSize: textSize),
         ),
       ],
     );

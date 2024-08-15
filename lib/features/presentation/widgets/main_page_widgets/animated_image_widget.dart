@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class AnimatedImageWidget extends StatelessWidget {
   final AnimationController controller;
   final String imagePath;
+  final double height;
+  final double width;
 
   const AnimatedImageWidget({
     super.key,
     required this.controller,
-    required this.imagePath, required int height, required int width,
+    required this.imagePath,
+    required this.height,
+    required this.width,
   });
 
   @override
@@ -16,8 +20,8 @@ class AnimatedImageWidget extends StatelessWidget {
       animation: controller,
       child: Image.asset(
         imagePath,
-        height: 131,
-        width: 131,
+        height: height,
+        width: width,
       ),
       builder: (context, child) {
         return Transform.rotate(
