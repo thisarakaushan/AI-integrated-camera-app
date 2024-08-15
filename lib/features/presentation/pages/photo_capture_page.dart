@@ -49,7 +49,6 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   @override
   void initState() {
     super.initState();
-    //print('Received imageUrl: ${widget.imageUrl}');
 
     _controller = AnimationController(
       duration: const Duration(seconds: 30),
@@ -203,43 +202,49 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                       ),
                       widget.imageUrl != null
                           ? ClipRect(
-                              child: Align(
-                                alignment: Alignment.topLeft,
-                                widthFactor: lensSize /
-                                    (widget.focusRect?.width ?? lensSize),
-                                heightFactor: lensSize /
-                                    (widget.focusRect?.height ?? lensSize),
-                                child: Image.network(
-                                  widget.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  width: lensSize,
-                                  height: lensSize,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    } else {
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  widthFactor: lensSize /
+                                      (widget.focusRect?.width ?? lensSize),
+                                  heightFactor: lensSize /
+                                      (widget.focusRect?.height ?? lensSize),
+                                  //borderRadius: BorderRadius.circular(borderRadius),
+
+                                  child: Image.network(
+                                    widget.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    width: lensSize,
+                                    height: lensSize,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
                                       return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                          .expectedTotalBytes ??
-                                                      1)
-                                              : null,
-                                        ),
+                                        child: Text('Failed to load image',
+                                            style:
+                                                TextStyle(color: Colors.red)),
                                       );
-                                    }
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Center(
-                                      child: Text('Failed to load image',
-                                          style: TextStyle(color: Colors.red)),
-                                    );
-                                  },
+                                    },
+                                  ),
                                 ),
                               ),
                             )
