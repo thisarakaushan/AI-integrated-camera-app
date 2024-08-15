@@ -139,12 +139,12 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 30),
             PlatformGridView(
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
@@ -155,7 +155,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
@@ -168,7 +168,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                         const MessageInputFieldWidget(),
                         Positioned(
                           right: 4,
-                          top: 6,
+                          top: 3,
                           child: MessageSendButtonWidget(
                               onSendMessage: _handleSendMessage),
                         ),

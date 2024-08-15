@@ -170,7 +170,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final lensSize = constraints.maxWidth * 0.88;
+        final lensSize = constraints.maxWidth * 0.8;
         final borderRadius = lensSize * 0.1;
 
         return Scaffold(

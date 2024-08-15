@@ -8,7 +8,7 @@ class PhotoCaptureButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double buttonSize =
-        MediaQuery.of(context).size.width * 0.2; // 20% of screen width
+        MediaQuery.of(context).size.width * 0.15; // 20% of screen width
 
     return Container(
       width: buttonSize,
@@ -44,7 +44,7 @@ class PhotoCaptureButtonWidget extends StatelessWidget {
             child: Icon(
               Icons.camera_alt,
               color: Colors.white,
-              size: buttonSize * 0.4, // Icon size relative to button size
+              size: buttonSize * 0.3, // Icon size relative to button size
             ),
           ),
         ),

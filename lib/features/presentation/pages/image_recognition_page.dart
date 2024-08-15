@@ -105,7 +105,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
     return LayoutBuilder(
       builder: (context, constraints) {
         final lensSize =
-            constraints.maxWidth * 0.88; // Adjusted size for responsiveness
+            constraints.maxWidth * 0.8; // Adjusted size for responsiveness
         final borderRadius = lensSize * 0.1;
         final textSize = constraints.maxWidth * 0.05; // 5% of screen width
 

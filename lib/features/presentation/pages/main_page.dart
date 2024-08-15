@@ -146,7 +146,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final double lensSize = size.width * 0.88; // Adjusted size for square lens
+    final double lensSize = size.width * 0.8; // Adjusted size for square lens
     final double animatedImageSize = size.width * 0.6;
 
     return Scaffold(
@@ -169,7 +169,7 @@ class _MainPageState extends State<MainPage>
                     painter: LensBorderPainter(),
                   ),
                 ),
-                const SizedBox(height: 1),
+                const SizedBox(height: 5),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/main_image.png',
@@ -178,7 +178,7 @@ class _MainPageState extends State<MainPage>
                 ),
                 const SizedBox(height: 5),
                 const MainPageTextWidget(),
-                const Spacer(),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -194,7 +194,7 @@ class _MainPageState extends State<MainPage>
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
               ],
             ),
           ),

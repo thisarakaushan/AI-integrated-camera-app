@@ -8,9 +8,9 @@ class GalleryButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double buttonWidth =
-        MediaQuery.of(context).size.width * 0.6; // 60% of screen width
+        MediaQuery.of(context).size.width * 0.5; // 60% of screen width
     final double buttonHeight =
-        MediaQuery.of(context).size.height * 0.1; // 10% of screen height
+        MediaQuery.of(context).size.height * 0.07; // 10% of screen height
 
     return Container(
       width: buttonWidth,
@@ -41,9 +41,9 @@ class GalleryButtonWidget extends StatelessWidget {
                     buttonHeight / 2), // Circular border radius
               ),
               padding: EdgeInsets.symmetric(
-                  horizontal: buttonWidth * 0.15,
+                  horizontal: buttonWidth * 0.1,
                   vertical:
-                      buttonHeight * 0.2), // Padding relative to button size
+                      buttonHeight * 0.15), // Padding relative to button size
               shadowColor: Colors.transparent,
             ),
             child: const Text(
