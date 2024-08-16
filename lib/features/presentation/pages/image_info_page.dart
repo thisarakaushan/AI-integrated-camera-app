@@ -99,7 +99,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                     width: 120,
                     height: 100,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(5),
                       child: Image.network(
                         widget.imageUrl,
                         fit: BoxFit.cover,

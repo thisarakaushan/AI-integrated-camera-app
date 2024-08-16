@@ -108,48 +108,37 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                       ),
                       widget.imageUrl != null
                           ? ClipRect(
-                              child: FittedBox(
+                              child: Image.network(
+                                widget.imageUrl!,
                                 fit: BoxFit.cover,
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  widthFactor: lensSize /
-                                      (widget.focusRect?.width ?? lensSize),
-                                  heightFactor: lensSize /
-                                      (widget.focusRect?.height ?? lensSize),
-                                  child: Image.network(
-                                    widget.imageUrl!,
-                                    fit: BoxFit.cover,
-                                    width: lensSize,
-                                    height: lensSize,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      } else {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    (loadingProgress
-                                                            .expectedTotalBytes ??
-                                                        1)
-                                                : null,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Center(
-                                        child: Text('Failed to load image',
-                                            style:
-                                                TextStyle(color: Colors.red)),
-                                      );
-                                    },
-                                  ),
-                                ),
+                                width: lensSize,
+                                height: lensSize,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                (loadingProgress
+                                                        .expectedTotalBytes ??
+                                                    1)
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Text('Failed to load image',
+                                        style: TextStyle(color: Colors.red)),
+                                  );
+                                },
                               ),
                             )
                           : const Center(

@@ -97,8 +97,9 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                   width: lensSize,
                   height: lensSize,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(borderRadius),
+                    //border: Border.all(color: Colors.white, width: 2),
+                    //borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(color: Colors.transparent),
                   ),
                   child: Stack(
                     children: [
@@ -115,7 +116,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                         ),
                       ),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(borderRadius),
+                        //borderRadius: BorderRadius.circular(borderRadius),
                         child: Image.network(
                           widget.imageUrl,
                           fit: BoxFit.cover,

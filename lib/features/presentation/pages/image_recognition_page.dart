@@ -83,17 +83,18 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 5),
                 TopRowWidget(onCameraPressed: _navigateToMainPage),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Container(
                   width: lensSize,
                   height: lensSize,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(borderRadius),
+                    // border: Border.all(color: Colors.white, width: 2),
+                    // borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(color: Colors.transparent),
                   ),
                   child: Stack(
                     children: [
@@ -110,7 +111,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                         ),
                       ),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(borderRadius),
+                        //borderRadius: BorderRadius.circular(borderRadius),
                         child: Image.network(
                           widget.imageUrl,
                           fit: BoxFit.cover,
@@ -149,7 +150,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                 ),
                 const SizedBox(height: 5),
                 const ProcessingAndRecognitionPageTextWidget(),
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
               ],
             ),
           ),
