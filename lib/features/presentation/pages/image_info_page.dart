@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/camera_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/message_input_field_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/message_send_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/platform_grid_view.dart';
 import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
@@ -49,11 +46,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
-  // Handle send message action
-  void _handleSendMessage() {
-    // end message logic here
-  }
-
   // Handle platform tap
   void _onPlatformTap(Product product) {
     Navigator.of(context).push(
@@ -86,7 +78,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 5),
             TopRowWidget(onCameraPressed: _navigateToMainPage),
             const SizedBox(height: 10),
             Padding(
@@ -99,12 +91,12 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                     height: 35,
                     child: InfoPageAnimatedImageWidget(
                       controller: _controller,
-                      imagePath: 'assets/info_page_image.png',
+                      imagePath: 'assets/page_images/info_page_image.png',
                     ),
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 130,
+                    width: 120,
                     height: 100,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -144,29 +136,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  CameraButtonWidget(onNavigateToMainPage: _navigateToMainPage),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        const MessageInputFieldWidget(),
-                        Positioned(
-                          right: 4,
-                          top: 3,
-                          child: MessageSendButtonWidget(
-                              onSendMessage: _handleSendMessage),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 30),
           ],
         ),
       ),

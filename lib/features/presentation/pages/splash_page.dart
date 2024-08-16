@@ -67,7 +67,7 @@ class _SplashPageState extends State<SplashPage>
             AnimatedBuilder(
               animation: _controller,
               child: Image.asset(
-                'assets/splash_image.png',
+                'assets/page_images/splash_image.png',
                 width: imageSize,
                 height: imageSize,
                 fit: BoxFit.contain,

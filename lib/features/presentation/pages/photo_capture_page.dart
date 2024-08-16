@@ -84,7 +84,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
           body: SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
@@ -161,7 +161,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                 const SizedBox(height: 10),
                 AnimatedImageWidget(
                   controller: _controller,
-                  imagePath: 'assets/main_image.png',
+                  imagePath: 'assets/page_images/main_image.png',
                   height: constraints.maxWidth * 0.6,
                   width: constraints.maxWidth * 0.6,
                 ),

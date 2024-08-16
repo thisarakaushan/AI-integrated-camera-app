@@ -47,13 +47,6 @@ class _MainPageState extends State<MainPage>
     _initializeControllerFuture = _cameraController!.initialize();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose(); // Dispose animation controller
-    _cameraController?.dispose(); // Dispose camera controller
-    super.dispose();
-  }
-
   // Method to navigate to PhotoCapturePage with the imageUrl
   void _navigateToPhotoCapturePage(String imageUrl) {
     Navigator.pushNamed(
@@ -156,8 +149,18 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  void _navigateToMainPage() {
+  void _navigateToMainPage() async {
+    if (_cameraController != null) {
+      await _cameraController?.dispose(); // Dispose of the camera controller
+    }
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose(); // Dispose camera controller
+    _controller.dispose(); // Dispose animation controller
+    super.dispose();
   }
 
   @override
@@ -176,12 +179,19 @@ class _MainPageState extends State<MainPage>
               future: _initializeControllerFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  final previewAspectRatio =
-                      _cameraController!.value.aspectRatio;
-                  return AspectRatio(
-                    aspectRatio: previewAspectRatio,
-                    child: CameraPreview(_cameraController!),
-                  );
+                  if (_cameraController != null &&
+                      _cameraController!.value.isInitialized) {
+                    final previewAspectRatio =
+                        _cameraController!.value.aspectRatio;
+                    return AspectRatio(
+                      aspectRatio: previewAspectRatio,
+                      child: CameraPreview(_cameraController!),
+                    );
+                  } else {
+                    return Center(
+                      child: Text('Camera not initialized'),
+                    );
+                  }
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
@@ -196,7 +206,7 @@ class _MainPageState extends State<MainPage>
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
@@ -224,23 +234,29 @@ class _MainPageState extends State<MainPage>
                 const SizedBox(height: 5),
                 AnimatedImageWidget(
                   controller: _controller,
-                  imagePath: 'assets/main_image.png',
+                  imagePath: 'assets/page_images/main_image.png',
                   height: animatedImageSize,
                   width: animatedImageSize,
                 ),
                 const SizedBox(height: 5),
                 const MainPageTextWidget(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    PhotoCaptureButtonWidget(
-                      onCapturePressed: _capturePhoto,
-                    ),
-                    const SizedBox(width: 20),
+                    // Spacer to push GalleryButtonWidget to the left
+                    Spacer(flex: 1),
+                    // GalleryButtonWidget on the left
                     GalleryButtonWidget(
                       onGalleryPressed: _pickImageFromGallery,
                     ),
+                    // Spacer to push PhotoCaptureButtonWidget to the center
+                    Spacer(flex: 1),
+                    // PhotoCaptureButtonWidget in the center
+                    PhotoCaptureButtonWidget(
+                      onCapturePressed: _capturePhoto,
+                    ),
+                    // Spacer to push GalleryButtonWidget to the right
+                    Spacer(flex: 3),
                   ],
                 ),
                 const SizedBox(height: 30),

@@ -5,6 +5,9 @@ class MainPageTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final double textSize = size.width * 0.04; // 5% of screen width
+
     return Column(
       children: [
         const SizedBox(height: 5),
@@ -18,14 +21,14 @@ class MainPageTextWidget extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
-          child: const Text(
+          child: Text(
             'What are you looking at?',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: textSize),
           ),
         ),
-        const Text(
+        Text(
           'Focus your camera on anything around you',
-          style: TextStyle(color: Color(0xff46edfe), fontSize: 16),
+          style: TextStyle(color: Color(0xff46edfe), fontSize: textSize),
         ),
       ],
     );

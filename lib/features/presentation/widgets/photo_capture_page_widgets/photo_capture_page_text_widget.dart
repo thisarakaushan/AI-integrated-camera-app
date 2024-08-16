@@ -6,7 +6,7 @@ class PhotoCapturePageTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final double textSize = size.width * 0.05; // 5% of screen width
+    final double textSize = size.width * 0.04; // 5% of screen width
     final double spacing = size.height * 0.01; // 1% of screen height
 
     return Column(

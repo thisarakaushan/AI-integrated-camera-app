@@ -85,6 +85,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 5),
                 TopRowWidget(onCameraPressed: _navigateToMainPage),
                 const SizedBox(height: 10),
                 Container(
@@ -142,7 +143,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                 const SizedBox(height: 5),
                 AnimatedImageWidget(
                   controller: _controller,
-                  imagePath: 'assets/main_image.png',
+                  imagePath: 'assets/page_images/main_image.png',
                   height: constraints.maxWidth * 0.6,
                   width: constraints.maxWidth * 0.6,
                 ),
