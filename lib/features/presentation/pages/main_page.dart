@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
@@ -43,6 +44,7 @@ class _MainPageState extends State<MainPage>
     _cameraController = CameraController(
       widget.cameras[0], // Assuming the first camera is used
       ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     _initializeControllerFuture = _cameraController!.initialize();
@@ -65,6 +67,33 @@ class _MainPageState extends State<MainPage>
   }
 
   // Capture photo method
+  // Future<void> _capturePhoto() async {
+  //   try {
+  //     await _initializeControllerFuture;
+  //     if (_cameraController == null) return;
+
+  //     // Capture photo
+  //     final XFile photo = await _cameraController!.takePicture();
+
+  //     // Save to gallery
+  //     final result = await CapturePhoto().savePhotoToGallery(photo.path);
+  //     result.fold(
+  //       (failure) => ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(failure.message)),
+  //       ),
+  //       (_) async {
+  //         // Upload to Firebase
+  //         await uploadImageToFirebase(context, photo, (imageUrl) {
+  //           _navigateToPhotoCapturePage(imageUrl!);
+  //         });
+  //       },
+  //     );
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error capturing photo: $e')),
+  //     );
+  //   }
+  // }
   Future<void> _capturePhoto() async {
     try {
       await _initializeControllerFuture;
@@ -73,15 +102,49 @@ class _MainPageState extends State<MainPage>
       // Capture photo
       final XFile photo = await _cameraController!.takePicture();
 
+      // Load image for cropping
+      final originalImage =
+          img.decodeImage(await File(photo.path).readAsBytes());
+
+      if (originalImage == null) return;
+
+      // Calculate the cropping area based on the lens size and position
+      final int cropWidth = (originalImage.width * 0.8).toInt();
+      final int cropHeight = cropWidth; // Assuming the lens is square
+      final int offsetX = (originalImage.width - cropWidth) ~/ 2;
+      final int offsetY = (originalImage.height - cropHeight) ~/ 2;
+
+      // offset to adjust for the shift
+      //const double shiftOffsetX = 10.0; // upward shift
+      const double shiftOffsetY = 200.0; // downward shift
+
+      final croppedImage = img.copyCrop(
+        originalImage,
+        x: offsetX,
+        y: (offsetY - shiftOffsetY).toInt(),
+        width: cropWidth,
+        height: cropHeight,
+      );
+
+      // Save the cropped image to a file
+      final croppedImagePath = '${photo.path}_cropped.jpg';
+      final croppedFile = File(croppedImagePath)
+        ..writeAsBytesSync(img.encodeJpg(croppedImage));
+
+      // Convert the File to XFile
+      final XFile croppedXFile = XFile(croppedFile.path);
+
       // Save to gallery
-      final result = await CapturePhoto().savePhotoToGallery(photo.path);
+      final result = await CapturePhoto().savePhotoToGallery(croppedImagePath);
       result.fold(
         (failure) => ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(failure.message)),
         ),
         (_) async {
-          // Upload to Firebase
-          await uploadImageToFirebase(context, photo, (imageUrl) {
+          // Upload the cropped image to Firebase
+          await uploadImageToFirebase(
+              context, croppedXFile, // Pass the XFile to the upload function
+              (imageUrl) {
             _navigateToPhotoCapturePage(imageUrl!);
           });
         },
@@ -91,6 +154,25 @@ class _MainPageState extends State<MainPage>
         SnackBar(content: Text('Error capturing photo: $e')),
       );
     }
+  }
+
+  void _navigateToRecentSearchesPage() {
+    setState(() {
+      _isRecentSearchesPageOpen = true;
+    });
+
+    Navigator.push(
+      context,
+      SlideTransitionRoute(
+        page: RecentSearchesPage(
+          onClose: () {
+            setState(() {
+              _isRecentSearchesPageOpen = false;
+            });
+          },
+        ),
+      ),
+    );
   }
 
   // Pick image from gallery method
@@ -124,29 +206,104 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  void _navigateToRecentSearchesPage() {
-    setState(() {
-      _isRecentSearchesPageOpen = true;
-    });
-
-    Navigator.push(
-      context,
-      SlideTransitionRoute(
-        page: RecentSearchesPage(
-          onClose: () {
-            setState(() {
-              _isRecentSearchesPageOpen = false;
-            });
-          },
-        ),
-      ),
-    );
-  }
-
   void _navigateToMainPage() {
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   final size = MediaQuery.of(context).size;
+  //   final double lensSize = size.width * 0.8; // Adjusted size for square lens
+  //   final double animatedImageSize = size.width * 0.6;
+
+  //   return Scaffold(
+  //     backgroundColor: Colors.black,
+  //     body: Stack(
+  //       children: [
+  //         SafeArea(
+  //           child: Column(
+  //             children: [
+  //               const SizedBox(height: 20),
+  //               TopRowWidget(
+  //                 onMenuPressed: _navigateToRecentSearchesPage,
+  //                 onEditPressed: _navigateToMainPage,
+  //               ),
+  //               const Spacer(),
+  //               Center(
+  //                 child: Container(
+  //                   width: lensSize,
+  //                   height: lensSize,
+  //                   decoration: BoxDecoration(
+  //                     border: Border.all(color: Colors.transparent),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                   child: Stack(
+  //                     children: [
+  //                       FutureBuilder<void>(
+  //                         future: _initializeControllerFuture,
+  //                         builder: (context, snapshot) {
+  //                           if (snapshot.connectionState ==
+  //                               ConnectionState.done) {
+  //                             return ClipRRect(
+  //                               borderRadius: BorderRadius.circular(10),
+  //                               child: FittedBox(
+  //                                 fit: BoxFit.cover,
+  //                                 child: SizedBox(
+  //                                   width: lensSize,
+  //                                   height: lensSize,
+  //                                   child: CameraPreview(_cameraController!),
+  //                                 ),
+  //                               ),
+  //                             );
+  //                           } else if (snapshot.hasError) {
+  //                             return Center(
+  //                               child: Text('Error: ${snapshot.error}'),
+  //                             );
+  //                           } else {
+  //                             return Container();
+  //                           }
+  //                         },
+  //                       ),
+  //                       // Draw the custom lens border
+  //                       CustomPaint(
+  //                         painter: LensBorderPainter(
+  //                           focusRect: Rect.fromLTWH(0, 0, lensSize, lensSize),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 5),
+  //               AnimatedImageWidget(
+  //                 controller: _controller,
+  //                 imagePath: 'assets/main_image.png',
+  //                 height: animatedImageSize,
+  //                 width: animatedImageSize,
+  //               ),
+  //               const SizedBox(height: 5),
+  //               const MainPageTextWidget(),
+  //               const SizedBox(height: 10),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   PhotoCaptureButtonWidget(
+  //                     onCapturePressed: _capturePhoto,
+  //                   ),
+  //                   const SizedBox(width: 20),
+  //                   GalleryButtonWidget(
+  //                     onGalleryPressed: _pickImageFromGallery,
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBox(height: 30),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -157,6 +314,29 @@ class _MainPageState extends State<MainPage>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          // Camera preview as background
+          Positioned.fill(
+            child: FutureBuilder<void>(
+              future: _initializeControllerFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  final previewAspectRatio =
+                      _cameraController!.value.aspectRatio;
+                  return AspectRatio(
+                    aspectRatio: previewAspectRatio,
+                    child: CameraPreview(_cameraController!),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
+          ),
+          // Overlay the UI components on top of the camera preview
           SafeArea(
             child: Column(
               children: [
@@ -176,31 +356,6 @@ class _MainPageState extends State<MainPage>
                     ),
                     child: Stack(
                       children: [
-                        FutureBuilder<void>(
-                          future: _initializeControllerFuture,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: FittedBox(
-                                  fit: BoxFit.cover,
-                                  child: SizedBox(
-                                    width: lensSize,
-                                    height: lensSize,
-                                    child: CameraPreview(_cameraController!),
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Text('Error: ${snapshot.error}'),
-                              );
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
                         // Draw the custom lens border
                         CustomPaint(
                           painter: LensBorderPainter(
