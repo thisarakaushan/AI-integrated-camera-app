@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
 class TopRowWidget extends StatelessWidget {
-  final VoidCallback onMenuPressed;
-  final VoidCallback onEditPressed;
+  final VoidCallback onCameraPressed;
 
   const TopRowWidget({
     super.key,
-    required this.onMenuPressed,
-    required this.onEditPressed,
+    required this.onCameraPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the icon size based on screen width
+    final double iconSize = MediaQuery.of(context).size.width * 0.07;
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment:
+          MainAxisAlignment.end, // Align the camera icon to the end
       children: [
         IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: onMenuPressed,
-        ),
-        IconButton(
-          icon: const Icon(Icons.edit, color: Colors.white),
-          onPressed: onEditPressed,
+          icon: Icon(Icons.camera_alt,
+              color: Colors.white,
+              size: iconSize), // Use the responsive icon size
+          onPressed: onCameraPressed,
         ),
       ],
     );

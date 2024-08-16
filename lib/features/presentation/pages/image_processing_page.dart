@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/services/image_process_service.dart';
-import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/common_widgets/processing_recognition_page_text_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
@@ -23,7 +21,6 @@ class ImageProcessingPage extends StatefulWidget {
 class _ImageProcessingPageState extends State<ImageProcessingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   @override
   void initState() {
@@ -53,19 +50,16 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
     service.processImage(
       (keyword, products) {
-        if (!_isRecentSearchesPageOpen) {
-          if (mounted) {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.imageRecognitionPage,
-              arguments: {
-                'imageUrl': widget.imageUrl,
-                'identifiedObject': keyword,
-                'products':
-                    products.map((product) => product.toJson()).toList(),
-              },
-            );
-          }
+        if (mounted) {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.imageRecognitionPage,
+            arguments: {
+              'imageUrl': widget.imageUrl,
+              'identifiedObject': keyword,
+              'products': products.map((product) => product.toJson()).toList(),
+            },
+          );
         }
       },
       (failure) {
@@ -76,27 +70,6 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         }
       },
     );
-  }
-
-  void _navigateToRecentSearchesPage() {
-    setState(() {
-      _isRecentSearchesPageOpen = true; // Set flag to true
-    });
-
-    Navigator.push(
-      context,
-      SlideTransitionRoute(page: const RecentSearchesPage()),
-    ).then((_) {
-      // Reset flag to false after Recent Searches Page is closed
-      setState(() {
-        _isRecentSearchesPageOpen = false;
-      });
-
-      // restart image processing here if needed
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _processImage();
-      });
-    });
   }
 
   void _navigateToMainPage() {
@@ -116,8 +89,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
             child: Column(
               children: [
                 TopRowWidget(
-                  onMenuPressed: _navigateToRecentSearchesPage,
-                  onEditPressed: _navigateToMainPage,
+                  onCameraPressed: _navigateToMainPage,
                 ),
                 const SizedBox(height: 10),
                 Container(

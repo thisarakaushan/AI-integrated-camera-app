@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:valuefinder/config/routes/slide_transition_route.dart';
-import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/camera_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/message_input_field_widget.dart';
@@ -80,13 +78,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     );
   }
 
-  void _navigateToRecentSearchesPage() {
-    Navigator.push(
-      context,
-      SlideTransitionRoute(page: const RecentSearchesPage()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,9 +87,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            TopRowWidget(
-                onMenuPressed: _navigateToRecentSearchesPage,
-                onEditPressed: _navigateToMainPage),
+            TopRowWidget(onCameraPressed: _navigateToMainPage),
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),

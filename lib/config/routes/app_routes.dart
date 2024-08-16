@@ -4,7 +4,6 @@ import 'package:valuefinder/features/data/models/product.dart';
 import 'package:valuefinder/features/presentation/pages/image_info_page.dart';
 import 'package:valuefinder/features/presentation/pages/image_recognition_page.dart';
 import 'package:valuefinder/features/presentation/pages/main_page.dart';
-import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/pages/splash_page.dart';
 import 'package:valuefinder/features/presentation/pages/photo_capture_page.dart';
 import 'package:valuefinder/features/presentation/pages/image_processing_page.dart';
@@ -122,11 +121,6 @@ class AppRoutes {
           }
         }
         return _errorRoute('Missing or invalid arguments for DetailsPage');
-      case recentSearchesPage:
-        // No arguments expected for this route
-        return MaterialPageRoute(
-          builder: (_) => RecentSearchesPage(),
-        );
       default:
         return _errorRoute('No route defined for ${settings.name}');
     }

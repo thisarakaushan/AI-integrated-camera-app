@@ -3,11 +3,9 @@ import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/config/routes/slide_transition_route.dart';
 import 'package:valuefinder/core/services/firebase_services/upload_image_to_firebase_service.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
 import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
-import 'package:valuefinder/features/presentation/pages/recent_searches_page.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/photo_capture_button_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/gallery_button_widget.dart';
@@ -30,7 +28,6 @@ class _MainPageState extends State<MainPage>
   File? image; // Variable to store picked image
   CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
-  bool _isRecentSearchesPageOpen = false; // Track if RecentSearchesPage is open
 
   @override
   void initState() {
@@ -128,25 +125,6 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  void _navigateToRecentSearchesPage() {
-    setState(() {
-      _isRecentSearchesPageOpen = true;
-    });
-
-    Navigator.push(
-      context,
-      SlideTransitionRoute(
-        page: RecentSearchesPage(
-          onClose: () {
-            setState(() {
-              _isRecentSearchesPageOpen = false;
-            });
-          },
-        ),
-      ),
-    );
-  }
-
   // Pick image from gallery method
   Future<void> _pickImageFromGallery() async {
     try {
@@ -220,8 +198,7 @@ class _MainPageState extends State<MainPage>
               children: [
                 const SizedBox(height: 20),
                 TopRowWidget(
-                  onMenuPressed: _navigateToRecentSearchesPage,
-                  onEditPressed: _navigateToMainPage,
+                  onCameraPressed: _navigateToMainPage,
                 ),
                 const Spacer(),
                 Center(
