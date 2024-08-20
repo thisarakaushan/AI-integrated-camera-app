@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,24 +7,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:valuefinder/config/di/injection_container.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/presentation/bloc/camera_bloc.dart';
+import 'package:valuefinder/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDependencies();
 
   try {
-    if (Platform.isAndroid) {
-      await Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
-          appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
-          messagingSenderId: '1002412293801',
-          projectId: 'excelly-startup',
-        ),
-      );
-    } else {
-      await Firebase.initializeApp();
-    }
+    // if (Platform.isAndroid) {
+    //   await Firebase.initializeApp(
+    //     options: const FirebaseOptions(
+    //       apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
+    //       appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
+    //       messagingSenderId: '1002412293801',
+    //       projectId: 'excelly-startup',
+    //     ),
+    //   );
+    // } else {
+    //   await Firebase.initializeApp();
+    // }
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
     print('Failed to initialize Firebase: $e');
   }

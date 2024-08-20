@@ -8,7 +8,7 @@ class GalleryButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double buttonSize = MediaQuery.of(context).size.width *
-        0.15; // Same size as PhotoCaptureButtonWidget
+        0.17; // Same size as PhotoCaptureButtonWidget
 
     return Container(
       width: buttonSize,

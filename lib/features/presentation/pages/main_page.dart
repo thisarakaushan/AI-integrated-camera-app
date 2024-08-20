@@ -167,7 +167,7 @@ class _MainPageState extends State<MainPage>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final double lensSize = size.width * 0.8; // Adjusted size for square lens
-    final double animatedImageSize = size.width * 0.6;
+    final double animatedImageSize = size.width * 0.2;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -231,17 +231,19 @@ class _MainPageState extends State<MainPage>
                     ),
                   ),
                 ),
-                const SizedBox(height: 5),
-                AnimatedImageWidget(
-                  controller: _controller,
-                  imagePath: 'assets/page_images/main_image.png',
-                  height: animatedImageSize,
-                  width: animatedImageSize,
-                ),
-                const SizedBox(height: 5),
+                // const SizedBox(height: 5),
+                // AnimatedImageWidget(
+                //   controller: _controller,
+                //   imagePath: 'assets/page_images/main_image.png',
+                //   height: animatedImageSize,
+                //   width: animatedImageSize,
+                // ),
+                const SizedBox(height: 200),
                 const MainPageTextWidget(),
-                const SizedBox(height: 15),
+                const SizedBox(height: 30),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Spacer to push GalleryButtonWidget to the left
                     Spacer(flex: 1),
@@ -249,14 +251,23 @@ class _MainPageState extends State<MainPage>
                     GalleryButtonWidget(
                       onGalleryPressed: _pickImageFromGallery,
                     ),
-                    // Spacer to push PhotoCaptureButtonWidget to the center
+                    // Spacer between GalleryButton and AnimatedImage
                     Spacer(flex: 1),
-                    // PhotoCaptureButtonWidget in the center
+                    // AnimatedImageWidget in the middle
+                    AnimatedImageWidget(
+                      controller: _controller,
+                      imagePath: 'assets/page_images/main_image.png',
+                      height: animatedImageSize,
+                      width: animatedImageSize,
+                    ),
+                    // Spacer between AnimatedImage and PhotoCaptureButton
+                    Spacer(flex: 1),
+                    // PhotoCaptureButtonWidget on the right
                     PhotoCaptureButtonWidget(
                       onCapturePressed: _capturePhoto,
                     ),
-                    // Spacer to push GalleryButtonWidget to the right
-                    Spacer(flex: 3),
+                    // Spacer to push PhotoCaptureButtonWidget to the right
+                    Spacer(flex: 1),
                   ],
                 ),
                 const SizedBox(height: 30),

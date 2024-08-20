@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_info_page_widgets/platform_grid_view.dart';
-import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
+import '../widgets/image_info_page_widgets/platform_grid_view.dart';
+import '../widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/data/models/product.dart';
-import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
+// import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
 
 class ImageInfoPage extends StatefulWidget {
   final String imageUrl;
@@ -31,14 +32,8 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // Add duration for animation
+      duration: const Duration(seconds: 2), // Duration for animation
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   // Navigation to main page
@@ -47,27 +42,44 @@ class _ImageInfoPageState extends State<ImageInfoPage>
   }
 
   // Handle platform tap
-  void _onPlatformTap(Product product) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return DetailsPage(
-            product: product,
-          );
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0); // Start position of the slide
-          const end = Offset.zero; // End position of the slide
-          const curve = Curves.easeInOut; // Animation curve
+  // void _onPlatformTap(Product product) {
+  //   Navigator.of(context).push(
+  //     PageRouteBuilder(
+  //       pageBuilder: (context, animation, secondaryAnimation) {
+  //         return DetailsPage(
+  //           product: product,
+  //         );
+  //       },
+  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+  //         const begin = Offset(0.0, 1.0); // Start position of the slide
+  //         const end = Offset.zero; // End position of the slide
+  //         const curve = Curves.easeInOut; // Animation curve
 
-          var tween = Tween(begin: begin, end: end);
-          var offsetAnimation =
-              animation.drive(tween.chain(CurveTween(curve: curve)));
+  //         var tween = Tween(begin: begin, end: end);
+  //         var offsetAnimation =
+  //             animation.drive(tween.chain(CurveTween(curve: curve)));
 
-          return SlideTransition(position: offsetAnimation, child: child);
-        },
-      ),
-    );
+  //         return SlideTransition(position: offsetAnimation, child: child);
+  //       },
+  //     ),
+  //   );
+  // }
+  Future<void> _onPlatformTap(Product product) async {
+    final uri = Uri.parse(product.link);
+
+    // Attempt to open the link using the specific app (if installed)
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // If the app is not available, open the link in the browser
+      await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -121,6 +133,7 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               ),
             ),
             const SizedBox(height: 30),
+            // Product grid view
             PlatformGridView(
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model

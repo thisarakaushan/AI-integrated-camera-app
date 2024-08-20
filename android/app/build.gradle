@@ -7,11 +7,6 @@ plugins {
 
 }
 
-// def flutterRoot = localProperties.getProperty('flutter.sdk')
-// if (flutterRoot == null) {
-//     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-// }
-
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -67,7 +62,7 @@ flutter {
 dependencies {
     // implementation platform('com.google.firebase:firebase-bom:33.1.2')
     implementation('com.google.firebase:firebase-analytics:21.0.0')
-    // implementation 'com.google.firebase:firebase-auth:22.0.0'
+    implementation 'com.google.firebase:firebase-auth:22.0.0'
     // implementation 'com.google.firebase:firebase-storage:20.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Ensure the Kotlin version matches the root build.gradle
 }

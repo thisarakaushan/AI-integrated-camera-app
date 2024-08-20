@@ -11,24 +11,59 @@ class MainPageTextWidget extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 5),
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xff2753cf),
-              Color(0xffc882ff),
-              Color(0xff46edfe),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: Text(
-            'What are you looking at?',
-            style: TextStyle(color: Colors.white, fontSize: textSize),
-          ),
+        // Stack to layer the text and its outline
+        Stack(
+          children: [
+            // Black outline text
+            Positioned(
+              left: 1.0,
+              top: 1.0,
+              child: Text(
+                'What are you looking at?',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: textSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // Main text
+            Text(
+              'What are you looking at?',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: textSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
-        Text(
-          'Focus your camera on anything around you',
-          style: TextStyle(color: Color(0xff46edfe), fontSize: textSize),
+        const SizedBox(height: 5),
+        Stack(
+          children: [
+            // Black outline text
+            Positioned(
+              left: 1.0,
+              top: 1.0,
+              child: Text(
+                'Focus your camera on anything around you',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: textSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // Main text
+            Text(
+              'Focus your camera on anything around you',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: textSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ],
     );

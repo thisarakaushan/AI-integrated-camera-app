@@ -1,29 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'firebase_test_setup.dart'; // Ensure this path is correct
+import 'firebase_test_setup.dart';
 
 void main() {
   setUpAll(() async {
-    setupFirebase(); // Initialize Firebase before running tests
+    await setupFirebase();
   });
 
   test('Firebase Auth Sign-In', () async {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
     try {
-      // Test signing in anonymously
       UserCredential userCredential = await auth.signInAnonymously();
       User? user = userCredential.user;
 
       if (user != null) {
-        expect(user.uid, isNotEmpty); // Check if uid is not empty
+        expect(user.uid, isNotEmpty);
         print('Successfully signed in: ${user.uid}');
       } else {
         fail('User is null');
       }
     } catch (e) {
       print('Error signing in: $e');
-      fail('Exception occurred: $e'); // Fail the test if there's an exception
+      fail('Exception occurred: $e');
     }
   });
 }
