@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     storageBucket: 'excelly-startup.appspot.com',
-    iosBundleId: 'com.example.valuefinder',
+    iosBundleId: 'com.excelly.valuefinder',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     storageBucket: 'excelly-startup.appspot.com',
-    iosBundleId: 'com.example.valuefinder',
+    iosBundleId: 'com.excelly.valuefinder',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -85,5 +85,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'excelly-startup.appspot.com',
     measurementId: 'G-QL5VW7SSDQ',
   );
-
 }

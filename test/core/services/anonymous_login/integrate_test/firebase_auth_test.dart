@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'firebase_test_setup.dart';
+import '../../firebase_test_setup.dart';
 
 void main() {
   setUpAll(() async {
