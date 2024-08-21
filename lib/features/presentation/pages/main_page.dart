@@ -3,6 +3,7 @@ import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/core/services/firebase_services/upload_image_to_firebase_service.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
 import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
@@ -137,8 +138,8 @@ class _MainPageState extends State<MainPage>
             // ScaffoldMessenger.of(context).showSnackBar(
             //   const SnackBar(content: Text('Failed to get image URL')),
             // );
-            print(
-                'Failed to get image url because user didn\'t select any image from gallery');
+            //print('Failed to get image url because user didn\'t select any image from gallery');
+             throw const ImageNavigationFailure('No valid image URL provided.');
           }
         },
       );

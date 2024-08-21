@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:valuefinder/core/error/failures.dart';
 
 class Product {
   final String title;
@@ -28,19 +29,24 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      title: json['title'] ?? '',
-      source: json['source'] ?? '',
-      link: json['link'] ?? '',
-      price: json['price'] ?? '',
-      delivery: json['delivery'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
-      position: json['position'] ?? 0, // Default to 0 if not present
-      rating: (json['rating'] as num?)?.toDouble(), // Convert rating to double
-      ratingCount: json['ratingCount'] as int?,
-      offers: json['offers'],
-      productId: json['productId'],
-    );
+    try {
+      return Product(
+        title: json['title'] ?? '',
+        source: json['source'] ?? '',
+        link: json['link'] ?? '',
+        price: json['price'] ?? '',
+        delivery: json['delivery'] ?? '',
+        imageUrl: json['imageUrl'] ?? '',
+        position: json['position'] ?? 0, // Default to 0 if not present
+        rating:
+            (json['rating'] as num?)?.toDouble(), // Convert rating to double
+        ratingCount: json['ratingCount'] as int?,
+        offers: json['offers'],
+        productId: json['productId'],
+      );
+    } catch (e) {
+      throw ServerFailure('Error parsing product: $e');
+    }
   }
 
   get description => null;
@@ -68,27 +74,40 @@ class ProductResponse {
   ProductResponse({required this.products});
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
-    var list = json['products'];
-    if (list == null || list is! List) {
-      throw FormatException('Invalid or missing "products" key');
+    try {
+      var list = json['products'];
+      if (list == null || list is! List) {
+        throw FormatException('Invalid or missing "products" key');
+      }
+      List<Product> productList = (list as List<dynamic>)
+          .map((item) => Product.fromJson(item as Map<String, dynamic>))
+          .toList();
+      return ProductResponse(products: productList);
+    } catch (e) {
+      throw ServerFailure('Error parsing product response: $e');
     }
-    List<Product> productList = (list as List<dynamic>)
-        .map((item) => Product.fromJson(item as Map<String, dynamic>))
-        .toList();
-    return ProductResponse(products: productList);
   }
 }
 
-// Function to parse the response
+// Function to parse the response with error handling
 ProductResponse parseProductResponse(String jsonResponse) {
-  final Map<String, dynamic> parsed = jsonDecode(jsonResponse);
-  return ProductResponse.fromJson(parsed);
+  try {
+    final Map<String, dynamic> parsed = jsonDecode(jsonResponse);
+    return ProductResponse.fromJson(parsed);
+  } catch (e) {
+    throw ServerFailure('Failed to parse product response: $e');
+  }
 }
 
 void debugJson(String jsonResponse) {
   try {
     final parsed = jsonDecode(jsonResponse);
   } catch (e) {
-    print('Error decoding JSON: $e');
+    throw JsonDecodingFailure(message: 'Error decoding JSON: $e');
   }
+}
+
+// Define a custom failure for JSON decoding errors
+class JsonDecodingFailure extends Failure {
+  const JsonDecodingFailure({required String message}) : super(message);
 }

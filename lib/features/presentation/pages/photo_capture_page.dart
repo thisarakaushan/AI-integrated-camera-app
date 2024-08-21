@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
+import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
@@ -58,7 +59,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
         arguments: {'imageUrl': imageUrl},
       );
     } else {
-      print('No valid image URL provided.');
+      throw const ImageNavigationFailure('No valid image URL provided.');
     }
   }
 

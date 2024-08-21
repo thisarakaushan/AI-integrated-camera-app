@@ -8,7 +8,7 @@ class AnonymousAuthService {
       UserCredential userCredential = await _auth.signInAnonymously();
       return userCredential.user;
     } catch (e) {
-      print('Failed to sign in anonymously: $e');
+      //print('Failed to sign in anonymously: $e');
       return null;
     }
   }

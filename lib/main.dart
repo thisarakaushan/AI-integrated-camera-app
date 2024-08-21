@@ -14,18 +14,6 @@ Future<void> main() async {
   await initializeDependencies();
 
   try {
-    // if (Platform.isAndroid) {
-    //   await Firebase.initializeApp(
-    //     options: const FirebaseOptions(
-    //       apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
-    //       appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
-    //       messagingSenderId: '1002412293801',
-    //       projectId: 'excelly-startup',
-    //     ),
-    //   );
-    // } else {
-    //   await Firebase.initializeApp();
-    // }
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );

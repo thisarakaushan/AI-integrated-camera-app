@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/start_button_widget.dart';
+//import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/start_button_widget.dart';
 
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -26,28 +26,28 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     )..repeat();
 
-    // Navigate to the main page after 5 seconds
-    _timer = Timer(const Duration(seconds: 5), _navigateToMainPage);
+    // Navigate to the main page after 2 seconds
+    _timer = Timer(const Duration(seconds: 2), _navigateToMainPage);
   }
+
+  void _navigateToMainPage() {
+    Navigator.of(context).pushReplacementNamed(
+      AppRoutes.mainPage,
+      arguments: widget.cameras,
+    );
+  }
+
+  // Automatic navigation if we didn't click the start button
+  // void _onStartButtonPressed() {
+  //   _timer?.cancel(); // Cancel the timer when the button is pressed
+  //   _navigateToMainPage();
+  // }
 
   @override
   void dispose() {
     _controller.dispose();
     _timer?.cancel(); // Cancel the timer if the widget is disposed
     super.dispose();
-  }
-
-  void _navigateToMainPage() {
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.mainPage, // Use AppRoutes.mainPage
-      arguments: widget.cameras,
-    );
-  }
-
-  // Automatic navigation if we didn't click the start button
-  void _onStartButtonPressed() {
-    _timer?.cancel(); // Cancel the timer when the button is pressed
-    _navigateToMainPage();
   }
 
   @override
@@ -79,9 +79,7 @@ class _SplashPageState extends State<SplashPage>
                 );
               },
             ),
-            SizedBox(
-                height: size.height *
-                    0.02), // Space between elements, relative to screen height
+            SizedBox(height: size.height * 0.02),
             Text(
               'Your own',
               style: TextStyle(
@@ -112,10 +110,8 @@ class _SplashPageState extends State<SplashPage>
                 ),
               ),
             ),
-            SizedBox(
-                height: size.height *
-                    0.04), // Space between elements, relative to screen height
-            StartButtonWidget(onPressed: _onStartButtonPressed),
+            SizedBox(height: size.height * 0.04),
+            //StartButtonWidget(onPressed: _onStartButtonPressed),
           ],
         ),
       ),

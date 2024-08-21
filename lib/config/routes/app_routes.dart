@@ -20,8 +20,7 @@ class AppRoutes {
   static const String detailsPage = '/details-page';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    print(
-        'Navigating to ${settings.name} with arguments: ${settings.arguments}');
+    // print('Navigating to ${settings.name} with arguments: ${settings.arguments}');
     final args = settings.arguments as Map<String, dynamic>?;
 
     switch (settings.name) {
@@ -83,7 +82,7 @@ class AppRoutes {
           final description = args['description'] as String;
           final productsJson = args['products'] as List<dynamic>;
 
-          print('Navigating to ImageInfoPage with productsJson: $productsJson');
+          print('Navigating to ImageInfoPage with products: $productsJson');
 
           final products = productsJson
               .map((json) {

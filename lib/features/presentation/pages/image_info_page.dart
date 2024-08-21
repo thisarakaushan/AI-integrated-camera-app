@@ -139,17 +139,17 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                'If you require specific assistance with these ${widget.description}, such as price or sizes, please inform me!',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 40),
+            //   child: Text(
+            //     'If you require specific assistance with these ${widget.description}, such as price or sizes, please inform me!',
+            //     style: const TextStyle(
+            //       color: Colors.white,
+            //       fontSize: 16,
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 30),
           ],
         ),
       ),

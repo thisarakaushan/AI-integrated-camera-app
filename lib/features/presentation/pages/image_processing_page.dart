@@ -36,12 +36,6 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   void _processImage() {
     final service = ImageProcessingService(
       imageUrl: widget.imageUrl,
@@ -74,6 +68,12 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
 
   void _navigateToMainPage() {
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

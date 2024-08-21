@@ -16,12 +16,12 @@ void main() {
 
       if (user != null) {
         expect(user.uid, isNotEmpty);
-        print('Successfully signed in: ${user.uid}');
+        //print('Successfully signed in: ${user.uid}');
       } else {
         fail('User is null');
       }
     } catch (e) {
-      print('Error signing in: $e');
+      //print('Error signing in: $e');
       fail('Exception occurred: $e');
     }
   });
