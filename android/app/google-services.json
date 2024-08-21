@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1002412293801:android:ed8759d7a063613652b3b8",
         "android_client_info": {
-          "package_name": "com.excelly.valuefinder"
+          "package_name": "com.example.valuefinder"
         }
       },
       "oauth_client": [],
@@ -29,6 +29,25 @@
         "mobilesdk_app_id": "1:1002412293801:android:93429aa587b574a852b3b8",
         "android_client_info": {
           "package_name": "com.excelly.palyground"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002412293801:android:278b7dcdb15380af52b3b8",
+        "android_client_info": {
+          "package_name": "com.excelly.valuefinder"
         }
       },
       "oauth_client": [],

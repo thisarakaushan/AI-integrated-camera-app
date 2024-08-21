@@ -42,17 +42,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAQV4Cyk_i4bXGjzCGiqy5nec_QJPAp1EY',
-    appId: '1:1002412293801:web:25a0fe1b20c2dd3e52b3b8',
+    appId: '1:1002412293801:web:bf9250e111fd367d52b3b8',
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     authDomain: 'excelly-startup.firebaseapp.com',
     storageBucket: 'excelly-startup.appspot.com',
-    measurementId: 'G-QL5VW7SSDQ',
+    measurementId: 'G-9ZG7Q2NB1B',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAm9ZteqRe39bf8uM2vU9y6P0e-yXdWWWU',
-    appId: '1:1002412293801:android:ed8759d7a063613652b3b8',
+    appId: '1:1002412293801:android:278b7dcdb15380af52b3b8',
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     storageBucket: 'excelly-startup.appspot.com',
@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCIvxXuxZSB6E-WxjQyMdCE7naCyFcQyDM',
-    appId: '1:1002412293801:ios:01fd7a2f0e1bf87852b3b8',
+    appId: '1:1002412293801:ios:cd6171594d7d7eea52b3b8',
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     storageBucket: 'excelly-startup.appspot.com',
@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCIvxXuxZSB6E-WxjQyMdCE7naCyFcQyDM',
-    appId: '1:1002412293801:ios:01fd7a2f0e1bf87852b3b8',
+    appId: '1:1002412293801:ios:cd6171594d7d7eea52b3b8',
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     storageBucket: 'excelly-startup.appspot.com',
@@ -78,11 +78,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAQV4Cyk_i4bXGjzCGiqy5nec_QJPAp1EY',
-    appId: '1:1002412293801:web:25a0fe1b20c2dd3e52b3b8',
+    appId: '1:1002412293801:web:bb47bc118722cfc452b3b8',
     messagingSenderId: '1002412293801',
     projectId: 'excelly-startup',
     authDomain: 'excelly-startup.firebaseapp.com',
     storageBucket: 'excelly-startup.appspot.com',
-    measurementId: 'G-QL5VW7SSDQ',
+    measurementId: 'G-YP3600TJFB',
   );
 }
