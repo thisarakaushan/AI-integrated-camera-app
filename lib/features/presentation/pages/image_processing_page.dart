@@ -63,6 +63,20 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
           );
         }
       },
+      (message) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
+          );
+
+          // Start a timer to navigate back to the main page after 2 seconds
+          Future.delayed(const Duration(seconds: 4), () {
+            if (mounted) {
+              _navigateToMainPage();
+            }
+          });
+        }
+      },
     );
   }
 

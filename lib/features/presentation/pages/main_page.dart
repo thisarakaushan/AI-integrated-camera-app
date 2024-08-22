@@ -2,18 +2,19 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
-import 'package:valuefinder/core/services/firebase_services/upload_image_to_firebase_service.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
 import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/photo_capture_button_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/gallery_button_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/main_page_text_widget.dart';
+import '../../../core/services/firebase_services/upload_image_to_firebase_service.dart';
+import '../widgets/main_page_widgets/photo_capture_button_widget.dart';
+import '../widgets/main_page_widgets/animated_image_widget.dart';
+import '../widgets/main_page_widgets/gallery_button_widget.dart';
+import '../widgets/main_page_widgets/main_page_text_widget.dart';
 
-import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../widgets/common_widgets/top_row_widget.dart';
+import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
 
 class MainPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -38,6 +39,9 @@ class _MainPageState extends State<MainPage>
       vsync: this,
     )..repeat();
 
+    // Check permissions before initializing the camera
+    _checkPermissions();
+
     // Initialize camera controller
     _cameraController = CameraController(
       widget.cameras[0], // Assuming the first camera is used
@@ -46,6 +50,24 @@ class _MainPageState extends State<MainPage>
     );
 
     _initializeControllerFuture = _cameraController!.initialize();
+  }
+
+  // Ensure that camera and storage permissions granted
+  Future<void> _checkPermissions() async {
+    final cameraStatus = await Permission.camera.status;
+    final storageStatus = await Permission.storage.status;
+
+    if (!cameraStatus.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Camera permission is required.')),
+      );
+    }
+
+    if (!storageStatus.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Storage permission is required.')),
+      );
+    }
   }
 
   // Method to navigate to PhotoCapturePage with the imageUrl
@@ -135,11 +157,7 @@ class _MainPageState extends State<MainPage>
           if (imageUrl != null) {
             _navigateToPhotoCapturePage(imageUrl);
           } else {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   const SnackBar(content: Text('Failed to get image URL')),
-            // );
-            //print('Failed to get image url because user didn\'t select any image from gallery');
-             throw const ImageNavigationFailure('No valid image URL provided.');
+            throw const ImageNavigationFailure('No valid image URL provided.');
           }
         },
       );
@@ -232,13 +250,6 @@ class _MainPageState extends State<MainPage>
                     ),
                   ),
                 ),
-                // const SizedBox(height: 5),
-                // AnimatedImageWidget(
-                //   controller: _controller,
-                //   imagePath: 'assets/page_images/main_image.png',
-                //   height: animatedImageSize,
-                //   width: animatedImageSize,
-                // ),
                 const SizedBox(height: 200),
                 const MainPageTextWidget(),
                 const SizedBox(height: 30),

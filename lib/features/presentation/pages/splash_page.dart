@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-//import 'package:valuefinder/features/presentation/widgets/splash_page_widgets/start_button_widget.dart';
+import 'package:valuefinder/core/error/failures.dart';
 
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -16,7 +16,6 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  Timer? _timer; // Timer to implement automatic navigation
 
   @override
   void initState() {
@@ -26,8 +25,78 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     )..repeat();
 
-    // Navigate to the main page after 2 seconds
-    _timer = Timer(const Duration(seconds: 2), _navigateToMainPage);
+    // Start app initialization
+    _initializeApp();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Load resources that depend on the context (like MediaQuery)
+    _loadResources();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Check for necessary permissions
+      await _checkPermissions();
+
+      // Delay for 3 seconds to show the splash image
+      // await Future.delayed(const Duration(seconds: 2));
+
+      // Initialization is complete, navigate to the main page
+      _navigateToMainPage();
+    } catch (error) {
+      // Handle any errors that occur during initialization
+      _handleFailure(error);
+    }
+  }
+
+  Future<void> _loadResources() async {
+    await precacheImage(
+        const AssetImage('assets/page_images/splash_image.png'), context);
+    await precacheImage(
+        const AssetImage('assets/page_images/main_image.png'), context);
+    await precacheImage(
+        const AssetImage('assets/page_images/info_page_image.png'), context);
+  }
+
+  Future<void> _checkPermissions() async {
+    final storagePermissionStatus = await _requestStoragePermission();
+    if (storagePermissionStatus is Failure) {
+      throw storagePermissionStatus;
+    }
+
+    final cameraPermissionStatus = await _requestCameraPermission();
+    if (cameraPermissionStatus is Failure) {
+      throw cameraPermissionStatus;
+    }
+  }
+
+  Future<Failure?> _requestStoragePermission() async {
+    final status = await Permission.storage.request();
+    if (status.isDenied) {
+      return StoragePermissionFailure('Storage permission denied.');
+    } else if (status.isPermanentlyDenied) {
+      await openAppSettings();
+      return StoragePermissionFailure(
+          'Storage permission permanently denied. Please enable it from settings.');
+    }
+    return null;
+  }
+
+  Future<Failure?> _requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (status.isDenied) {
+      return CameraInitializationFailure(message: 'Camera permission denied.');
+    } else if (status.isPermanentlyDenied) {
+      await openAppSettings();
+      return CameraInitializationFailure(
+          message:
+              'Camera permission permanently denied. Please enable it from settings.');
+    }
+    return null;
   }
 
   void _navigateToMainPage() {
@@ -37,26 +106,39 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 
-  // Automatic navigation if we didn't click the start button
-  // void _onStartButtonPressed() {
-  //   _timer?.cancel(); // Cancel the timer when the button is pressed
-  //   _navigateToMainPage();
-  // }
+  void _handleFailure(Object failure) {
+    if (failure is Failure) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text(failure.message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _initializeApp();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      print('Unexpected error: $failure');
+    }
+  }
 
   @override
   void dispose() {
     _controller.dispose();
-    _timer?.cancel(); // Cancel the timer if the widget is disposed
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final double imageSize =
-        size.width * 0.9; // Adjust image size relative to screen width
-    final double textSize =
-        size.width * 0.2; // Adjust text size relative to screen width
+    final double imageSize = size.width * 0.9;
 
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
@@ -80,7 +162,7 @@ class _SplashPageState extends State<SplashPage>
               },
             ),
             SizedBox(height: size.height * 0.02),
-            Text(
+            const Text(
               'Your own',
               style: TextStyle(
                 color: Colors.white,
@@ -88,9 +170,7 @@ class _SplashPageState extends State<SplashPage>
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(
-                height: size.height *
-                    0.01), // Space between elements, relative to screen height
+            SizedBox(height: size.height * 0.01),
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [
@@ -111,7 +191,6 @@ class _SplashPageState extends State<SplashPage>
               ),
             ),
             SizedBox(height: size.height * 0.04),
-            //StartButtonWidget(onPressed: _onStartButtonPressed),
           ],
         ),
       ),
@@ -119,13 +198,16 @@ class _SplashPageState extends State<SplashPage>
   }
 }
 
-// authenticate navigation
+
+
+
+
+
+// import 'dart:async';
 
 // import 'package:flutter/material.dart';
 // import 'package:camera/camera.dart';
 // import 'package:valuefinder/config/routes/app_routes.dart';
-// import 'package:valuefinder/features/presentation/widgets/start_button_widget.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 
 // class SplashPage extends StatefulWidget {
 //   final List<CameraDescription> cameras;
@@ -138,7 +220,7 @@ class _SplashPageState extends State<SplashPage>
 // class _SplashPageState extends State<SplashPage>
 //     with SingleTickerProviderStateMixin {
 //   late AnimationController _controller;
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
+//   Timer? _timer; // Timer to implement automatic navigation
 
 //   @override
 //   void initState() {
@@ -148,41 +230,32 @@ class _SplashPageState extends State<SplashPage>
 //       vsync: this,
 //     )..repeat();
 
-//     // Authenticate and navigate after a short delay
-//     Future.delayed(const Duration(seconds: 2), () async {
-//       await _authenticateAndNavigate();
-//     });
+//     // Navigate to the main page after 2 seconds
+//     _timer = Timer(const Duration(seconds: 2), _navigateToMainPage);
 //   }
 
-//   Future<void> _authenticateAndNavigate() async {
-//     try {
-//       User? user = _auth.currentUser;
-//       if (user == null) {
-//         // Sign in anonymously if no user is currently signed in
-//         UserCredential userCredential = await _auth.signInAnonymously();
-//         user = userCredential.user;
-//       }
-      
-//       // Proceed to the main page
-//       Navigator.of(context).pushReplacementNamed(
-//         AppRoutes.mainPage,
-//         arguments: widget.cameras,
-//       );
-//     } catch (e) {
-//       // Handle authentication errors
-//       print('Authentication failed: $e');
-//       // Optionally show an error message or retry authentication
-//     }
+//   void _navigateToMainPage() {
+//     Navigator.of(context).pushReplacementNamed(
+//       AppRoutes.mainPage,
+//       arguments: widget.cameras,
+//     );
 //   }
 
 //   @override
 //   void dispose() {
 //     _controller.dispose();
+//     _timer?.cancel(); // Cancel the timer if the widget is disposed
 //     super.dispose();
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
+//     final size = MediaQuery.of(context).size;
+//     final double imageSize =
+//         size.width * 0.9; // Adjust image size relative to screen width
+//     final double textSize =
+//         size.width * 0.2; // Adjust text size relative to screen width
+
 //     return Scaffold(
 //       backgroundColor: const Color(0xFF051338),
 //       body: Center(
@@ -192,9 +265,9 @@ class _SplashPageState extends State<SplashPage>
 //             AnimatedBuilder(
 //               animation: _controller,
 //               child: Image.asset(
-//                 'assets/splash_image.png',
-//                 width: 357,
-//                 height: 357,
+//                 'assets/page_images/splash_image.png',
+//                 width: imageSize,
+//                 height: imageSize,
 //                 fit: BoxFit.contain,
 //               ),
 //               builder: (context, child) {
@@ -204,15 +277,18 @@ class _SplashPageState extends State<SplashPage>
 //                 );
 //               },
 //             ),
-//             const SizedBox(height: 20),
-//             const Text(
+//             SizedBox(height: size.height * 0.02),
+//             Text(
 //               'Your own',
 //               style: TextStyle(
-//                   color: Colors.white,
-//                   fontSize: 36,
-//                   fontWeight: FontWeight.w600),
+//                 color: Colors.white,
+//                 fontSize: 36,
+//                 fontWeight: FontWeight.w600,
+//               ),
 //             ),
-//             const SizedBox(height: 5),
+//             SizedBox(
+//                 height: size.height *
+//                     0.01), // Space between elements, relative to screen height
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
@@ -223,20 +299,21 @@ class _SplashPageState extends State<SplashPage>
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
 //               ).createShader(bounds),
-//               child: const Text(
+//               child: Text(
 //                 'AI assistance',
 //                 style: TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 36,
-//                     fontWeight: FontWeight.w600),
+//                   color: Colors.white,
+//                   fontSize: 36,
+//                   fontWeight: FontWeight.w600,
+//                 ),
 //               ),
 //             ),
-//             const SizedBox(height: 20),
-//             // Remove the button if you handle navigation automatically
-//             // StartButtonWidget(onPressed: _navigateToMainPage),
+//             SizedBox(height: size.height * 0.04),
+//             //StartButtonWidget(onPressed: _onStartButtonPressed),
 //           ],
 //         ),
 //       ),
 //     );
 //   }
 // }
+

@@ -18,10 +18,10 @@ class ImageProcessingService {
 
   Future<void> processImage(
       Function(String keyword, List<Product> products) onSuccess,
-      Function(Failure) onError) async {
+      Function(Failure) onError,
+      Function(String message)? onUnclearObject) async {
     try {
       User? user = auth.currentUser;
-
       if (user == null) {
         throw PhotoCaptureFailure(message: 'No user is currently signed in.');
       }
@@ -58,8 +58,10 @@ class ImageProcessingService {
         }
 
         if (keyword.isEmpty) {
-          throw ServerFailure(
-              'Object is not clear. Please provide more images.');
+          if (onUnclearObject != null) {
+            onUnclearObject('Object is not clear. Please provide more images.');
+          }
+          return;
         }
 
         // Step 2: Use the extracted keyword to get details from shopping URL

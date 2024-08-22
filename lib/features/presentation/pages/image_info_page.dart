@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../widgets/image_info_page_widgets/info_page_animated_image_widget.dart';
 import '../widgets/image_info_page_widgets/platform_grid_view.dart';
 import '../widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/data/models/product.dart';
-// import 'package:valuefinder/features/presentation/pages/final_details_page.dart';
 
 class ImageInfoPage extends StatefulWidget {
   final String imageUrl;
@@ -41,29 +39,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
-  // Handle platform tap
-  // void _onPlatformTap(Product product) {
-  //   Navigator.of(context).push(
-  //     PageRouteBuilder(
-  //       pageBuilder: (context, animation, secondaryAnimation) {
-  //         return DetailsPage(
-  //           product: product,
-  //         );
-  //       },
-  //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-  //         const begin = Offset(0.0, 1.0); // Start position of the slide
-  //         const end = Offset.zero; // End position of the slide
-  //         const curve = Curves.easeInOut; // Animation curve
-
-  //         var tween = Tween(begin: begin, end: end);
-  //         var offsetAnimation =
-  //             animation.drive(tween.chain(CurveTween(curve: curve)));
-
-  //         return SlideTransition(position: offsetAnimation, child: child);
-  //       },
-  //     ),
-  //   );
-  // }
   Future<void> _onPlatformTap(Product product) async {
     final uri = Uri.parse(product.link);
 
@@ -93,42 +68,31 @@ class _ImageInfoPageState extends State<ImageInfoPage>
             const SizedBox(height: 5),
             TopRowWidget(onCameraPressed: _navigateToMainPage),
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 35,
-                    height: 35,
-                    child: InfoPageAnimatedImageWidget(
-                      controller: _controller,
-                      imagePath: 'assets/page_images/info_page_image.png',
-                    ),
+            // Centered Main Image
+            Center(
+              child: SizedBox(
+                width: 150,
+                height: 130,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.network(
+                    widget.imageUrl,
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 120,
-                    height: 100,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Image.network(
-                        widget.imageUrl,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.description,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+            // Centered Object Name
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  widget.description,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                  ),
                 ),
               ),
             ),
@@ -139,17 +103,6 @@ class _ImageInfoPageState extends State<ImageInfoPage>
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
             const SizedBox(height: 20),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 40),
-            //   child: Text(
-            //     'If you require specific assistance with these ${widget.description}, such as price or sizes, please inform me!',
-            //     style: const TextStyle(
-            //       color: Colors.white,
-            //       fontSize: 16,
-            //     ),
-            //   ),
-            // ),
-            // const SizedBox(height: 30),
           ],
         ),
       ),
