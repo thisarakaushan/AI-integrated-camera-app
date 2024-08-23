@@ -27,9 +27,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  File? image; // Variable to store picked image
+  // Variable to store picked image
+  File? image;
   CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
+  // State to check if image is being captured
+  bool isCapturing = false;
 
   @override
   void initState() {
@@ -44,7 +47,8 @@ class _MainPageState extends State<MainPage>
 
     // Initialize camera controller
     _cameraController = CameraController(
-      widget.cameras[0], // Assuming the first camera is used
+      // Assuming the first camera is used
+      widget.cameras[0],
       ResolutionPreset.high,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
@@ -80,12 +84,18 @@ class _MainPageState extends State<MainPage>
   }
 
   Future<void> _capturePhoto() async {
+    setState(() {
+      isCapturing = true; // Start capturing
+    });
+
     try {
       await _initializeControllerFuture;
       if (_cameraController == null) return;
 
       // Capture photo
       final XFile photo = await _cameraController!.takePicture();
+
+      // Process the captured photo (cropping, saving, uploading)...
 
       // Load image for cropping
       final originalImage =
@@ -128,8 +138,9 @@ class _MainPageState extends State<MainPage>
         (_) async {
           // Upload the cropped image to Firebase
           await uploadImageToFirebase(
-              context, croppedXFile, // Pass the XFile to the upload function
-              (imageUrl) {
+              // Pass the XFile to the upload function
+              context,
+              croppedXFile, (imageUrl) {
             _navigateToPhotoCapturePage(imageUrl!);
           });
         },
@@ -138,6 +149,10 @@ class _MainPageState extends State<MainPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error capturing photo: $e')),
       );
+    } finally {
+      setState(() {
+        isCapturing = false; // Stop capturing
+      });
     }
   }
 
@@ -163,14 +178,15 @@ class _MainPageState extends State<MainPage>
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: ${e.toString()}')),
+        SnackBar(content: Text('Pick or Capture an image.')),
       );
     }
   }
 
   void _navigateToMainPage() async {
     if (_cameraController != null) {
-      await _cameraController?.dispose(); // Dispose of the camera controller
+      // Dispose of the camera controller
+      await _cameraController?.dispose();
     }
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
@@ -185,7 +201,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final double lensSize = size.width * 0.8; // Adjusted size for square lens
+    final double lensSize = size.width * 0.8;
     final double animatedImageSize = size.width * 0.2;
 
     return Scaffold(
@@ -207,7 +223,7 @@ class _MainPageState extends State<MainPage>
                       child: CameraPreview(_cameraController!),
                     );
                   } else {
-                    return Center(
+                    return const Center(
                       child: Text('Camera not initialized'),
                     );
                   }
@@ -240,7 +256,6 @@ class _MainPageState extends State<MainPage>
                     ),
                     child: Stack(
                       children: [
-                        // Draw the custom lens border
                         CustomPaint(
                           painter: LensBorderPainter(
                             focusRect: Rect.fromLTWH(0, 0, lensSize, lensSize),
@@ -257,35 +272,65 @@ class _MainPageState extends State<MainPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Spacer to push GalleryButtonWidget to the left
-                    Spacer(flex: 1),
-                    // GalleryButtonWidget on the left
+                    const Spacer(flex: 1),
                     GalleryButtonWidget(
                       onGalleryPressed: _pickImageFromGallery,
                     ),
-                    // Spacer between GalleryButton and AnimatedImage
-                    Spacer(flex: 1),
-                    // AnimatedImageWidget in the middle
+                    const Spacer(flex: 1),
                     AnimatedImageWidget(
                       controller: _controller,
                       imagePath: 'assets/page_images/main_image.png',
                       height: animatedImageSize,
                       width: animatedImageSize,
                     ),
-                    // Spacer between AnimatedImage and PhotoCaptureButton
-                    Spacer(flex: 1),
-                    // PhotoCaptureButtonWidget on the right
+                    const Spacer(flex: 1),
                     PhotoCaptureButtonWidget(
-                      onCapturePressed: _capturePhoto,
+                      // Disable button during capture
+                      onCapturePressed: isCapturing
+                          ? null
+                          : () async {
+                              setState(() {
+                                isCapturing = true;
+                              });
+                              await _capturePhoto();
+
+                              // Extend the message showing time
+                              await Future.delayed(const Duration(seconds: 3));
+
+                              setState(() {
+                                isCapturing = false;
+                              });
+                            },
                     ),
-                    // Spacer to push PhotoCaptureButtonWidget to the right
-                    Spacer(flex: 1),
+                    const Spacer(flex: 1),
                   ],
                 ),
                 const SizedBox(height: 30),
               ],
             ),
           ),
+          // Show loading indicator and capturing message when capturing
+          if (isCapturing)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Spacer(flex: 1), // Add space above
+                      CircularProgressIndicator(),
+                      SizedBox(height: 20),
+                      Text(
+                        "Capturing Image...",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      Spacer(flex: 2), // Add space below
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

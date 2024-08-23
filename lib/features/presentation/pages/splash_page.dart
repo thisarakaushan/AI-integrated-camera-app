@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -42,8 +43,8 @@ class _SplashPageState extends State<SplashPage>
       // Check for necessary permissions
       await _checkPermissions();
 
-      // Delay for 3 seconds to show the splash image
-      // await Future.delayed(const Duration(seconds: 2));
+      // Delay for 2 seconds to show the splash image
+      await Future.delayed(const Duration(seconds: 2));
 
       // Initialization is complete, navigate to the main page
       _navigateToMainPage();
@@ -75,13 +76,32 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<Failure?> _requestStoragePermission() async {
-    final status = await Permission.storage.request();
-    if (status.isDenied) {
-      return StoragePermissionFailure('Storage permission denied.');
-    } else if (status.isPermanentlyDenied) {
-      await openAppSettings();
-      return StoragePermissionFailure(
-          'Storage permission permanently denied. Please enable it from settings.');
+    // Check Android version
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    final isAndroid11OrAbove = androidInfo.version.sdkInt >= 30;
+
+    // Request MANAGE_EXTERNAL_STORAGE for Android 11 and above
+    if (isAndroid11OrAbove) {
+      final status = await Permission.manageExternalStorage.request();
+      if (status.isDenied) {
+        return StoragePermissionFailure(
+            'Manage External Storage permission denied.');
+      } else if (status.isPermanentlyDenied) {
+        await openAppSettings();
+        return StoragePermissionFailure(
+            'Manage External Storage permission permanently denied. Please enable it from settings.');
+      }
+    } else {
+      // Request regular storage permission for Android below 11
+      final status = await Permission.storage.request();
+      if (status.isDenied) {
+        return StoragePermissionFailure('Storage permission denied.');
+      } else if (status.isPermanentlyDenied) {
+        await openAppSettings();
+        return StoragePermissionFailure(
+            'Storage permission permanently denied. Please enable it from settings.');
+      }
     }
     return null;
   }
@@ -197,10 +217,6 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 }
-
-
-
-
 
 
 // import 'dart:async';

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PhotoCaptureButtonWidget extends StatelessWidget {
-  final VoidCallback onCapturePressed;
+  //final VoidCallback onCapturePressed;
+  final void Function()? onCapturePressed;
 
   const PhotoCaptureButtonWidget({super.key, required this.onCapturePressed});
 

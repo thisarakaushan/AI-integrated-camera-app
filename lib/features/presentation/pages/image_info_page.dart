@@ -67,12 +67,19 @@ class _ImageInfoPageState extends State<ImageInfoPage>
           children: [
             const SizedBox(height: 5),
             TopRowWidget(onCameraPressed: _navigateToMainPage),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             // Centered Main Image
             Center(
-              child: SizedBox(
-                width: 150,
+              child: Container(
+                width: 155,
                 height: 130,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white, // White border color
+                    width: 1, // Border thickness
+                  ),
+                  borderRadius: BorderRadius.circular(7), // Same as the image
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: Image.network(
@@ -96,13 +103,22 @@ class _ImageInfoPageState extends State<ImageInfoPage>
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 5),
+            // Separator line
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                color: Colors.grey, // Adjust color as needed
+                thickness: 1, // Adjust thickness as needed
+              ),
+            ),
+            const SizedBox(height: 10),
             // Product grid view
             PlatformGridView(
               products: widget.products, // Updated to use Product model
               onProductTap: _onPlatformTap, // Updated to use Product model
             ),
-            const SizedBox(height: 20),
+            //const SizedBox(height: 10),
           ],
         ),
       ),
