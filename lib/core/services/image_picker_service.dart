@@ -16,10 +16,12 @@ Future<void> pickImageFromGallery(BuildContext context,
       File image = File(pickedFile.path);
 
       // Convert HEIC image to JPEG
-      if (pickedFile.path.endsWith('.heic') || pickedFile.path.endsWith('.heif')) {
+      if (pickedFile.path.endsWith('.heic') ||
+          pickedFile.path.endsWith('.heif')) {
         final originalImage = img.decodeImage(image.readAsBytesSync());
         if (originalImage != null) {
-          final convertedImagePath = pickedFile.path.replaceAll('.heic', '.jpg');
+          final convertedImagePath =
+              pickedFile.path.replaceAll('.heic', '.jpg');
           image = File(convertedImagePath)
             ..writeAsBytesSync(img.encodeJpg(originalImage));
         } else {

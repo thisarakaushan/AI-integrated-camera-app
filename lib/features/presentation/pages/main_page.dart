@@ -24,6 +24,9 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+// Handle both cases(capturing and uploading)
+enum ProgressState { none, capturing, uploading }
+
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -31,8 +34,8 @@ class _MainPageState extends State<MainPage>
   File? image;
   CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
-  // State to check if image is being captured
-  bool isCapturing = false;
+  // Combined states to check if image is being captured or uploaded
+  ProgressState _progressState = ProgressState.none;
 
   @override
   void initState() {
@@ -84,8 +87,9 @@ class _MainPageState extends State<MainPage>
   }
 
   Future<void> _capturePhoto() async {
+    // Show capturing progress
     setState(() {
-      isCapturing = true; // Start capturing
+      _progressState = ProgressState.capturing;
     });
 
     try {
@@ -150,13 +154,13 @@ class _MainPageState extends State<MainPage>
         SnackBar(content: Text('Error capturing photo: $e')),
       );
     } finally {
+      // Hide progress on error
       setState(() {
-        isCapturing = false; // Stop capturing
+        _progressState = ProgressState.none;
       });
     }
   }
 
-  // Pick image from gallery method
   Future<void> _pickImageFromGallery() async {
     try {
       await pickImageFromGallery(
@@ -165,11 +169,20 @@ class _MainPageState extends State<MainPage>
           if (pickedImage != null) {
             setState(() {
               image = pickedImage;
+              // Show uploading progress
+              setState(() {
+                _progressState = ProgressState.uploading;
+              });
             });
           }
         },
-        (imageUrl) {
+        (imageUrl) async {
           if (imageUrl != null) {
+            await Future.delayed(const Duration(seconds: 2));
+            // Hide progress
+            setState(() {
+              _progressState = ProgressState.none;
+            });
             _navigateToPhotoCapturePage(imageUrl);
           } else {
             throw const ImageNavigationFailure('No valid image URL provided.');
@@ -180,6 +193,10 @@ class _MainPageState extends State<MainPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Pick or Capture an image.')),
       );
+      // Hide progress on error
+      setState(() {
+        _progressState = ProgressState.none;
+      });
     }
   }
 
@@ -286,19 +303,17 @@ class _MainPageState extends State<MainPage>
                     const Spacer(flex: 1),
                     PhotoCaptureButtonWidget(
                       // Disable button during capture
-                      onCapturePressed: isCapturing
+                      onCapturePressed: _progressState ==
+                              ProgressState.capturing
                           ? null
                           : () async {
                               setState(() {
-                                isCapturing = true;
+                                _progressState = ProgressState.capturing;
                               });
                               await _capturePhoto();
-
-                              // Extend the message showing time
                               await Future.delayed(const Duration(seconds: 3));
-
                               setState(() {
-                                isCapturing = false;
+                                _progressState = ProgressState.none;
                               });
                             },
                     ),
@@ -310,22 +325,26 @@ class _MainPageState extends State<MainPage>
             ),
           ),
           // Show loading indicator and capturing message when capturing
-          if (isCapturing)
+          if (_progressState == ProgressState.capturing ||
+              _progressState == ProgressState.uploading)
             Positioned.fill(
               child: Container(
                 color: Colors.black.withOpacity(0.5),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Spacer(flex: 1), // Add space above
+                    children: [
+                      const Spacer(flex: 1),
                       CircularProgressIndicator(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Text(
-                        "Capturing Image...",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        _progressState == ProgressState.capturing
+                            ? "Capturing Image..."
+                            : "Uploading Image...",
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
                       ),
-                      Spacer(flex: 2), // Add space below
+                      const Spacer(flex: 2),
                     ],
                   ),
                 ),

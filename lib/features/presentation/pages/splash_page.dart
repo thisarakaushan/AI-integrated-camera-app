@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
 // Import permission services
@@ -84,55 +83,21 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 
-  // void _handleFailure(Object failure) {
-  //   if (failure is Failure) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //         title: const Text('Error'),
-  //         content: Text(failure.message),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //               _initializeApp();
-  //             },
-  //             child: const Text('Retry'),
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   } else {
-  //     print('Unexpected error: $failure');
-  //   }
-  // }
-
   void _handleFailure(Object failure) {
     if (failure is Failure) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Permission Required'),
+          title: const Text('Error'),
           content: Text(failure.message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                if (failure.message.contains('permanently denied')) {
-                  openAppSettings(); // Open settings directly
-                } else {
-                  _initializeApp(); // Retry initialization
-                }
+                _initializeApp();
               },
               child: const Text('Retry'),
             ),
-            if (failure.message.contains('permanently denied'))
-              TextButton(
-                onPressed: () {
-                  openAppSettings(); // Open settings directly
-                },
-                child: const Text('Open Settings'),
-              ),
           ],
         ),
       );
@@ -140,6 +105,40 @@ class _SplashPageState extends State<SplashPage>
       print('Unexpected error: $failure');
     }
   }
+
+  // void _handleFailure(Object failure) {
+  //   if (failure is Failure) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         title: const Text('Permission Required'),
+  //         content: Text(failure.message),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               if (failure.message.contains('permanently denied')) {
+  //                 openAppSettings(); // Open settings directly
+  //               } else {
+  //                 _initializeApp(); // Retry initialization
+  //               }
+  //             },
+  //             child: const Text('Retry'),
+  //           ),
+  //           if (failure.message.contains('permanently denied'))
+  //             TextButton(
+  //               onPressed: () {
+  //                 openAppSettings(); // Open settings directly
+  //               },
+  //               child: const Text('Open Settings'),
+  //             ),
+  //         ],
+  //       ),
+  //     );
+  //   } else {
+  //     print('Unexpected error: $failure');
+  //   }
+  // }
 
   @override
   void dispose() {
