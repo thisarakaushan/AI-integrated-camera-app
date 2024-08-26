@@ -19,21 +19,22 @@ Future<Failure?> requestStoragePermission() async {
     }
   } else if (sdkInt >= 30) {
     // Android 11 (API level 30) to Android 12L (API level 32)
-    final status = await Permission.manageExternalStorage.request();
-    if (status.isDenied) {
+    final manageStoragePermission =
+        await Permission.manageExternalStorage.request();
+    if (manageStoragePermission.isDenied) {
       return StoragePermissionFailure(
           'Manage External Storage permission denied.');
-    } else if (status.isPermanentlyDenied) {
+    } else if (manageStoragePermission.isPermanentlyDenied) {
       await openAppSettings();
       return StoragePermissionFailure(
           'Manage External Storage permission permanently denied. Please enable it from settings.');
     }
   } else {
     // Below Android 11
-    final status = await Permission.storage.request();
-    if (status.isDenied) {
+    final storagePermission = await Permission.storage.request();
+    if (storagePermission.isDenied) {
       return StoragePermissionFailure('Storage permission denied.');
-    } else if (status.isPermanentlyDenied) {
+    } else if (storagePermission.isPermanentlyDenied) {
       await openAppSettings();
       return StoragePermissionFailure(
           'Storage permission permanently denied. Please enable it from settings.');
