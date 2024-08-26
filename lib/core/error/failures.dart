@@ -46,3 +46,8 @@ class ImagePickerFailure extends Failure {
 class ImageNavigationFailure extends Failure {
   const ImageNavigationFailure(super.message);
 }
+
+// Custom Failure for Conversion
+class ConversionFailure extends Failure {
+  const ConversionFailure(super.message);
+}

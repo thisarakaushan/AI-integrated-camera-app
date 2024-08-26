@@ -1,6 +1,8 @@
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img; // Add image package for conversions
+
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/core/services/firebase_services/upload_image_to_firebase_service.dart';
 
@@ -11,24 +13,35 @@ Future<void> pickImageFromGallery(BuildContext context,
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      final image = File(pickedFile.path);
+      File image = File(pickedFile.path);
+
+      // Convert HEIC image to JPEG
+      if (pickedFile.path.endsWith('.heic') || pickedFile.path.endsWith('.heif')) {
+        final originalImage = img.decodeImage(image.readAsBytesSync());
+        if (originalImage != null) {
+          final convertedImagePath = pickedFile.path.replaceAll('.heic', '.jpg');
+          image = File(convertedImagePath)
+            ..writeAsBytesSync(img.encodeJpg(originalImage));
+        } else {
+          throw ConversionFailure('Failed to convert image from HEIC.');
+        }
+      }
+
       onImagePicked(image);
 
       // Upload image to Firebase Storage
       await uploadImageToFirebase(
         context,
-        pickedFile,
+        XFile(image.path), // Use the possibly converted image
         (imageUrl) {
           if (imageUrl != null) {
             onImageUploaded(imageUrl);
           } else {
-            // Use specific Failure for URL issues
             throw ServerFailure('Failed to get image URL');
           }
         },
       );
     } else {
-      // Use GalleryAccessFailure for no image selected
       throw GalleryAccessFailure('No image selected.');
     }
   } catch (e) {

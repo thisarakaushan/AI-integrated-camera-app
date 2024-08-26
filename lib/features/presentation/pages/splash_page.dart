@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
+// Import permission services
+import '../../../core/services/permission_services/camera_permission_handler.dart';
+import '../../../core/services/permission_services/storage_permission_handler.dart';
 
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -64,59 +65,15 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<void> _checkPermissions() async {
-    final storagePermissionStatus = await _requestStoragePermission();
+    final storagePermissionStatus = await requestStoragePermission();
     if (storagePermissionStatus is Failure) {
       throw storagePermissionStatus;
     }
 
-    final cameraPermissionStatus = await _requestCameraPermission();
+    final cameraPermissionStatus = await requestCameraPermission();
     if (cameraPermissionStatus is Failure) {
       throw cameraPermissionStatus;
     }
-  }
-
-  Future<Failure?> _requestStoragePermission() async {
-    // Check Android version
-    final deviceInfo = DeviceInfoPlugin();
-    final androidInfo = await deviceInfo.androidInfo;
-    final isAndroid11OrAbove = androidInfo.version.sdkInt >= 30;
-
-    // Request MANAGE_EXTERNAL_STORAGE for Android 11 and above
-    if (isAndroid11OrAbove) {
-      final status = await Permission.manageExternalStorage.request();
-      if (status.isDenied) {
-        return StoragePermissionFailure(
-            'Manage External Storage permission denied.');
-      } else if (status.isPermanentlyDenied) {
-        await openAppSettings();
-        return StoragePermissionFailure(
-            'Manage External Storage permission permanently denied. Please enable it from settings.');
-      }
-    } else {
-      // Request regular storage permission for Android below 11
-      final status = await Permission.storage.request();
-      if (status.isDenied) {
-        return StoragePermissionFailure('Storage permission denied.');
-      } else if (status.isPermanentlyDenied) {
-        await openAppSettings();
-        return StoragePermissionFailure(
-            'Storage permission permanently denied. Please enable it from settings.');
-      }
-    }
-    return null;
-  }
-
-  Future<Failure?> _requestCameraPermission() async {
-    final status = await Permission.camera.request();
-    if (status.isDenied) {
-      return CameraInitializationFailure(message: 'Camera permission denied.');
-    } else if (status.isPermanentlyDenied) {
-      await openAppSettings();
-      return CameraInitializationFailure(
-          message:
-              'Camera permission permanently denied. Please enable it from settings.');
-    }
-    return null;
   }
 
   void _navigateToMainPage() {
@@ -217,6 +174,7 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 }
+
 
 
 // import 'dart:async';
