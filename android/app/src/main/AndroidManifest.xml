@@ -25,6 +25,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> 
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+
+    <uses-permission android:name="android.permission.DEFAULT_SCOPED_STORAGE" />
+    <uses-permission android:name="android.permission.FORCE_ENABLE_SCOPED_STORAGE" />
     
     <!-- Optional: If you need access to media location metadata -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
