@@ -4,7 +4,7 @@ description: "A new Flutter project."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.0
+version: 0.1.9
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -15,15 +15,13 @@ dependencies:
 
   get_it: ^7.2.0
   injectable: ^2.1.0
-
-  firebase_core: ^3.2.0 # Firebase core
-  # cloud_firestore: ^5.1.0 # Firebase store for database related
-  firebase_storage: ^12.1.1 # For storage services
+  firebase_core: ^3.2.0 
+  firebase_storage: ^12.1.1 
   firebase_auth: ^5.1.3
-  image_picker: ^1.1.2 # Image picker   
-  gallery_saver: ^2.3.2 # Gallery saver
+  firebase_analytics: ^11.2.1
+  image_picker: ^1.1.2   
+  gallery_saver: ^2.3.2 
   image_gallery_saver: ^2.0.3
-  # image_cropper: ^4.0.1 # Image cropper
   path_provider: ^2.0.5
   path: ^1.9.0
   camera: ^0.11.0+1
@@ -31,18 +29,16 @@ dependencies:
   external_path: ^1.0.3
   media_scanner: ^2.1.0
   image: ^4.2.0
-
-  #state management
   flutter_bloc: ^8.1.4
   bloc: ^8.1.4
-
   dartz: ^0.10.1
-
   http: 0.13.6
-
   equatable: ^2.0.5
-
   permission_handler: ^11.3.1
+  intl: ^0.19.0
+  shared_preferences: ^2.0.15
+  url_launcher: ^6.0.20 
+  device_info_plus: ^10.1.2
 
 dev_dependencies:
   flutter_test:
@@ -53,9 +49,17 @@ dev_dependencies:
   # testing purpose
   mockito: ^5.0.15
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.13.1
+
+# replace app icon 
+flutter_icons:
+  android: true
+  image_path: "assets/app_icon_images/icon.png" # Path to icon image
+
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/splash_image.png
-    - assets/main_image.png
+    - assets/page_images/splash_image.png
+    - assets/page_images/main_image.png
+    - assets/page_images/info_page_image.png

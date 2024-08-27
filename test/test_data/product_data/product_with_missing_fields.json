@@ -1,0 +1,14 @@
+{
+    "products": [
+      {
+        "title": "Sample Product",
+        "source": "Example Source",
+        "link": "https://example.com/product",
+        "price": "$10.00",
+        "delivery": "Free delivery",
+        "imageUrl": "https://example.com/image.jpg",
+        "position": 1
+      }
+    ]
+  }
+  

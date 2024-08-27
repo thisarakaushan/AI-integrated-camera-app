@@ -41,3 +41,13 @@ class CameraInitializationFailure extends Failure {
 class ImagePickerFailure extends Failure {
   const ImagePickerFailure({required String message}) : super(message);
 }
+
+// Custom Failures for Navigation
+class ImageNavigationFailure extends Failure {
+  const ImageNavigationFailure(super.message);
+}
+
+// Custom Failure for Conversion
+class ConversionFailure extends Failure {
+  const ConversionFailure(super.message);
+}

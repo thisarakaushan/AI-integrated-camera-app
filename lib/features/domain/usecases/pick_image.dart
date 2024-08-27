@@ -9,10 +9,6 @@ class PickImageUseCase {
 
   PickImageUseCase(this.cameraImageRepository);
 
-  // Future<CameraImageEntity> execute() {
-  //   return repository.pickImage();
-  // }
-
   Future<Either<Failure, CameraImageEntity>> call() {
     return cameraImageRepository.pickImage();
   }

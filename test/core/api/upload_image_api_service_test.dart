@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:valuefinder/core/api/upload_image_api_service.dart';
+import 'package:valuefinder/core/services/firebase_services/upload_image_api_service.dart';
 
 class MockClient extends Mock implements http.Client {}
 

@@ -1,19 +1,22 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/image_processing_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
+import 'package:valuefinder/features/data/models/product.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/processing_recognition_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
 
 class ImageRecognitionPage extends StatefulWidget {
-  final String imagePath;
+  final String imageUrl;
   final String identifiedObject;
+  final List<Product> products;
 
   const ImageRecognitionPage({
     super.key,
-    required this.imagePath,
+    required this.imageUrl,
     required this.identifiedObject,
+    required this.products,
   });
 
   @override
@@ -33,76 +36,126 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
       vsync: this,
     )..repeat();
 
-    // Set up the timer to navigate after 2 seconds
-    _timer = Timer(const Duration(seconds: 2), _navigateToImageInfoPage);
+    // Set up the timer to navigate after 4 seconds
+    _timer = Timer(const Duration(seconds: 4), _navigateToImageInfoPage);
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _timer.cancel(); // Cancel the timer when disposing
+    _timer.cancel();
     super.dispose();
   }
 
   void _navigateToImageInfoPage() {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.imageInfoPage,
-      arguments: {
-        'imageInfoPath':
-            widget.imagePath, // Use 'imageInfoPath' as per the route
-        'description': widget
-            .identifiedObject, // Pass the identified object as description
-      },
-    );
+    if (widget.identifiedObject.isNotEmpty) {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.imageInfoPage,
+        arguments: {
+          'imageUrl': widget.imageUrl,
+          'description': widget.identifiedObject,
+          'products':
+              widget.products.map((product) => product.toJson()).toList(),
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Identified object is not available.')),
+      );
+    }
+  }
+
+  void _navigateToMainPage() {
+    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
-            const Spacer(),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final lensSize =
+            constraints.maxWidth * 0.8; // Adjusted size for responsiveness
+        final borderRadius = lensSize * 0.1;
+        final textSize = constraints.maxWidth * 0.05; // 5% of screen width
+
+        return Scaffold(
+          backgroundColor: const Color(0xFF051338),
+          body: SafeArea(
+            child: Column(
+              //mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 5),
+                TopRowWidget(onCameraPressed: _navigateToMainPage),
+                const SizedBox(height: 5),
+                Container(
+                  width: lensSize,
+                  height: lensSize,
+                  decoration: BoxDecoration(
+                    // border: Border.all(color: Colors.white, width: 2),
+                    // borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(color: Colors.transparent),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: LensBorderPainter(
+                            focusRect: Rect.fromLTWH(
+                              0,
+                              0,
+                              lensSize,
+                              lensSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ClipRRect(
+                        //borderRadius: BorderRadius.circular(borderRadius),
+                        child: Image.network(
+                          widget.imageUrl,
+                          fit: BoxFit.cover,
+                          width: lensSize,
+                          height: lensSize,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Text(
+                                'Image not available',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: textSize),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Text(
+                  widget.identifiedObject.isNotEmpty
+                      ? widget.identifiedObject
+                      : 'Object not identified',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: textSize,
+                  ),
+                ),
+                const SizedBox(height: 150),
+                const ProcessingAndRecognitionPageTextWidget(),
+                const SizedBox(height: 30),
+                AnimatedImageWidget(
+                  controller: _controller,
+                  imagePath: 'assets/page_images/main_image.png',
+                  height: constraints.maxWidth * 0.2,
+                  width: constraints.maxWidth * 0.2,
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              widget.identifiedObject,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-              ),
-            ),
-            const SizedBox(height: 10),
-            AnimatedImageWidget(
-              controller: _controller,
-              imagePath: 'assets/main_image.png',
-              height: 131,
-              width: 131,
-            ),
-            const SizedBox(height: 20),
-            const ImageProcessingPageTextWidget(), // use the image processing page text widget
-            const Spacer(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

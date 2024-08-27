@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import 'package:valuefinder/features/presentation/widgets/start_button_widget.dart';
+import 'package:valuefinder/core/error/failures.dart';
+// Import permission services
+import '../../../core/services/permission_services/camera_permission_handler.dart';
+import '../../../core/services/permission_services/storage_permission_handler.dart';
 
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -22,7 +26,119 @@ class _SplashPageState extends State<SplashPage>
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
+
+    // Start app initialization
+    _initializeApp();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Load resources that depend on the context (like MediaQuery)
+    _loadResources();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Check for necessary permissions
+      await _checkPermissions();
+
+      // Delay for 2 seconds to show the splash image
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Initialization is complete, navigate to the main page
+      _navigateToMainPage();
+    } catch (error) {
+      // Handle any errors that occur during initialization
+      _handleFailure(error);
+    }
+  }
+
+  Future<void> _loadResources() async {
+    await precacheImage(
+        const AssetImage('assets/page_images/splash_image.png'), context);
+    await precacheImage(
+        const AssetImage('assets/page_images/main_image.png'), context);
+    await precacheImage(
+        const AssetImage('assets/page_images/info_page_image.png'), context);
+  }
+
+  Future<void> _checkPermissions() async {
+    final storagePermissionStatus = await requestStoragePermission();
+    if (storagePermissionStatus is Failure) {
+      throw storagePermissionStatus;
+    }
+
+    final cameraPermissionStatus = await requestCameraPermission();
+    if (cameraPermissionStatus is Failure) {
+      throw cameraPermissionStatus;
+    }
+  }
+
+  void _navigateToMainPage() {
+    Navigator.of(context).pushReplacementNamed(
+      AppRoutes.mainPage,
+      arguments: widget.cameras,
+    );
+  }
+
+  void _handleFailure(Object failure) {
+    if (failure is Failure) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text(failure.message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _initializeApp();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      print('Unexpected error: $failure');
+    }
+  }
+
+  // void _handleFailure(Object failure) {
+  //   if (failure is Failure) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         title: const Text('Permission Required'),
+  //         content: Text(failure.message),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               if (failure.message.contains('permanently denied')) {
+  //                 openAppSettings(); // Open settings directly
+  //               } else {
+  //                 _initializeApp(); // Retry initialization
+  //               }
+  //             },
+  //             child: const Text('Retry'),
+  //           ),
+  //           if (failure.message.contains('permanently denied'))
+  //             TextButton(
+  //               onPressed: () {
+  //                 openAppSettings(); // Open settings directly
+  //               },
+  //               child: const Text('Open Settings'),
+  //             ),
+  //         ],
+  //       ),
+  //     );
+  //   } else {
+  //     print('Unexpected error: $failure');
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -30,15 +146,11 @@ class _SplashPageState extends State<SplashPage>
     super.dispose();
   }
 
-  void _navigateToMainPage() {
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.mainPage, // Use AppRoutes.mainPage
-      arguments: widget.cameras,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final double imageSize = size.width * 0.9;
+
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
       body: Center(
@@ -48,9 +160,9 @@ class _SplashPageState extends State<SplashPage>
             AnimatedBuilder(
               animation: _controller,
               child: Image.asset(
-                'assets/splash_image.png',
-                width: 357,
-                height: 357,
+                'assets/page_images/splash_image.png',
+                width: imageSize,
+                height: imageSize,
                 fit: BoxFit.contain,
               ),
               builder: (context, child) {
@@ -60,15 +172,16 @@ class _SplashPageState extends State<SplashPage>
                 );
               },
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: size.height * 0.02),
             const Text(
               'Your own',
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.w600),
+                color: Colors.white,
+                fontSize: 36,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: size.height * 0.01),
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [
@@ -79,16 +192,16 @@ class _SplashPageState extends State<SplashPage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),
-              child: const Text(
+              child: Text(
                 'AI assistance',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 36,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            StartButtonWidget(onPressed: _navigateToMainPage),
+            SizedBox(height: size.height * 0.04),
           ],
         ),
       ),

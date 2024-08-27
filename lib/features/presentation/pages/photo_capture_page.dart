@@ -1,19 +1,16 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-//import 'package:valuefinder/core/api/upload_image_api_service.dart';
-import 'package:valuefinder/features/presentation/widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/photo_capture_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/top_row_widget.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:valuefinder/core/error/failures.dart';
+import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 
 class PhotoCapturePage extends StatefulWidget {
-  const PhotoCapturePage({super.key});
+  final String? imageUrl; // accept the imageUrl parameter from main page
+  final Rect? focusRect; // Added to specify the focused object area
+
+  const PhotoCapturePage({super.key, this.imageUrl, this.focusRect});
 
   @override
   _PhotoCapturePageState createState() => _PhotoCapturePageState();
@@ -21,191 +18,151 @@ class PhotoCapturePage extends StatefulWidget {
 
 class _PhotoCapturePageState extends State<PhotoCapturePage>
     with SingleTickerProviderStateMixin {
-  CameraController? _cameraController;
-  Future<void>? _initializeControllerFuture;
   late AnimationController _controller;
-  late Timer _timer;
+  bool imageLoaded = false; // Flag to track if the image is displayed
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+
     _controller = AnimationController(
       duration: const Duration(seconds: 30),
       vsync: this,
     )..repeat();
-    _timer = Timer(
-        const Duration(seconds: 2), _capturePhoto); // Adjust timing as needed
+
+    if (widget.imageUrl != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          imageLoaded = true;
+        });
+        // Automatically navigate to the processing page after the image is loaded
+        _attemptNavigationToProcessingPage();
+      });
+    }
   }
 
-  Future<void> _initializeCamera() async {
-    try {
-      final cameras = await availableCameras();
-      _cameraController = CameraController(
-        cameras.first,
-        ResolutionPreset.high,
+  void _attemptNavigationToProcessingPage() {
+    if (imageLoaded) {
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) {
+          _navigateToProcessingPage(widget.imageUrl!);
+        }
+      });
+    }
+  }
+
+  Future<void> _navigateToProcessingPage(String imageUrl) async {
+    if (imageUrl.isNotEmpty) {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.imageProcessingPage,
+        arguments: {'imageUrl': imageUrl},
       );
-      _initializeControllerFuture = _cameraController!.initialize();
-      setState(() {}); // Trigger a rebuild to reflect the changes
-    } catch (e) {
-      // Handle any errors that occur during camera initialization
-      print('Error initializing camera: $e');
-      _initializeControllerFuture = Future.error(e);
+    } else {
+      throw const ImageNavigationFailure('No valid image URL provided.');
     }
   }
 
-  Future<void> _capturePhoto() async {
-    try {
-      await _initializeControllerFuture;
-      if (_cameraController == null ||
-          !_cameraController!.value.isInitialized) {
-        throw Exception('Camera not initialized');
-      }
-      final image = await _cameraController!.takePicture();
-
-      // save the captured photo to the gallery
-      final capturePhoto = CapturePhoto();
-      await capturePhoto.saveAndUploadPhoto(image.path);
-      print('Image saved and Uploaded');
-
-      if (mounted) {
-        print(
-            'Navigating to ${AppRoutes.imageProcessingPage} with arguments: ${image.path}');
-        Navigator.pushReplacementNamed(
-          context,
-          AppRoutes.imageProcessingPage,
-          arguments: {'imagePath': image.path},
-        );
-      }
-    } catch (e) {
-      // Handle any errors that occur during capture
-      print('Error capturing photo: $e');
-    }
+  void _navigateToMainPage() {
+    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
   @override
   void dispose() {
-    _cameraController?.dispose();
     _controller.dispose();
-    _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            TopRowWidget(onMenuPressed: () {}, onEditPressed: () {}), // top row
-            const Spacer(),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: FutureBuilder<void>(
-                  future: _initializeControllerFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (_cameraController != null &&
-                          _cameraController!.value.isInitialized) {
-                        return CameraPreview(_cameraController!);
-                      } else {
-                        return const Center(
-                            child: Text('Error initializing camera'));
-                      }
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final lensSize = constraints.maxWidth * 0.8;
+        final borderRadius = lensSize * 0.1;
+
+        return Scaffold(
+          backgroundColor: const Color(0xFF051338),
+          body: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 5),
+                TopRowWidget(
+                  onCameraPressed: _navigateToMainPage,
                 ),
-              ),
+                const SizedBox(height: 10),
+                Container(
+                  width: lensSize,
+                  height: lensSize,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.transparent),
+                    borderRadius: BorderRadius.circular(borderRadius),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: LensBorderPainter(
+                            focusRect: widget.focusRect ??
+                                Rect.fromLTWH(0, 0, lensSize, lensSize),
+                          ),
+                        ),
+                      ),
+                      widget.imageUrl != null
+                          ? ClipRect(
+                              child: Image.network(
+                                widget.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: lensSize,
+                                height: lensSize,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                (loadingProgress
+                                                        .expectedTotalBytes ??
+                                                    1)
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Text('Failed to load image',
+                                        style: TextStyle(color: Colors.red)),
+                                  );
+                                },
+                              ),
+                            )
+                          : const Center(
+                              child: Text('No image available'),
+                            ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 200),
+                PhotoCapturePageTextWidget(),
+                const SizedBox(height: 20),
+                AnimatedImageWidget(
+                  controller: _controller,
+                  imagePath: 'assets/page_images/main_image.png',
+                  height: constraints.maxWidth * 0.2,
+                  width: constraints.maxWidth * 0.2,
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 20),
-            AnimatedImageWidget(
-              controller: _controller,
-              imagePath: 'assets/main_image.png',
-              height: 131,
-              width: 131,
-            ),
-            const SizedBox(height: 20),
-            const PhotoCapturePageTextWidget(), // use the photo capture page text widget
-            const Spacer(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CapturePhoto {
-  // Method to save the captured photo to the gallery and upload it to the server
-  Future<void> saveAndUploadPhoto(String imagePath) async {
-    print('Call save photo method');
-
-    // check for permissions
-    if (await Permission.storage.request().isGranted) {
-      try {
-        // Read the file from the given path
-        final File imageFile = File(imagePath);
-        if (!await imageFile.exists()) {
-          print('File does not exist at $imagePath');
-          return;
-        }
-        final Uint8List bytes = await imageFile.readAsBytes();
-
-        // Save the image to the gallery
-        final result = await ImageGallerySaver.saveImage(
-          bytes,
-          quality: 100,
-          name: 'captured_image_${DateTime.now().millisecondsSinceEpoch}',
+          ),
         );
-
-        if (result == null || result['isSuccess'] != true) {
-          print('Failed to save image to gallery: $result');
-          return;
-        }
-
-        print('Image saved to gallery: $result');
-
-        // Obtain the token
-        // final FirebaseAuth _auth = FirebaseAuth.instance;
-        // User? user = _auth.currentUser;
-        // String? token = await user?.getIdToken();
-
-        // if (token == null) {
-        //   print('Error obtaining token');
-        //   return;
-        // }
-
-        // upload image to server
-        // final uploadImageApiService = UploadImageApiService(
-        //   baseUrl: 'https://uploadimage-s4r2ozb5wq-uc.a.run.app',
-        //   token: token,
-        // );
-        // final uploadResponse =
-        //     await uploadImageApiService.uploadImage(imageFile);
-        // if (uploadResponse.statusCode != 200) {
-        //   print(
-        //       'Failed to upload image: ${uploadResponse.statusCode} ${uploadResponse.body}');
-        //   return;
-        // }
-
-        // print(
-        //     'uploadResponse : ${uploadResponse.statusCode} ${uploadResponse.body}');
-      } catch (e) {
-        print('Error saving image to gallery: $e');
-      }
-    } else {
-      print('Storage permission not granted');
-    }
+      },
+    );
   }
 }

@@ -16,13 +16,12 @@ class CameraImageRepositoryImpl implements CameraImageRepository {
     try {
       final result = await dataSource.capturePhoto();
       return result.fold(
-        (failure) => Left(failure), // Map failure from data source
+        (failure) => Left(failure), // failure from data source
         (cameraImageModel) =>
-            Right(cameraImageModel), // Map success from data source
+            Right(cameraImageModel), // success from data source
       );
     } catch (e) {
-      return Left(PhotoCaptureFailure(
-          message: e.toString())); // Handle unexpected errors
+      return Left(PhotoCaptureFailure(message: e.toString()));
     }
   }
 
@@ -31,31 +30,12 @@ class CameraImageRepositoryImpl implements CameraImageRepository {
     try {
       final result = await dataSource.pickImage();
       return result.fold(
-        (failure) => Left(failure), // Map failure from data source
+        (failure) => Left(failure), // failure from data source
         (cameraImageModel) =>
-            Right(cameraImageModel), // Map success from data source
+            Right(cameraImageModel), // success from data source
       );
     } catch (e) {
-      return Left(ImagePickerFailure(
-          message: e.toString())); // Handle unexpected errors
+      return Left(ImagePickerFailure(message: e.toString()));
     }
   }
-
-  // @override
-  // Future<Either<Failure, CameraImage>> capturePhoto() async {
-  //   final result = await cameraDataSource.capturePhoto();
-  //   return result.fold(
-  //     (failure) => Left(failure),
-  //     (cameraImageModel) => Right(cameraImageModel.toEntity()),
-  //   );
-  // }
-
-  // @override
-  // Future<Either<Failure, CameraImage>> pickImage() async {
-  //   final result = await cameraDataSource.pickImage();
-  //   return result.fold(
-  //     (failure) => Left(failure),
-  //     (cameraImageModel) => Right(cameraImageModel.toEntity()),
-  //   );
-  // }
 }

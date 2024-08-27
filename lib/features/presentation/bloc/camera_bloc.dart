@@ -31,23 +31,3 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     });
   }
 }
-
-
-// @injectable
-// class CameraBloc extends Bloc<CameraEvent, CameraState> {
-//   final CapturePhoto capturePhoto;
-
-//   CameraBloc(this.capturePhoto) : super(CameraInitial());
-
-//   @override
-//   Stream<CameraState> mapEventToState(CameraEvent event) async* {
-//     if (event is CapturePhotoEvent) {
-//       yield CameraLoading();
-//       final failureOrPhoto = await capturePhoto();
-//       yield failureOrPhoto.fold(
-//         (failure) => CameraError(message: failure.message),
-//         (photo) => CameraLoaded(photo: photo),
-//       );
-//     }
-//   }
-// }
