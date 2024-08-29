@@ -6,10 +6,11 @@ import 'package:valuefinder/features/presentation/widgets/common_widgets/process
 import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import 'dart:async'; // Import for Completer
 
 class ImageProcessingPage extends StatefulWidget {
   final String imageUrl;
-  final Rect? focusRect; // Added to specify the focused object area
+  final Rect? focusRect;
 
   const ImageProcessingPage(
       {super.key, required this.imageUrl, this.focusRect});
@@ -21,6 +22,8 @@ class ImageProcessingPage extends StatefulWidget {
 class _ImageProcessingPageState extends State<ImageProcessingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  double? imageAspectRatio;
+  bool imageLoaded = false;
 
   @override
   void initState() {
@@ -30,10 +33,26 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
       vsync: this,
     )..repeat();
 
-    // Process the image but handle interruptions from RecentSearchesPage
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _processImage();
+    _loadImageAspectRatio(widget.imageUrl).then((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _processImage();
+      });
     });
+  }
+
+  Future<void> _loadImageAspectRatio(String imageUrl) async {
+    final image = NetworkImage(imageUrl);
+    final completer = Completer<void>();
+    image.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener((info, _) {
+        setState(() {
+          imageAspectRatio = info.image.width / info.image.height;
+          imageLoaded = true;
+        });
+        completer.complete();
+      }),
+    );
+    await completer.future;
   }
 
   void _processImage() {
@@ -69,7 +88,6 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
             SnackBar(content: Text(message)),
           );
 
-          // Start a timer to navigate back to the main page after 2 seconds
           Future.delayed(const Duration(seconds: 4), () {
             if (mounted) {
               _navigateToMainPage();
@@ -90,52 +108,59 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     super.dispose();
   }
 
+  double lensAspectRatioAdjustment(
+      double lensWidth, double lensHeight, double lensContainerHeight) {
+    final aspectRatio = lensWidth / lensHeight;
+    if (lensHeight > lensContainerHeight) {
+      return lensContainerHeight;
+    } else if (lensHeight < lensContainerHeight &&
+        lensWidth / lensHeight > aspectRatio) {
+      return lensWidth / aspectRatio;
+    }
+    return lensHeight;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final lensSize = constraints.maxWidth * 0.8;
-        final borderRadius = lensSize * 0.1;
+        final lensWidth = constraints.maxWidth * 0.8;
+        final lensHeight = lensWidth / (imageAspectRatio ?? 1);
+        final adjustedLensHeight = lensAspectRatioAdjustment(
+            lensWidth, lensHeight, constraints.maxHeight * 0.6);
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 5),
+                SizedBox(height: 10),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Container(
-                  width: lensSize,
-                  height: lensSize,
-                  decoration: BoxDecoration(
-                    //border: Border.all(color: Colors.white, width: 2),
-                    //borderRadius: BorderRadius.circular(borderRadius),
-                    border: Border.all(color: Colors.transparent),
-                  ),
+                  width: lensWidth,
+                  height: adjustedLensHeight,
                   child: Stack(
+                    alignment: Alignment.topCenter,
                     children: [
                       Positioned.fill(
                         child: CustomPaint(
                           painter: LensBorderPainter(
-                            focusRect: Rect.fromLTWH(
-                              0,
-                              0,
-                              lensSize,
-                              lensSize,
-                            ),
+                            focusRect: widget.focusRect ??
+                                Rect.fromLTWH(
+                                    0, 0, lensWidth, adjustedLensHeight),
                           ),
                         ),
                       ),
                       ClipRRect(
-                        //borderRadius: BorderRadius.circular(borderRadius),
+                        borderRadius: BorderRadius.circular(0),
                         child: Image.network(
                           widget.imageUrl,
                           fit: BoxFit.cover,
-                          width: lensSize,
-                          height: lensSize,
+                          width: lensWidth,
+                          height: adjustedLensHeight,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) {
                               return child;
@@ -163,16 +188,16 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                     ],
                   ),
                 ),
-                const SizedBox(height: 200),
-                const ProcessingAndRecognitionPageTextWidget(),
-                const SizedBox(height: 20),
+                Spacer(),
+                ProcessingAndRecognitionPageTextWidget(),
+                SizedBox(height: 20),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/page_images/main_image.png',
-                  height: constraints.maxWidth * 0.2,
-                  width: constraints.maxWidth * 0.2,
+                  height: 60.0, // Fixed height
+                  width: 60.0, // Fixed width
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
               ],
             ),
           ),

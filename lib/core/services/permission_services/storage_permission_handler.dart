@@ -9,14 +9,14 @@ Future<Failure?> requestStoragePermission() async {
 
   if (sdkInt >= 33) {
     // Android 13 (API level 33) or higher
-    final storagePermissionForAndroid13 = await Permission.photos.request();
-    if (storagePermissionForAndroid13.isDenied) {
+    final photoPermission = await Permission.photos.request();
+    if (photoPermission.isDenied) {
       return StoragePermissionFailure(
-          'Storage permission denied for Android version 13.');
-    } else if (storagePermissionForAndroid13.isPermanentlyDenied) {
+          'Photo access permission denied for Android version 13.');
+    } else if (photoPermission.isPermanentlyDenied) {
       await openAppSettings();
       return StoragePermissionFailure(
-          'Storage permission permanently denied for Android version 13. Please enable it from settings.');
+          'Photo access permission permanently denied for Android version 13. Please enable it from settings.');
     }
   } else if (sdkInt >= 30) {
     // Android 11 (API level 30) to Android 12L (API level 32)
@@ -44,3 +44,4 @@ Future<Failure?> requestStoragePermission() async {
   }
   return null;
 }
+

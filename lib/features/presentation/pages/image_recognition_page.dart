@@ -27,6 +27,8 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Timer _timer;
+  double? imageAspectRatio;
+  bool imageLoaded = false;
 
   @override
   void initState() {
@@ -36,15 +38,26 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
       vsync: this,
     )..repeat();
 
-    // Set up the timer to navigate after 4 seconds
-    _timer = Timer(const Duration(seconds: 4), _navigateToImageInfoPage);
+    // Load image aspect ratio
+    _loadImageAspectRatio(widget.imageUrl).then((_) {
+      // Set up the timer to navigate after 4 seconds
+      _timer = Timer(const Duration(seconds: 4), _navigateToImageInfoPage);
+    });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    _timer.cancel();
-    super.dispose();
+  Future<void> _loadImageAspectRatio(String imageUrl) async {
+    final image = NetworkImage(imageUrl);
+    final completer = Completer<void>();
+    image.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener((info, _) {
+        setState(() {
+          imageAspectRatio = info.image.width / info.image.height;
+          imageLoaded = true;
+        });
+        completer.complete();
+      }),
+    );
+    await completer.future;
   }
 
   void _navigateToImageInfoPage() {
@@ -71,29 +84,46 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  double lensAspectRatioAdjustment(
+      double lensWidth, double lensHeight, double lensContainerHeight) {
+    final aspectRatio = lensWidth / lensHeight;
+    if (lensHeight > lensContainerHeight) {
+      return lensContainerHeight;
+    } else if (lensHeight < lensContainerHeight &&
+        lensWidth / lensHeight > aspectRatio) {
+      return lensWidth / aspectRatio;
+    }
+    return lensHeight;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final lensSize =
-            constraints.maxWidth * 0.8; // Adjusted size for responsiveness
-        final borderRadius = lensSize * 0.1;
-        final textSize = constraints.maxWidth * 0.05; // 5% of screen width
+        final lensWidth = constraints.maxWidth * 0.8;
+        final lensHeight = lensWidth / (imageAspectRatio ?? 1);
+        final adjustedLensHeight = lensAspectRatioAdjustment(
+            lensWidth, lensHeight, constraints.maxHeight * 0.6);
+        final textSize = constraints.maxWidth * 0.05;
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 5),
+                SizedBox(height: 10),
                 TopRowWidget(onCameraPressed: _navigateToMainPage),
-                const SizedBox(height: 5),
+                SizedBox(height: 10),
                 Container(
-                  width: lensSize,
-                  height: lensSize,
+                  width: lensWidth,
+                  height: adjustedLensHeight,
                   decoration: BoxDecoration(
-                    // border: Border.all(color: Colors.white, width: 2),
-                    // borderRadius: BorderRadius.circular(borderRadius),
                     border: Border.all(color: Colors.transparent),
                   ),
                   child: Stack(
@@ -104,19 +134,19 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                             focusRect: Rect.fromLTWH(
                               0,
                               0,
-                              lensSize,
-                              lensSize,
+                              lensWidth,
+                              adjustedLensHeight,
                             ),
                           ),
                         ),
                       ),
                       ClipRRect(
-                        //borderRadius: BorderRadius.circular(borderRadius),
+                        borderRadius: BorderRadius.circular(0),
                         child: Image.network(
                           widget.imageUrl,
                           fit: BoxFit.cover,
-                          width: lensSize,
-                          height: lensSize,
+                          width: lensWidth,
+                          height: adjustedLensHeight,
                           errorBuilder: (context, error, stackTrace) {
                             return Center(
                               child: Text(
@@ -131,7 +161,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
                   widget.identifiedObject.isNotEmpty
                       ? widget.identifiedObject
@@ -141,16 +171,16 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                     fontSize: textSize,
                   ),
                 ),
-                const SizedBox(height: 150),
+                Spacer(),
                 const ProcessingAndRecognitionPageTextWidget(),
-                const SizedBox(height: 30),
+                SizedBox(height: 20),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/page_images/main_image.png',
                   height: constraints.maxWidth * 0.2,
                   width: constraints.maxWidth * 0.2,
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
               ],
             ),
           ),

@@ -29,8 +29,13 @@ class GalleryAccessFailure extends Failure {
   const GalleryAccessFailure(super.message);
 }
 
+// Custom Camera and Storage permission failures
 class StoragePermissionFailure extends Failure {
   const StoragePermissionFailure(super.message);
+}
+
+class CameraPermissionFailure extends Failure {
+  const CameraPermissionFailure(super.message);
 }
 
 // Specific Failures for Camera App

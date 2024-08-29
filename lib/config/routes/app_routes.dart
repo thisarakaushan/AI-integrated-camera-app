@@ -74,6 +74,7 @@ class AppRoutes {
         return _errorRoute(
             'Missing or invalid arguments for ImageRecognitionPage');
       case imageInfoPage:
+        print('In image info Page...');
         if (args != null &&
             args.containsKey('imageUrl') &&
             args.containsKey('description') &&

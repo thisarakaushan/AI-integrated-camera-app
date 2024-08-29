@@ -3,40 +3,22 @@
     
     <!-- Permissions for camera and storage-->
 
-    <!--Camera permission-->>
-    <!-- <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" /> -->
-
-    <!--Storage permission-->>
-
-    <!-- Required for Android 10 and below -->
+    <!-- Required for Android 10 and below (SDK 29 and below) -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_STORAGE"/>
-
-     <!-- Required for Android 11 to 12L -->
+     <!-- Required for Android 11 (SDK 30) to Android 12L (SDK 32) -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     
-    <!-- For Android 13 and above -->
-    <!-- <uses-permission android:name="android.permission.READ_MEDIA_*"/> -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> 
+    <!-- For Android 13 and above (SDK 33+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-    
-    <!-- Optional: If you need access to media location metadata -->
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
 
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-         <meta-data 
-            android:name="android.app.requestLegacyExternalStorage" 
-            android:value="true" 
-            />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -106,40 +106,6 @@ class _SplashPageState extends State<SplashPage>
     }
   }
 
-  // void _handleFailure(Object failure) {
-  //   if (failure is Failure) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //         title: const Text('Permission Required'),
-  //         content: Text(failure.message),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //               if (failure.message.contains('permanently denied')) {
-  //                 openAppSettings(); // Open settings directly
-  //               } else {
-  //                 _initializeApp(); // Retry initialization
-  //               }
-  //             },
-  //             child: const Text('Retry'),
-  //           ),
-  //           if (failure.message.contains('permanently denied'))
-  //             TextButton(
-  //               onPressed: () {
-  //                 openAppSettings(); // Open settings directly
-  //               },
-  //               child: const Text('Open Settings'),
-  //             ),
-  //         ],
-  //       ),
-  //     );
-  //   } else {
-  //     print('Unexpected error: $failure');
-  //   }
-  // }
-
   @override
   void dispose() {
     _controller.dispose();
