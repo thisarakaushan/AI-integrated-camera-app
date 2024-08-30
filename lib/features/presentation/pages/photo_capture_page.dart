@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
-import 'package:valuefinder/features/presentation/widgets/common_widgets/top_row_widget.dart';
+import '../widgets/main_page_widgets/animated_image_widget.dart';
+import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
+import '../widgets/common_widgets/top_row_widget.dart';
 
 class PhotoCapturePage extends StatefulWidget {
   final String? imageUrl;

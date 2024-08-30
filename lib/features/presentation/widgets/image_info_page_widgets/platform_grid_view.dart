@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:valuefinder/core/utils/widget_constants.dart';
 import 'package:valuefinder/features/data/models/product.dart';
 
@@ -14,32 +15,36 @@ class PlatformGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the width and height of the screen
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    // Determine the screen height using ScreenUtil
+
+    // 1.sh is equivalent to MediaQuery.of(context).size.height
+    final screenHeight = 1.sh;
+
+    // Calculate the available height for the GridView
+    final adjustedHeight =
+        screenHeight - (kToolbarHeight + ScreenUtil().statusBarHeight);
 
     // Calculate the item height based on screen height
-    final itemHeight = WidgetsConstant.height * 45;
+    final itemHeight = WidgetsConstant.height * 40;
 
     // Define the horizontal padding for each product box
-    final horizontalPadding = screenWidth * 0.015;
-    final verticalPadding = screenWidth * 0.015;
+    final horizontalPadding = WidgetsConstant.width * 1.5;
+    final verticalPadding = WidgetsConstant.width * 1.5;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+      padding: EdgeInsets.symmetric(horizontal: WidgetsConstant.width * 5),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 37, 61, 121),
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(10),
+                top: Radius.circular(20),
                 bottom: Radius.circular(1),
               ),
             ),
             child: SizedBox(
-              height: screenHeight -
-                  (kToolbarHeight + MediaQuery.of(context).padding.top),
+              height: adjustedHeight,
               child: GridView.builder(
                 physics: const BouncingScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -62,7 +67,7 @@ class PlatformGridView extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius:
-                              BorderRadius.circular(screenWidth * 0.025),
+                              BorderRadius.circular(WidgetsConstant.width * 5),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.5),
@@ -75,27 +80,38 @@ class PlatformGridView extends StatelessWidget {
                         child: Row(
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(screenWidth * 0.02),
+                              padding:
+                                  EdgeInsets.all(WidgetsConstant.width * 2),
                               child: Stack(
                                 children: [
                                   Container(
-                                    width: screenWidth * 0.25,
-                                    height: screenWidth * 0.25,
-                                    decoration: const BoxDecoration(
+                                    width: WidgetsConstant.width * 32,
+                                    height: WidgetsConstant.height * 33,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
                                       borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10),
+                                        topLeft: Radius.circular(15),
+                                        bottomLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
+                                      ),
+                                      // Border for image container
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: WidgetsConstant.width * 0.05,
                                       ),
                                     ),
                                     child: ClipRRect(
                                       borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        bottomLeft: Radius.circular(10),
+                                        topLeft: Radius.circular(15),
+                                        bottomLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
                                       ),
                                       child: Image.network(
                                         product.imageUrl,
-                                        fit: BoxFit.cover,
-                                        // Circular Progress Indicator
+                                        // Ensures the full image is visible without being cropped
+                                        fit: BoxFit.contain,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {
                                           if (loadingProgress == null) {
@@ -119,17 +135,26 @@ class PlatformGridView extends StatelessWidget {
                                     ),
                                   ),
                                   Positioned(
-                                    bottom: screenHeight * 0.093,
-                                    left: screenWidth * 0.17,
+                                    bottom: WidgetsConstant.height * 25,
+                                    left: WidgetsConstant.width * 25,
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: screenWidth * 0.01,
-                                          vertical: screenHeight * 0.002),
-                                      color: Colors.blue,
+                                        horizontal: WidgetsConstant.width * 2,
+                                        vertical: WidgetsConstant.height * 0.5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        // borderRadius: BorderRadius.only(
+                                        //   topRight: Radius.circular(
+                                        //       WidgetsConstant.width * 5),
+                                        // ),
+                                      ),
                                       child: Text(
                                         'New', // Placeholder for the status text
                                         style: TextStyle(
-                                          fontSize: screenWidth * 0.03,
+                                          fontSize:
+                                              WidgetsConstant.textFieldHeight *
+                                                  0.05,
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -139,16 +164,17 @@ class PlatformGridView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: WidgetsConstant.width * 0.1),
                             Container(
-                              width: 1,
-                              height: WidgetsConstant.height * 40,
+                              width: 0.8,
+                              height: WidgetsConstant.height * 37,
                               color: Colors.grey,
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: WidgetsConstant.width * 0.5),
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsets.all(screenWidth * 0.02),
+                                padding:
+                                    EdgeInsets.all(WidgetsConstant.width * 2),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -156,47 +182,61 @@ class PlatformGridView extends StatelessWidget {
                                     Text(
                                       product.source,
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.04,
+                                        fontSize:
+                                            WidgetsConstant.textFieldHeight *
+                                                0.11,
                                         color: Colors.blue,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                     ),
-                                    SizedBox(height: screenHeight * 0.005),
+                                    SizedBox(
+                                        height: WidgetsConstant.height * 2),
                                     Text(
                                       product.title,
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.035,
+                                        fontSize:
+                                            WidgetsConstant.textFieldHeight *
+                                                0.09,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                     ),
-                                    SizedBox(height: screenHeight * 0.005),
+                                    SizedBox(
+                                        height: WidgetsConstant.height * 0.5),
                                     Text(
                                       product.rating != null
                                           ? 'Rating: ${product.rating} (${product.ratingCount} reviews)'
                                           : 'No ratings available',
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.035,
-                                        color: Colors.grey,
+                                        fontSize:
+                                            WidgetsConstant.textFieldHeight *
+                                                0.09,
+                                        color: Colors.grey[600],
                                       ),
                                     ),
-                                    SizedBox(height: screenHeight * 0.005),
+                                    SizedBox(
+                                        height: WidgetsConstant.height * 0.5),
                                     Text(
                                       product.price,
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.035,
+                                        fontSize:
+                                            WidgetsConstant.textFieldHeight *
+                                                0.09,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(height: screenHeight * 0.005),
+                                    SizedBox(
+                                        height: WidgetsConstant.height * 0.5),
                                     Text(
                                       product.delivery,
                                       style: TextStyle(
-                                        fontSize: screenWidth * 0.035,
-                                        color: Colors.grey,
+                                        fontSize:
+                                            WidgetsConstant.textFieldHeight *
+                                                0.09,
+                                        color: Colors.grey[600],
                                       ),
                                     ),
                                   ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:valuefinder/core/utils/widget_constants.dart';
 import '../widgets/image_info_page_widgets/platform_grid_view.dart';
 import '../widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
@@ -61,10 +62,10 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    // final screenWidth = WidgetsConstant.width;
+    // final screenHeight = WidgetsConstant.height;
 
-    final containerWidth = screenWidth * 0.4;
+    final containerWidth = WidgetsConstant.width * 40;
     final containerHeight = containerWidth / (imageAspectRatio ?? 1.0);
 
     return Scaffold(
@@ -73,9 +74,9 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: WidgetsConstant.height * 1),
             TopRowWidget(onCameraPressed: _navigateToMainPage),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: WidgetsConstant.height * 1),
             Center(
               child: Container(
                 width: containerWidth,
@@ -85,10 +86,10 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
                     color: Colors.white,
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(7),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(15),
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Image.network(
@@ -99,29 +100,31 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
                 ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: WidgetsConstant.height * 3),
             Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                padding:
+                    EdgeInsets.symmetric(horizontal: WidgetsConstant.width * 5),
                 child: Text(
                   widget.description,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.045,
+                    fontSize: WidgetsConstant.textFieldHeight * 0.12,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.01),
+            SizedBox(height: WidgetsConstant.height * 2),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              padding:
+                  EdgeInsets.symmetric(horizontal: WidgetsConstant.width * 5),
               child: Divider(
-                color: Colors.grey,
-                thickness: 1,
+                color: Colors.grey[700],
+                thickness: 1.5,
               ),
             ),
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: WidgetsConstant.height * 3),
             Expanded(
               child: PlatformGridView(
                 products: widget.products,
