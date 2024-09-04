@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:valuefinder/core/utils/widget_constants.dart';
 
 class GalleryButtonWidget extends StatelessWidget {
   final VoidCallback onGalleryPressed;
@@ -7,8 +8,7 @@ class GalleryButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double buttonSize = MediaQuery.of(context).size.width *
-        0.17; // Same size as PhotoCaptureButtonWidget
+    final double buttonSize = WidgetsConstant.width * 18;
 
     return Container(
       width: buttonSize,
@@ -44,7 +44,7 @@ class GalleryButtonWidget extends StatelessWidget {
             child: Icon(
               Icons.photo,
               color: Colors.white,
-              size: buttonSize * 0.5, // Icon size relative to button size
+              size: buttonSize * 0.4, // Icon size relative to button size
             ),
           ),
         ),

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:valuefinder/core/utils/widget_constants.dart';
 
 class PhotoCapturePageTextWidget extends StatelessWidget {
   const PhotoCapturePageTextWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double textSize = size.width * 0.04; // 5% of screen width
-    final double spacing = size.height * 0.01; // 1% of screen height
+    final double textSize = WidgetsConstant.textFieldHeight * 0.1;
 
     return Column(
       children: [
-        SizedBox(height: spacing), // Dynamic space based on screen height
+        SizedBox(height: WidgetsConstant.height * 1),
         ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
             colors: const [

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
-import '../widgets/main_page_widgets/animated_image_widget.dart';
-import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../../../core/utils/widget_constants.dart';
+import '../widgets/common_widgets/animated_image_widget.dart';
+import '../widgets/common_widgets/lens_widget.dart';
 import '../widgets/photo_capture_page_widgets/photo_capture_page_text_widget.dart';
 import '../widgets/common_widgets/top_row_widget.dart';
 
@@ -23,6 +24,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
   late AnimationController _controller;
   bool imageLoaded = false;
   double? imageAspectRatio;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
@@ -40,17 +42,27 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     }
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    // Cancel the timer if it's still running
+    _navigationTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _loadImageAspectRatio(String imageUrl) async {
     final image = NetworkImage(imageUrl);
     final completer = Completer<void>();
     image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener((info, _) {
-        setState(() {
-          imageAspectRatio = info.image.width / info.image.height;
-          imageLoaded = true;
-        });
-        completer.complete();
-        _attemptNavigationToProcessingPage();
+        if (mounted) {
+          setState(() {
+            imageAspectRatio = info.image.width / info.image.height;
+            imageLoaded = true;
+          });
+          completer.complete();
+          _attemptNavigationToProcessingPage();
+        }
       }),
     );
     await completer.future;
@@ -82,10 +94,20 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
     Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  double lensAspectRatioAdjustment(
+    double lensWidth,
+    double lensHeight,
+    double lensContainerHeight,
+  ) {
+    // Ensure the lens height does not exceed the available space
+    final aspectRatio = lensWidth / lensHeight;
+    if (lensHeight > lensContainerHeight) {
+      return lensContainerHeight;
+    } else if (lensHeight < lensContainerHeight &&
+        lensWidth / lensHeight > aspectRatio) {
+      return lensWidth / aspectRatio;
+    }
+    return lensHeight;
   }
 
   @override
@@ -108,23 +130,23 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
           lensHeight,
           lensContainerHeight,
         );
+        final double animatedImageSize = WidgetsConstant.width * 20;
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
               children: [
-                SizedBox(height: fixedLensTopSpacing),
+                SizedBox(height: WidgetsConstant.height * 3),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 4),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     width: lensWidth,
                     height: adjustedLensHeight,
                     child: Stack(
-                      alignment: Alignment.topCenter,
                       children: [
                         Positioned.fill(
                           child: CustomPaint(
@@ -135,20 +157,23 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                             ),
                           ),
                         ),
-                        widget.imageUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(0),
-                                child: Image.network(
-                                  widget.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  width: lensWidth,
-                                  height: adjustedLensHeight,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    } else {
-                                      return Center(
+                        ClipRRect(
+                          //borderRadius: BorderRadius.circular(borderRadius),
+                          child: Image.network(
+                            widget.imageUrl ?? '',
+                            fit: BoxFit.cover,
+                            width: lensWidth,
+                            height: adjustedLensHeight,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Stack(
+                                  children: [
+                                    child, // Display the image partially loaded
+                                    Positioned.fill(
+                                      child: Align(
+                                        alignment: Alignment.center,
                                         child: CircularProgressIndicator(
                                           value: loadingProgress
                                                       .expectedTotalBytes !=
@@ -160,55 +185,39 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                                                       1)
                                               : null,
                                         ),
-                                      );
-                                    }
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Center(
-                                      child: Text('Failed to load image',
-                                          style: TextStyle(color: Colors.red)),
-                                    );
-                                  },
-                                ),
-                              )
-                            : const Center(
-                                child: Text('No image available'),
-                              ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Text('Failed to load image',
+                                    style: TextStyle(color: Colors.red)),
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
                 PhotoCapturePageTextWidget(),
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 10),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/page_images/main_image.png',
-                  height: 60.0, // Fixed height
-                  width: 60.0, // Fixed width
+                  height: animatedImageSize,
+                  width: animatedImageSize,
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: WidgetsConstant.height * 10),
               ],
             ),
           ),
         );
       },
     );
-  }
-
-  double lensAspectRatioAdjustment(
-    double lensWidth,
-    double lensHeight,
-    double lensContainerHeight,
-  ) {
-    // Ensure the lens height does not exceed the available space
-    final aspectRatio = lensWidth / lensHeight;
-    if (lensHeight > lensContainerHeight) {
-      return lensContainerHeight;
-    } else if (lensHeight < lensContainerHeight &&
-        lensWidth / lensHeight > aspectRatio) {
-      return lensWidth / aspectRatio;
-    }
-    return lensHeight;
   }
 }

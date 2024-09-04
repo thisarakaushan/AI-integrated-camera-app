@@ -7,29 +7,26 @@ Future<Failure?> requestStoragePermission() async {
   final androidInfo = await deviceInfo.androidInfo;
   final sdkInt = androidInfo.version.sdkInt;
 
-  // if (sdkInt >= 33) {
-  //   // Android 13 (API level 33) or higher
-  //   final photoPermission = await Permission.photos.request();
-  //   if (photoPermission.isDenied) {
-  //     return StoragePermissionFailure(
-  //         'Photo access permission denied for Android version 13.');
-  //   } else if (photoPermission.isPermanentlyDenied) {
-  //     await openAppSettings();
-  //     return StoragePermissionFailure(
-  //         'Photo access permission permanently denied for Android version 13. Please enable it from settings.');
-  //   }
-  // } else
-  if (sdkInt >= 30) {
-    // Android 11 (API level 30) to Android 12L (API level 32)
-    final manageStoragePermission =
-        await Permission.manageExternalStorage.request();
-    if (manageStoragePermission.isDenied) {
-      return StoragePermissionFailure(
-          'Manage External Storage permission denied.');
-    } else if (manageStoragePermission.isPermanentlyDenied) {
+  if (sdkInt >= 33) {
+    // Android 13 and above (API level 33+)
+    final imagePermission = await Permission.photos.request();
+    if (imagePermission.isDenied) {
+      return StoragePermissionFailure('Read media images permission denied.');
+    } else if (imagePermission.isPermanentlyDenied) {
       await openAppSettings();
       return StoragePermissionFailure(
-          'Manage External Storage permission permanently denied. Please enable it from settings.');
+          'Read media images permission permanently denied. Please enable it from settings.');
+    }
+  } else if (sdkInt >= 30) {
+    // Android 11 (API level 30) to Android 12L (API level 32)
+    final storagePermission = await Permission.storage.request();
+    if (storagePermission.isDenied) {
+      return StoragePermissionFailure(
+          'Storage permission denied for Android 11 and 12L.');
+    } else if (storagePermission.isPermanentlyDenied) {
+      await openAppSettings();
+      return StoragePermissionFailure(
+          'Storage permission permanently denied for Android 11 and 12L. Please enable it from settings.');
     }
   } else {
     // Below Android 11

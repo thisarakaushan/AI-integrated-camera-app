@@ -7,6 +7,8 @@ import 'package:valuefinder/core/error/failures.dart';
 import '../../../core/services/permission_services/camera_permission_handler.dart';
 import '../../../core/services/permission_services/storage_permission_handler.dart';
 
+import '../../../core/utils/widget_constants.dart';
+
 class SplashPage extends StatefulWidget {
   final List<CameraDescription> cameras;
   const SplashPage({super.key, required this.cameras});
@@ -114,8 +116,7 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double imageSize = size.width * 0.9;
+    final double imageSize = WidgetsConstant.width * 90;
 
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
@@ -138,16 +139,16 @@ class _SplashPageState extends State<SplashPage>
                 );
               },
             ),
-            SizedBox(height: size.height * 0.02),
+            SizedBox(height: WidgetsConstant.height * 2),
             const Text(
               'Your own',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 36,
+                fontSize: WidgetsConstant.textFieldHeight * 0.30,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: size.height * 0.01),
+            SizedBox(height: WidgetsConstant.height * 0.5),
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [
@@ -162,12 +163,12 @@ class _SplashPageState extends State<SplashPage>
                 'AI assistance',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 36,
+                  fontSize: WidgetsConstant.textFieldHeight * 0.30,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            SizedBox(height: size.height * 0.04),
+            SizedBox(height: WidgetsConstant.height * 4),
           ],
         ),
       ),

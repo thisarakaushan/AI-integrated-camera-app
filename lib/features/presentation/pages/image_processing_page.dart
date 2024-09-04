@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/core/services/image_process_service.dart';
-import '../widgets/main_page_widgets/animated_image_widget.dart';
+import '../../../core/utils/widget_constants.dart';
+import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/common_widgets/processing_recognition_page_text_widget.dart';
 import '../widgets/common_widgets/top_row_widget.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
-import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../widgets/common_widgets/lens_widget.dart';
 // Import for Completer
 import 'dart:async';
 
@@ -130,17 +131,19 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         final adjustedLensHeight = lensAspectRatioAdjustment(
             lensWidth, lensHeight, constraints.maxHeight * 0.6);
 
+        final double animatedImageSize = WidgetsConstant.width * 20;
+
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
               children: [
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 3),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
-                SizedBox(height: 10),
-                Container(
+                SizedBox(height: WidgetsConstant.height * 4),
+                SizedBox(
                   width: lensWidth,
                   height: adjustedLensHeight,
                   child: Stack(
@@ -191,14 +194,14 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                 ),
                 Spacer(),
                 ProcessingAndRecognitionPageTextWidget(),
-                SizedBox(height: 20),
+                SizedBox(height: WidgetsConstant.height * 10),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/page_images/main_image.png',
-                  height: 60.0, // Fixed height
-                  width: 60.0, // Fixed width
+                  height: animatedImageSize,
+                  width: animatedImageSize,
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: WidgetsConstant.height * 10),
               ],
             ),
           ),

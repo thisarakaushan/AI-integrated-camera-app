@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/widget_constants.dart';
+
 class ProcessingAndRecognitionPageTextWidget extends StatelessWidget {
   const ProcessingAndRecognitionPageTextWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double textSize = size.width * 0.04; // 5% of screen width
-    final double spacing = size.height * 0.01; // 1% of screen height
+    final double textSize = WidgetsConstant.textFieldHeight * 0.1;
 
     return Column(
       children: [
-        SizedBox(height: spacing), // Use dynamic spacing
+        SizedBox(height: WidgetsConstant.height * 1),
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
             colors: [
@@ -27,7 +27,7 @@ class ProcessingAndRecognitionPageTextWidget extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontSize: textSize),
           ),
         ),
-        SizedBox(height: spacing), // Use dynamic spacing
+        SizedBox(height: WidgetsConstant.height * 1),
         Text(
           'We\'re finding the best information for you',
           style: TextStyle(color: Color(0xff46edfe), fontSize: textSize),

@@ -8,13 +8,14 @@ import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
 import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
 import '../../../core/services/firebase_services/upload_image_to_firebase_service.dart';
+import '../../../core/utils/widget_constants.dart';
 import '../widgets/main_page_widgets/photo_capture_button_widget.dart';
-import '../widgets/main_page_widgets/animated_image_widget.dart';
+import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/main_page_widgets/gallery_button_widget.dart';
 import '../widgets/main_page_widgets/main_page_text_widget.dart';
 
 import '../widgets/common_widgets/top_row_widget.dart';
-import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../widgets/common_widgets/lens_widget.dart';
 
 class MainPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -217,9 +218,8 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double lensSize = size.width * 0.8;
-    final double animatedImageSize = size.width * 0.2;
+    final double lensSize = WidgetsConstant.width * 85;
+    final double animatedImageSize = WidgetsConstant.width * 20;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -258,11 +258,11 @@ class _MainPageState extends State<MainPage>
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 5),
+                SizedBox(height: WidgetsConstant.height * 3),
                 TopRowWidget(
                   onCameraPressed: _navigateToMainPage,
                 ),
-                const Spacer(),
+                SizedBox(height: WidgetsConstant.height * 4),
                 Center(
                   child: Container(
                     width: lensSize,
@@ -282,25 +282,25 @@ class _MainPageState extends State<MainPage>
                     ),
                   ),
                 ),
-                const SizedBox(height: 200),
+                SizedBox(height: WidgetsConstant.height * 60),
                 const MainPageTextWidget(),
-                const SizedBox(height: 30),
+                SizedBox(height: WidgetsConstant.height * 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Spacer(flex: 1),
+                    const Spacer(flex: 5),
                     GalleryButtonWidget(
                       onGalleryPressed: _pickImageFromGallery,
                     ),
-                    const Spacer(flex: 1),
+                    const Spacer(flex: 10),
                     AnimatedImageWidget(
                       controller: _controller,
                       imagePath: 'assets/page_images/main_image.png',
                       height: animatedImageSize,
                       width: animatedImageSize,
                     ),
-                    const Spacer(flex: 1),
+                    const Spacer(flex: 10),
                     PhotoCaptureButtonWidget(
                       // Disable button during capture
                       onCapturePressed: _progressState ==
@@ -317,10 +317,10 @@ class _MainPageState extends State<MainPage>
                               });
                             },
                     ),
-                    const Spacer(flex: 1),
+                    const Spacer(flex: 5),
                   ],
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: WidgetsConstant.height * 10),
               ],
             ),
           ),

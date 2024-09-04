@@ -2,10 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/features/data/models/product.dart';
-import '../widgets/main_page_widgets/animated_image_widget.dart';
+import '../../../core/utils/widget_constants.dart';
+import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/common_widgets/processing_recognition_page_text_widget.dart';
 import '../widgets/common_widgets/top_row_widget.dart';
-import '../widgets/photo_capture_page_widgets/capture_camera_lens_widget.dart';
+import '../widgets/common_widgets/lens_widget.dart';
 
 class ImageRecognitionPage extends StatefulWidget {
   final String imageUrl;
@@ -110,16 +111,18 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
         final lensHeight = lensWidth / (imageAspectRatio ?? 1);
         final adjustedLensHeight = lensAspectRatioAdjustment(
             lensWidth, lensHeight, constraints.maxHeight * 0.6);
-        final textSize = constraints.maxWidth * 0.05;
+
+        final double textSize = WidgetsConstant.textFieldHeight * 0.13;
+        final double animatedImageSize = WidgetsConstant.width * 20;
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
           body: SafeArea(
             child: Column(
               children: [
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 3),
                 TopRowWidget(onCameraPressed: _navigateToMainPage),
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 4),
                 Container(
                   width: lensWidth,
                   height: adjustedLensHeight,
@@ -161,7 +164,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: WidgetsConstant.height * 5),
                 Text(
                   widget.identifiedObject.isNotEmpty
                       ? widget.identifiedObject
@@ -173,14 +176,14 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
                 ),
                 Spacer(),
                 const ProcessingAndRecognitionPageTextWidget(),
-                SizedBox(height: 20),
+                SizedBox(height: WidgetsConstant.height * 10),
                 AnimatedImageWidget(
                   controller: _controller,
                   imagePath: 'assets/page_images/main_image.png',
-                  height: constraints.maxWidth * 0.2,
-                  width: constraints.maxWidth * 0.2,
+                  height: animatedImageSize,
+                  width: animatedImageSize,
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: WidgetsConstant.height * 10),
               ],
             ),
           ),
