@@ -13,6 +13,7 @@ analyzer:
     library_private_types_in_public_api: ignore
     non_constant_identifier_names: ignore
     prefer_const_constructors: ignore
+    prefer_const_declarations: ignore
     slash_for_doc_comments: ignore
     unnecessary_cast: ignore
     unnecessary_null_comparison: ignore

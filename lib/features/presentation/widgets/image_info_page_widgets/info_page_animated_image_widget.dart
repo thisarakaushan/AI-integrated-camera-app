@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:valuefinder/features/presentation/widgets/main_page_widgets/animated_image_widget.dart';
+import 'package:valuefinder/features/presentation/widgets/common_widgets/animated_image_widget.dart';
 
 class InfoPageAnimatedImageWidget extends StatelessWidget {
   final AnimationController controller;
