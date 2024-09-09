@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
+import '../../../core/providers/processing_page_state.dart';
 import '../../../core/utils/widget_constants.dart';
 import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/common_widgets/lens_widget.dart';
@@ -80,6 +82,13 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
 
   Future<void> _navigateToProcessingPage(String imageUrl) async {
     if (imageUrl.isNotEmpty) {
+      final processingState =
+          Provider.of<ProcessingPageState>(context, listen: false);
+
+      // Update both text content values
+      processingState.updateText('Processing your image...',
+          'We\'re finding the best information for you');
+
       Navigator.pushReplacementNamed(
         context,
         AppRoutes.imageProcessingPage,
@@ -203,7 +212,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: WidgetsConstant.height * 15),
                 PhotoCapturePageTextWidget(),
                 SizedBox(height: WidgetsConstant.height * 10),
                 AnimatedImageWidget(

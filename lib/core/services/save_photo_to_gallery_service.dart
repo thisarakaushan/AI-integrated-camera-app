@@ -34,7 +34,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:dartz/dartz.dart'; // Import dartz for Either and Unit
+import 'package:dartz/dartz.dart';
 import 'package:valuefinder/core/error/failures.dart';
 
 class CapturePhoto {
