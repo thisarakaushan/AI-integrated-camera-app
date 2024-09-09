@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/widget_constants.dart';
+
 class MainPageTextWidget extends StatelessWidget {
   const MainPageTextWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final double textSize = size.width * 0.04; // 5% of screen width
+    final double textSize = WidgetsConstant.textFieldHeight * 0.1;
 
     return Column(
       children: [
-        const SizedBox(height: 5),
+        SizedBox(height: WidgetsConstant.height * 1),
         // Stack to layer the text and its outline
         Stack(
           children: [
@@ -38,7 +39,7 @@ class MainPageTextWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: WidgetsConstant.height * 1),
         Stack(
           children: [
             // Black outline text

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/widget_constants.dart';
+
 class PhotoCaptureButtonWidget extends StatelessWidget {
   //final VoidCallback onCapturePressed;
   final void Function()? onCapturePressed;
@@ -8,8 +10,7 @@ class PhotoCaptureButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double buttonSize =
-        MediaQuery.of(context).size.width * 0.17; // 20% of screen width
+    final double buttonSize = WidgetsConstant.width * 18;
 
     return Container(
       width: buttonSize,
@@ -45,7 +46,7 @@ class PhotoCaptureButtonWidget extends StatelessWidget {
             child: Icon(
               Icons.camera_alt,
               color: Colors.white,
-              size: buttonSize * 0.5, // Icon size relative to button size
+              size: buttonSize * 0.4, // Icon size relative to button size
             ),
           ),
         ),

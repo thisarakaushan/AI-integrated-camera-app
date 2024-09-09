@@ -62,9 +62,6 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final screenWidth = WidgetsConstant.width;
-    // final screenHeight = WidgetsConstant.height;
-
     final containerWidth = WidgetsConstant.width * 40;
     final containerHeight = containerWidth / (imageAspectRatio ?? 1.0);
 
@@ -74,9 +71,9 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: WidgetsConstant.height * 1),
+            SizedBox(height: WidgetsConstant.height * 3),
             TopRowWidget(onCameraPressed: _navigateToMainPage),
-            SizedBox(height: WidgetsConstant.height * 1),
+            SizedBox(height: WidgetsConstant.height * 4),
             Center(
               child: Container(
                 width: containerWidth,
