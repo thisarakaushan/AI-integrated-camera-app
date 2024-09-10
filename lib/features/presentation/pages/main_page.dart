@@ -2,19 +2,15 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
-// import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
 import '../../../core/services/firebase_services/upload_image_to_firebase_service.dart';
 import '../../../core/utils/widget_constants.dart';
 import '../widgets/main_page_widgets/photo_capture_button_widget.dart';
 import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/main_page_widgets/gallery_button_widget.dart';
 import '../widgets/main_page_widgets/main_page_text_widget.dart';
-
-import '../widgets/common_widgets/top_row_widget.dart';
 import '../widgets/common_widgets/lens_widget.dart';
 
 class MainPage extends StatefulWidget {
@@ -46,9 +42,6 @@ class _MainPageState extends State<MainPage>
       vsync: this,
     )..repeat();
 
-    // Check permissions before initializing the camera
-    _checkPermissions();
-
     // Initialize camera controller
     _cameraController = CameraController(
       // Assuming the first camera is used
@@ -58,24 +51,6 @@ class _MainPageState extends State<MainPage>
     );
 
     _initializeControllerFuture = _cameraController!.initialize();
-  }
-
-  // Ensure that camera and storage permissions granted
-  Future<void> _checkPermissions() async {
-    final cameraStatus = await Permission.camera.status;
-    final storageStatus = await Permission.storage.status;
-
-    if (!cameraStatus.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Camera permission is required.')),
-      );
-    }
-
-    if (!storageStatus.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Storage permission is required.')),
-      );
-    }
   }
 
   // Method to navigate to PhotoCapturePage with the imageUrl
@@ -100,8 +75,7 @@ class _MainPageState extends State<MainPage>
       // Capture photo
       final XFile photo = await _cameraController!.takePicture();
 
-      // Process the captured photo (cropping, uploading, etc.)
-      // Load image for cropping
+      // Process the captured photo and cropping
       final originalImage =
           img.decodeImage(await File(photo.path).readAsBytes());
 
@@ -148,81 +122,6 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  // Future<void> _capturePhoto() async {
-  //   // Show capturing progress
-  //   setState(() {
-  //     _progressState = ProgressState.capturing;
-  //   });
-
-  //   try {
-  //     await _initializeControllerFuture;
-  //     if (_cameraController == null) return;
-
-  //     // Capture photo
-  //     final XFile photo = await _cameraController!.takePicture();
-
-  //     // Process the captured photo (cropping, saving, uploading)...
-
-  //     // Load image for cropping
-  //     final originalImage =
-  //         img.decodeImage(await File(photo.path).readAsBytes());
-
-  //     if (originalImage == null) return;
-
-  //     // Calculate the cropping area based on the lens size and position
-  //     final int cropWidth = (originalImage.width * 0.8).toInt();
-  //     final int cropHeight = cropWidth; // Assuming the lens is square
-  //     final int offsetX = (originalImage.width - cropWidth) ~/ 2;
-  //     final int offsetY = (originalImage.height - cropHeight) ~/ 2;
-
-  //     // offset to adjust for the shift
-  //     //const double shiftOffsetX = 10.0; // upward shift
-  //     const double shiftOffsetY = 200.0; // downward shift
-
-  //     final croppedImage = img.copyCrop(
-  //       originalImage,
-  //       x: offsetX,
-  //       y: (offsetY - shiftOffsetY).toInt(),
-  //       width: cropWidth,
-  //       height: cropHeight,
-  //     );
-
-  //     // Save the cropped image to a file
-  //     final croppedImagePath = '${photo.path}_cropped.jpg';
-  //     final croppedFile = File(croppedImagePath)
-  //       ..writeAsBytesSync(img.encodeJpg(croppedImage));
-
-  //     // Convert the File to XFile
-  //     final XFile croppedXFile = XFile(croppedFile.path);
-
-  //     // Save to gallery
-  //     final result = await CapturePhoto().savePhotoToGallery(croppedImagePath);
-  //     result.fold(
-  //       (failure) => ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(failure.message)),
-  //       ),
-  //       (_) async {
-  //         // Upload the cropped image to Firebase
-  //         await uploadImageToFirebase(
-  //             // Pass the XFile to the upload function
-  //             context,
-  //             croppedXFile, (imageUrl) {
-  //           _navigateToPhotoCapturePage(imageUrl!);
-  //         });
-  //       },
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error capturing photo: $e')),
-  //     );
-  //   } finally {
-  //     // Hide progress on error
-  //     setState(() {
-  //       _progressState = ProgressState.none;
-  //     });
-  //   }
-  // }
-
   Future<void> _pickImageFromGallery() async {
     try {
       await pickImageFromGallery(
@@ -262,14 +161,6 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  void _navigateToMainPage() async {
-    if (_cameraController != null) {
-      // Dispose of the camera controller
-      await _cameraController?.dispose();
-    }
-    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
-  }
-
   @override
   void dispose() {
     _cameraController?.dispose(); // Dispose camera controller
@@ -280,7 +171,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     final double lensSize = WidgetsConstant.width * 85;
-    final double animatedImageSize = WidgetsConstant.width * 20;
+    final double animatedImageSize = WidgetsConstant.width * 25;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -319,11 +210,7 @@ class _MainPageState extends State<MainPage>
           SafeArea(
             child: Column(
               children: [
-                SizedBox(height: WidgetsConstant.height * 3),
-                TopRowWidget(
-                  onCameraPressed: _navigateToMainPage,
-                ),
-                SizedBox(height: WidgetsConstant.height * 4),
+                SizedBox(height: WidgetsConstant.height * 22),
                 Center(
                   child: Container(
                     width: lensSize,
@@ -355,12 +242,15 @@ class _MainPageState extends State<MainPage>
                       onGalleryPressed: _pickImageFromGallery,
                     ),
                     const Spacer(flex: 10),
-                    AnimatedImageWidget(
-                      controller: _controller,
-                      imagePath: 'assets/page_images/main_image.png',
-                      height: animatedImageSize,
-                      width: animatedImageSize,
-                    ),
+                    // Only display the animated image when capturing or uploading
+                    if (_progressState == ProgressState.capturing ||
+                        _progressState == ProgressState.uploading)
+                      AnimatedImageWidget(
+                        controller: _controller,
+                        imagePath: 'assets/page_images/main_image.png',
+                        height: animatedImageSize,
+                        width: animatedImageSize,
+                      ),
                     const Spacer(flex: 10),
                     PhotoCaptureButtonWidget(
                       // Disable button during capture
@@ -381,7 +271,7 @@ class _MainPageState extends State<MainPage>
                     const Spacer(flex: 5),
                   ],
                 ),
-                SizedBox(height: WidgetsConstant.height * 10),
+                SizedBox(height: WidgetsConstant.height * 5),
               ],
             ),
           ),

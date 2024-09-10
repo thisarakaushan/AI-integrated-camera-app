@@ -139,7 +139,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
           lensHeight,
           lensContainerHeight,
         );
-        final double animatedImageSize = WidgetsConstant.width * 20;
+        final double animatedImageSize = WidgetsConstant.width * 25;
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
@@ -221,7 +221,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                   height: animatedImageSize,
                   width: animatedImageSize,
                 ),
-                SizedBox(height: WidgetsConstant.height * 10),
+                SizedBox(height: WidgetsConstant.height * 5),
               ],
             ),
           ),
