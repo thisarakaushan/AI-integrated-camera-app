@@ -2,19 +2,15 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-// import 'package:permission_handler/permission_handler.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/core/services/image_picker_service.dart';
-// import 'package:valuefinder/core/services/save_photo_to_gallery_service.dart';
 import '../../../core/services/firebase_services/upload_image_to_firebase_service.dart';
 import '../../../core/utils/widget_constants.dart';
 import '../widgets/main_page_widgets/photo_capture_button_widget.dart';
 import '../widgets/common_widgets/animated_image_widget.dart';
 import '../widgets/main_page_widgets/gallery_button_widget.dart';
 import '../widgets/main_page_widgets/main_page_text_widget.dart';
-
-import '../widgets/common_widgets/top_row_widget.dart';
 import '../widgets/common_widgets/lens_widget.dart';
 
 class MainPage extends StatefulWidget {
@@ -46,9 +42,6 @@ class _MainPageState extends State<MainPage>
       vsync: this,
     )..repeat();
 
-    // Check permissions before initializing the camera
-    // _checkPermissions();
-
     // Initialize camera controller
     _cameraController = CameraController(
       // Assuming the first camera is used
@@ -59,24 +52,6 @@ class _MainPageState extends State<MainPage>
 
     _initializeControllerFuture = _cameraController!.initialize();
   }
-
-  // Ensure that camera and storage permissions granted
-  // Future<void> _checkPermissions() async {
-  //   final cameraStatus = await Permission.camera.status;
-  //   final storageStatus = await Permission.storage.status;
-
-  //   if (!cameraStatus.isGranted) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Camera permission is required.')),
-  //     );
-  //   }
-
-  //   if (!storageStatus.isGranted) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Storage permission is required.')),
-  //     );
-  //   }
-  // }
 
   // Method to navigate to PhotoCapturePage with the imageUrl
   void _navigateToPhotoCapturePage(String imageUrl) {
@@ -100,8 +75,7 @@ class _MainPageState extends State<MainPage>
       // Capture photo
       final XFile photo = await _cameraController!.takePicture();
 
-      // Process the captured photo (cropping, uploading, etc.)
-      // Load image for cropping
+      // Process the captured photo and cropping
       final originalImage =
           img.decodeImage(await File(photo.path).readAsBytes());
 
@@ -187,14 +161,6 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  void _navigateToMainPage() async {
-    if (_cameraController != null) {
-      // Dispose of the camera controller
-      await _cameraController?.dispose();
-    }
-    Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
-  }
-
   @override
   void dispose() {
     _cameraController?.dispose(); // Dispose camera controller
@@ -205,7 +171,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     final double lensSize = WidgetsConstant.width * 85;
-    final double animatedImageSize = WidgetsConstant.width * 20;
+    final double animatedImageSize = WidgetsConstant.width * 25;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -244,11 +210,7 @@ class _MainPageState extends State<MainPage>
           SafeArea(
             child: Column(
               children: [
-                SizedBox(height: WidgetsConstant.height * 3),
-                TopRowWidget(
-                  onCameraPressed: _navigateToMainPage,
-                ),
-                SizedBox(height: WidgetsConstant.height * 4),
+                SizedBox(height: WidgetsConstant.height * 22),
                 Center(
                   child: Container(
                     width: lensSize,
@@ -306,7 +268,7 @@ class _MainPageState extends State<MainPage>
                     const Spacer(flex: 5),
                   ],
                 ),
-                SizedBox(height: WidgetsConstant.height * 10),
+                SizedBox(height: WidgetsConstant.height * 5),
               ],
             ),
           ),

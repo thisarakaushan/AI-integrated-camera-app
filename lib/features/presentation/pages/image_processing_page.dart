@@ -68,6 +68,11 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
     service.processImage(
       (keyword, products) {
         if (mounted) {
+          // Capitalize the first letter of the extracted keyword
+          String capitalizedKeyword =
+              keyword[0].toUpperCase() + keyword.substring(1);
+          keyword = capitalizedKeyword;
+
           Navigator.pushNamed(
             context,
             AppRoutes.imageRecognitionPage,
@@ -135,7 +140,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
         final adjustedLensHeight = lensAspectRatioAdjustment(
             lensWidth, lensHeight, constraints.maxHeight * 0.6);
 
-        final double animatedImageSize = WidgetsConstant.width * 20;
+        final double animatedImageSize = WidgetsConstant.width * 25;
 
         return Scaffold(
           backgroundColor: const Color(0xFF051338),
@@ -205,7 +210,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                   height: animatedImageSize,
                   width: animatedImageSize,
                 ),
-                SizedBox(height: WidgetsConstant.height * 10),
+                SizedBox(height: WidgetsConstant.height * 5),
               ],
             ),
           ),

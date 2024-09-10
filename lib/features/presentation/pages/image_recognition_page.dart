@@ -122,7 +122,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
         lensWidth, lensHeight, MediaQuery.of(context).size.height * 0.6);
 
     final double textSize = WidgetsConstant.textFieldHeight * 0.13;
-    final double animatedImageSize = WidgetsConstant.width * 20;
+    final double animatedImageSize = WidgetsConstant.width * 25;
 
     return Scaffold(
       backgroundColor: const Color(0xFF051338),
@@ -197,7 +197,7 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
               height: animatedImageSize,
               width: animatedImageSize,
             ),
-            SizedBox(height: WidgetsConstant.height * 10),
+            SizedBox(height: WidgetsConstant.height * 5),
           ],
         ),
       ),
