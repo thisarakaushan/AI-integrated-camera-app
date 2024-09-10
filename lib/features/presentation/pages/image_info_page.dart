@@ -119,25 +119,48 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
               ),
             ),
             SizedBox(height: WidgetsConstant.height * 3),
-            // New layout for gridview separation: add padding and rounded corners
+            // Persistent Separator
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.8),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(15),
+                ),
+              ),
+              child: SizedBox(
+                height: WidgetsConstant.height * 0.3,
+                width: double.infinity,
+              ),
+            ),
+            // Gridview with background image
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xff1a2b5e),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
+              child: Stack(
+                children: [
+                  // Background image
+                  Positioned.fill(
+                    child: Image.asset(
+                      'assets/page_images/info_page_background.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                padding: EdgeInsets.only(
-                  top: WidgetsConstant.height * 3,
-                  // left: WidgetsConstant.width * 2,
-                  // right: WidgetsConstant.width * 2,
-                ),
-                child: PlatformGridView(
-                  products: widget.products,
-                  onProductTap: _onPlatformTap,
-                ),
+                  // PlatformGridView on top of the background
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(
+                      top: WidgetsConstant.height * 3,
+                    ),
+                    child: PlatformGridView(
+                      products: widget.products,
+                      onProductTap: _onPlatformTap,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -146,6 +169,7 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
     );
   }
 }
+
 
 
 // class ImageInfoPage extends StatefulWidget {
