@@ -37,7 +37,8 @@ class PlatformGridView extends StatelessWidget {
         builder: (context, constraints) {
           return Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 37, 61, 121),
+              color: const Color(0xff1a2b5e),
+              // color: const Color.fromARGB(255, 37, 61, 121),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
                 bottom: Radius.circular(1),
@@ -66,16 +67,20 @@ class PlatformGridView extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
+                          // borderRadius: const BorderRadius.only(
+                          //   topLeft: Radius.circular(15),
+                          //   topRight: Radius.circular(15),
+                          // ),
                           borderRadius:
                               BorderRadius.circular(WidgetsConstant.width * 5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                          // boxShadow: [
+                          //   BoxShadow(
+                          //     color: Colors.black.withOpacity(0.5),
+                          //     spreadRadius: 2,
+                          //     blurRadius: 5,
+                          //     offset: const Offset(0, 3),
+                          //   ),
+                          // ],
                         ),
                         child: Row(
                           children: [
