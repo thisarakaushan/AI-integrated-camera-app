@@ -167,7 +167,7 @@ class _PhotoCapturePageState extends State<PhotoCapturePage>
                           ),
                         ),
                         ClipRRect(
-                          //borderRadius: BorderRadius.circular(borderRadius),
+                          borderRadius: BorderRadius.circular(20),
                           child: Image.network(
                             widget.imageUrl ?? '',
                             fit: BoxFit.cover,

@@ -183,7 +183,7 @@ class _ImageProcessingPageState extends State<ImageProcessingPage>
                             ),
                           ),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(0),
+                            borderRadius: BorderRadius.circular(20),
                             child: Image.network(
                               widget.imageUrl,
                               fit: BoxFit.cover,
