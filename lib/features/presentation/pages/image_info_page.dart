@@ -60,115 +60,135 @@ class _ImageInfoPageState extends State<ImageInfoPage> {
     }
   }
 
+  onBackPressed(didPop) {
+    if (didPop) {
+      return;
+    }
+
+    // Do the navigation
+    // Use future delay or widgets binding
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Navigator.pop(context);
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final containerWidth = WidgetsConstant.width * 40;
     final containerHeight = containerWidth / (imageAspectRatio ?? 1.0);
 
-    return Scaffold(
-      backgroundColor: const Color(0xff0e235a),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: WidgetsConstant.height * 3),
-            TopRowWidget(onCameraPressed: _navigateToMainPage),
-            SizedBox(height: WidgetsConstant.height * 4),
-            // Main image container with subtle shadow for separation
-            Center(
-              child: Container(
-                width: containerWidth,
-                height: containerHeight,
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4), // Shadow position
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Image.network(
-                      widget.imageUrl,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        onBackPressed(didPop);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xff0e235a),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: WidgetsConstant.height * 3),
+              TopRowWidget(onCameraPressed: _navigateToMainPage),
+              SizedBox(height: WidgetsConstant.height * 4),
+              // Main image container with subtle shadow for separation
+              Center(
+                child: Container(
+                  width: containerWidth,
+                  height: containerHeight,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4), // Shadow position
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: FittedBox(
                       fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: WidgetsConstant.height * 3),
-            // Description with padding and alignment
-            Center(
-              child: Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: WidgetsConstant.width * 5),
-                child: Text(
-                  widget.description,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: WidgetsConstant.textFieldHeight * 0.12,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            SizedBox(height: WidgetsConstant.height * 3),
-            // Persistent Separator
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.8),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(15),
-                ),
-              ),
-              child: SizedBox(
-                height: WidgetsConstant.height * 0.3,
-                width: double.infinity,
-              ),
-            ),
-            // Gridview with background image
-            Expanded(
-              child: Stack(
-                children: [
-                  // Background image
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/page_images/info_page_background.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  // PlatformGridView on top of the background
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15),
+                      child: Image.network(
+                        widget.imageUrl,
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    padding: EdgeInsets.only(
-                      top: WidgetsConstant.height * 3,
-                    ),
-                    child: PlatformGridView(
-                      products: widget.products,
-                      onProductTap: _onPlatformTap,
-                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: WidgetsConstant.height * 3),
+              // Description with padding and alignment
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: WidgetsConstant.width * 5),
+                  child: Text(
+                    widget.description,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: WidgetsConstant.textFieldHeight * 0.12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              SizedBox(height: WidgetsConstant.height * 3),
+              // Persistent Separator
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.8),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                ),
+                child: SizedBox(
+                  height: WidgetsConstant.height * 0.3,
+                  width: double.infinity,
+                ),
+              ),
+              // Gridview with background image
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Background image
+                    Positioned.fill(
+                      child: Image.asset(
+                        'assets/page_images/info_page_background.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    // PlatformGridView on top of the background
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                        ),
+                      ),
+                      padding: EdgeInsets.only(
+                        top: WidgetsConstant.height * 3,
+                      ),
+                      child: PlatformGridView(
+                        products: widget.products,
+                        onProductTap: _onPlatformTap,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 
 
