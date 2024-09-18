@@ -12,7 +12,7 @@ class LensBorderPainter extends CustomPainter {
       ..strokeWidth = 2.0 // Make the stroke a bit thicker
       ..style = PaintingStyle.stroke;
 
-    final double cornerLength = 30.0; // Define the length of each corner
+    final double cornerLength = 15.0; // Define the length of each corner
     final double cornerRadius = 20.0; // Define the radius of the corner's curve
 
     // Top left corner
