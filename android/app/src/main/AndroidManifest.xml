@@ -1,17 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.excelly.valuefinder">
-    
-    <!-- Permissions for camera and storage-->
 
-    <!-- Required for Android 10 and below (SDK 29 and below) -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
-     <!-- Required for Android 11 (SDK 30) to Android 12L (SDK 32) -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-    
-    <!-- For Android 13 and above (SDK 33+) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:label="@string/app_name"

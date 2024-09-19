@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:valuefinder/config/routes/app_routes.dart';
 import 'package:valuefinder/core/error/failures.dart';
-// Import permission services
-import '../../../core/services/permission_services/camera_permission_handler.dart';
-import '../../../core/services/permission_services/storage_permission_handler.dart';
 
 import '../../../core/utils/widget_constants.dart';
 
@@ -38,14 +35,11 @@ class _SplashPageState extends State<SplashPage>
     super.didChangeDependencies();
 
     // Load resources that depend on the context (like MediaQuery)
-    _loadResources();
+    // _loadResources();
   }
 
   Future<void> _initializeApp() async {
     try {
-      // Check for necessary permissions
-      await _checkPermissions();
-
       // Delay for 2 seconds to show the splash image
       await Future.delayed(const Duration(seconds: 2));
 
@@ -57,26 +51,14 @@ class _SplashPageState extends State<SplashPage>
     }
   }
 
-  Future<void> _loadResources() async {
-    await precacheImage(
-        const AssetImage('assets/page_images/splash_image.png'), context);
-    await precacheImage(
-        const AssetImage('assets/page_images/main_image.png'), context);
-    await precacheImage(
-        const AssetImage('assets/page_images/info_page_image.png'), context);
-  }
-
-  Future<void> _checkPermissions() async {
-    final storagePermissionStatus = await requestStoragePermission();
-    if (storagePermissionStatus is Failure) {
-      throw storagePermissionStatus;
-    }
-
-    final cameraPermissionStatus = await requestCameraPermission();
-    if (cameraPermissionStatus is Failure) {
-      throw cameraPermissionStatus;
-    }
-  }
+  // Future<void> _loadResources() async {
+  //   await precacheImage(
+  //       const AssetImage('assets/page_images/splash_image.png'), context);
+  //   await precacheImage(
+  //       const AssetImage('assets/page_images/main_image.png'), context);
+  //   await precacheImage(
+  //       const AssetImage('assets/page_images/info_page_image.png'), context);
+  // }
 
   void _navigateToMainPage() {
     Navigator.of(context).pushReplacementNamed(

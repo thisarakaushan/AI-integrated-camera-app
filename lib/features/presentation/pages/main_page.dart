@@ -122,7 +122,7 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  Future<void> _pickImageFromGallery() async {
+  Future<void> _pickImageFromGallery() async {      
     try {
       await pickImageFromGallery(
         context,

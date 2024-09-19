@@ -41,6 +41,7 @@ dependencies:
   flutter_screenutil: ^5.0.0
   cached_network_image: ^3.2.3
   provider: ^6.0.0
+  geolocator: ^13.0.1
 
 dev_dependencies:
   flutter_test:
