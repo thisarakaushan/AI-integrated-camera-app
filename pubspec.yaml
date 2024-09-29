@@ -4,7 +4,7 @@ description: "A new Flutter project."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.15
+version: 0.1.18
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -40,6 +40,7 @@ dependencies:
   flutter_screenutil: ^5.0.0
   cached_network_image: ^3.2.3
   provider: ^6.0.0
+  geolocator: ^13.0.1
 
 dev_dependencies:
   flutter_test:
@@ -64,3 +65,4 @@ flutter:
     - assets/page_images/splash_image.png
     - assets/page_images/main_image.png
     - assets/page_images/info_page_image.png
+    - assets/page_images/info_page_background.png

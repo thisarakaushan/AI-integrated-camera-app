@@ -1,11 +1,12 @@
-// lib/core/services/image_processing_service.dart
-
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:valuefinder/core/constants/constants.dart';
 import 'package:valuefinder/core/error/failures.dart';
 import 'package:valuefinder/features/data/models/product.dart';
+
+//import 'location_services/ipapi_location.dart';
+import 'location_services/location.dart';
 
 class ImageProcessingService {
   final String imageUrl;
@@ -64,11 +65,23 @@ class ImageProcessingService {
           return;
         }
 
-        // Step 2: Use the extracted keyword to get details from shopping URL
+        // Step 2: Determine the country by country code
+        String countryCode = '';
+        try {
+          countryCode = await getCountryCode();
+          print('Country Code: $countryCode');
+        } catch (e) {
+          print('Error fetching country code: $e');
+          onError(ServerFailure('Could not retrieve country code'));
+          return; // Exit if the country code retrieval fails
+        }
+
+        // Step 3: Use the extracted keyword to get details from shopping URL
         final recognitionResponse = await http.get(
-          Uri.parse('$shoppingBaseUrl?keyword=$keyword'),
+          Uri.parse('$shoppingBaseUrl?keyword=$keyword&country=$countryCode'),
           headers: {'Authorization': 'Bearer $token'},
         );
+        print('Country Code: $countryCode');
 
         if (recognitionResponse.statusCode == 200) {
           final recognitionResult = jsonDecode(recognitionResponse.body);

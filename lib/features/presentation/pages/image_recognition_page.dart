@@ -114,6 +114,19 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
     return lensHeight;
   }
 
+  onBackPressed(didPop) {
+    if (didPop) {
+      return;
+    }
+
+    // Do the navigation
+    // Use future delay or widgets binding
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Navigator.pop(context);
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final lensWidth = MediaQuery.of(context).size.width * 0.8;
@@ -124,81 +137,87 @@ class _ImageRecognitionPageState extends State<ImageRecognitionPage>
     final double textSize = WidgetsConstant.textFieldHeight * 0.13;
     final double animatedImageSize = WidgetsConstant.width * 25;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF051338),
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: WidgetsConstant.height * 3),
-            TopRowWidget(onCameraPressed: _navigateToMainPage),
-            SizedBox(height: WidgetsConstant.height * 4),
-            Container(
-              width: lensWidth,
-              height: adjustedLensHeight,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.transparent),
-              ),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: LensBorderPainter(
-                        focusRect: Rect.fromLTWH(
-                          0,
-                          0,
-                          lensWidth,
-                          adjustedLensHeight,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        onBackPressed(didPop);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF051338),
+        body: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(height: WidgetsConstant.height * 3),
+              TopRowWidget(onCameraPressed: _navigateToMainPage),
+              SizedBox(height: WidgetsConstant.height * 4),
+              Container(
+                width: lensWidth,
+                height: adjustedLensHeight,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.transparent),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: LensBorderPainter(
+                          focusRect: Rect.fromLTWH(
+                            0,
+                            0,
+                            lensWidth,
+                            adjustedLensHeight,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(0),
-                    child: Image.network(
-                      widget.imageUrl, // Use the static image URL directly
-                      fit: BoxFit.cover,
-                      width: lensWidth,
-                      height: adjustedLensHeight,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Center(
-                          child: Text(
-                            'Image not available',
-                            style: TextStyle(
-                                color: Colors.white, fontSize: textSize),
-                          ),
-                        );
-                      },
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        widget.imageUrl, // Use the static image URL directly
+                        fit: BoxFit.cover,
+                        width: lensWidth,
+                        height: adjustedLensHeight,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'Image not available',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: textSize),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: WidgetsConstant.height * 5),
-            // Only this Text widget will rebuild dynamically when the identified object changes
-            Consumer<RecognitionState>(
-              builder: (context, recognitionState, child) {
-                return Text(
-                  recognitionState.identifiedObject.isNotEmpty
-                      ? recognitionState.identifiedObject
-                      : 'Object not identified',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: textSize,
-                  ),
-                );
-              },
-            ),
-            Spacer(),
-            const ProcessingAndRecognitionPageTextWidget(),
-            SizedBox(height: WidgetsConstant.height * 10),
-            AnimatedImageWidget(
-              controller: _controller,
-              imagePath: 'assets/page_images/main_image.png',
-              height: animatedImageSize,
-              width: animatedImageSize,
-            ),
-            SizedBox(height: WidgetsConstant.height * 5),
-          ],
+              SizedBox(height: WidgetsConstant.height * 5),
+              // Only this Text widget will rebuild dynamically when the identified object changes
+              Consumer<RecognitionState>(
+                builder: (context, recognitionState, child) {
+                  return Text(
+                    recognitionState.identifiedObject.isNotEmpty
+                        ? recognitionState.identifiedObject
+                        : 'Object not identified',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: textSize,
+                    ),
+                  );
+                },
+              ),
+              Spacer(),
+              const ProcessingAndRecognitionPageTextWidget(),
+              SizedBox(height: WidgetsConstant.height * 10),
+              AnimatedImageWidget(
+                controller: _controller,
+                imagePath: 'assets/page_images/main_image.png',
+                height: animatedImageSize,
+                width: animatedImageSize,
+              ),
+              SizedBox(height: WidgetsConstant.height * 5),
+            ],
+          ),
         ),
       ),
     );

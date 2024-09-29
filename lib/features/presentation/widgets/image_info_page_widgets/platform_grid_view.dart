@@ -35,7 +35,8 @@ class PlatformGridView extends StatelessWidget {
         builder: (context, constraints) {
           return Container(
             decoration: BoxDecoration(
-              color: const Color(0xff1a2b5e),
+              // color: const Color(0xff1a2b5e),
+              color: Colors.transparent,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
                 bottom: Radius.circular(1),
